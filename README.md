@@ -17,3 +17,9 @@ npm run build
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### 提交到 git仓库
+git pull
+git add .
+git commit -m '提交新文件夹'
+git push
