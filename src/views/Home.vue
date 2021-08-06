@@ -2,11 +2,11 @@
   <div class="home">
     <head>主页</head>
     <TabBar :tabList=tabList>
-      <div slot="shangpinxiangqing" class="frist">
+      <template v-slot:shangpinxiangqing class="frist">
         <el-col :span="20">
           <el-input
             type="textarea"
-            :rows="2"
+            :rows="4"
             placeholder="请输入内容"
             v-model="copyText">
           </el-input>
@@ -14,33 +14,36 @@
         <el-col :span="4">
           <el-button v-copy="copyText">复制全部</el-button>
         </el-col>
-      </div>
-      <div slot="guigecanshu">
+      </template>
+      <template v-slot:guigecanshu>
         {{textTxt}}
         <vue-hover-mask @click="handleClick">
-            <!-- 默认插槽 -->
-            <!-- <video 
-              src="https://s3.pstatp.com/aweme/resource/web/static/image/index/tvc-v2_30097df.mp4" 
-              autoplay
-              loop/> -->
-              <img src="https://img1.baidu.com/it/u=1263028917,3538415969&fm=26&fmt=auto&gp=0.jpg" alt="">
-            <!-- action插槽 -->
-            <template v-slot:action>
-              <i class="iconfont zoom"></i>
-              <i class="iconfont delete"></i>
-            </template>
-          </vue-hover-mask>
-      </div>
-      <div slot="peijianxiane" style="background-color: #d6ecab;border: 2px solid pink;">
+          <!-- 默认插槽 -->
+          <!-- <video 
+            src="https://s3.pstatp.com/aweme/resource/web/static/image/index/tvc-v2_30097df.mp4" 
+            autoplay
+            loop/> -->
+            <img src="https://img1.baidu.com/it/u=1263028917,3538415969&fm=26&fmt=auto&gp=0.jpg" alt="">
+          <!-- action插槽 -->
+          <template v-slot:action>
+            <i class="iconfont zoom"></i>
+            <i class="iconfont delete"></i>
+            <i class="iconfont delete">测试更改</i>
+          </template>
+        </vue-hover-mask>
+      </template>
+      <template v-slot:peijianxiane style="background-color: #d6ecab;border: 2px solid pink;">
         <template>
           <el-button type="primary" @click="changePage">切换页面</el-button>
         </template>
-      </div>
-      <div slot="chengjiaojilu">
+      </template>
+      <template v-slot:chengjiaojilu>
         <input type="text" @change="getBaiduData">
         <ul></ul>
-      </div>
-      <div slot="shangpinpingjia">shangpinpingjia</div>
+      </template>
+      <template v-slot:shangpinpingjia>
+        <Slideshow></Slideshow>
+      </template>
     </TabBar>
   </div>
 </template>
@@ -49,11 +52,13 @@
 // @ is an alias to /src
 import TabBar from '@/components/TabBar.vue'
 import promise from '@/js/promise'
+import Slideshow from '@/components/slideshow'
 
 export default {
   name: 'Home',
   components: {
-    TabBar
+    TabBar,
+    Slideshow
   },
   data(){
     return{
@@ -62,7 +67,7 @@ export default {
         {label:"规格参数",value:"2",slotName:'guigecanshu'},
         {label:"配件限额",value:"3",slotName:'peijianxiane'},
         {label:"成交记录",value:"4",slotName:'chengjiaojilu'},
-        {label:"商品评价",value:"5",slotName:'shangpinpingjia'},
+        {label:"图片轮播",value:"5",slotName:'shangpinpingjia'},
       ],
       copyText: 'a copy directives',
       textTxt:'测试数组对象去重',
@@ -255,7 +260,7 @@ export default {
     this.test();
     this.jsonpgetData();
     //使用vue-jsonp实现跨域请求
-    promise()
+    promise() // 类函数
   }
 }
 </script>

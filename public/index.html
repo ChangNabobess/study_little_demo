@@ -17,8 +17,10 @@
     <!-- built files will be auto injected -->
   </body>
   <script type="text/javascript">
-    var aliyunshuju = function(data){
-      console.log(data);
-    }
+    document.documentElement.style.fontSize = '100px'
+    document.body.style.fontSize = '16px'
+    window.addEventListener('resize',(e)=>{
+      document.documentElement.style.fontSize=(document.body.offsetWidth/screen.width)*100+"px";
+    })
   </script>
 </html>

@@ -20,7 +20,7 @@
 export default {
   data() {
     return {
-      activeValue:'1',
+      activeValue:'5',
       // tabList:[],
     };
   },
@@ -42,16 +42,14 @@ export default {
       // console.log('store',this.$store.getters.routerState);
     }
   },
-  created() {
-    
-  },
+  created() {},
   mounted() {},
 }
 </script>
 
 <style lang='scss' scoped>
 .main-body{
-  width: 1500px;
+  min-width: 1300px; // 这里设置相当于最小宽度
   height: 100%;
   margin: 0px auto;
   ul{
