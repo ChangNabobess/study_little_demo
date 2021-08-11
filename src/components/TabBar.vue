@@ -49,7 +49,7 @@ export default {
 
 <style lang='scss' scoped>
 .main-body{
-  min-width: 1300px; // 这里设置相当于最小宽度
+  // min-width: 1300px; // 这里设置相当于最小宽度
   height: 100%;
   margin: 0px auto;
   ul{
