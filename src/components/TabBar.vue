@@ -20,8 +20,7 @@
 export default {
   data() {
     return {
-      activeValue:'5',
-      // tabList:[],
+      activeValue:'1'
     };
   },
   props:{

@@ -3,17 +3,23 @@
     <head>主页</head>
     <TabBar :tabList=tabList>
       <template v-slot:shangpinxiangqing class="frist">
-        <el-col :span="20">
-          <el-input
-            type="textarea"
-            :rows="4"
-            placeholder="请输入内容"
-            v-model="copyText">
-          </el-input>
-        </el-col>
-        <el-col :span="4">
-          <el-button v-copy="copyText">复制全部</el-button>
-        </el-col>
+        <el-row>
+          <el-col :span="20">
+            <el-input
+              type="textarea"
+              :rows="4"
+              placeholder="请输入内容"
+              v-model="copyText">
+            </el-input>
+          </el-col>
+          <el-col :span="4">
+            <el-button v-copy="copyText">复制全部</el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <!-- <h1 class="testH1">这里测试一下，animation中的step属性</h1> -->
+          <h1 class="testH1">这里测试一下好像只适配中文</h1>
+        </el-row>
       </template>
       <template v-slot:guigecanshu>
         {{textTxt}}
@@ -265,6 +271,8 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+@keyframes typing { from { width: 0; } }
+@keyframes blink-caret { 50% { border-color: transparent; } }
 @import url('//at.alicdn.com/t/font_1223885_a68qqkvtjgr.css');
 .iconfont {
   padding: 0 10px;
@@ -283,5 +291,15 @@ export default {
 .el-textarea ::v-deep .el-textarea__inner{
   resize: none;
 }
-
+.testH1{
+  font: bold 200% Consolas, Monaco, monospace;
+	border-right: .1em solid;
+	width: 425px; /* fallback */ // h1的长度
+	// width: 30ch; /* # of chars */
+	margin: 2em 1em;
+	white-space: nowrap;
+	overflow: hidden;
+	animation: typing 20s steps(13, end), /* # of steps = # of chars step规定动画执行几次例如：425px，一共是三个字符，动画分布执行13次*/
+	           blink-caret .5s step-end infinite alternate;
+}
 </style>
