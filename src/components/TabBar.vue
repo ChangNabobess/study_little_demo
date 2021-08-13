@@ -2,7 +2,7 @@
   <div class=''>
     <div class="main-body" v-if="tabList.length>0">
       <ul>
-        <li v-for="(item,index) in tabList" :key="index" @click="changeValue(item)">{{item.label}}</li>
+        <li v-for="(item,index) in tabList" :key="index" :class="(activeValue == index) ? 'activeClass' : '' " @click="changeValue(item)">{{item.label}}</li>
       </ul>
       <div class="show-page">
         <div v-for="(i,v) in tabList" :key="v">
@@ -20,7 +20,7 @@
 export default {
   data() {
     return {
-      activeValue:'1'
+      activeValue:'0'
     };
   },
   props:{
@@ -65,8 +65,11 @@ export default {
       cursor: pointer;
       }
     li:hover{
-          background: pink;
+          background: #f00056;
       }
+    .activeClass{
+      background: pink;
+    }
   }
   .show-page{
     width: 100%;

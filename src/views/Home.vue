@@ -20,6 +20,7 @@
           <!-- <h1 class="testH1">这里测试一下，animation中的step属性</h1> -->
           <h1 class="testH1">这里测试一下好像只适配中文</h1>
         </el-row>
+        <TodoList></TodoList>
       </template>
       <template v-slot:guigecanshu>
         {{textTxt}}
@@ -59,21 +60,23 @@
 import TabBar from '@/components/TabBar.vue'
 import promise from '@/js/promise'
 import Slideshow from '@/components/slideshow'
+import TodoList from '@/components/todoList'
 
 export default {
   name: 'Home',
   components: {
     TabBar,
-    Slideshow
+    Slideshow,
+    TodoList
   },
   data(){
     return{
       tabList:[
-        {label:"商品详情",value:"1",slotName:'shangpinxiangqing'},
-        {label:"规格参数",value:"2",slotName:'guigecanshu'},
-        {label:"配件限额",value:"3",slotName:'peijianxiane'},
-        {label:"成交记录",value:"4",slotName:'chengjiaojilu'},
-        {label:"图片轮播",value:"5",slotName:'shangpinpingjia'},
+        {label:"商品详情",value:"0",slotName:'shangpinxiangqing'},
+        {label:"规格参数",value:"1",slotName:'guigecanshu'},
+        {label:"配件限额",value:"2",slotName:'peijianxiane'},
+        {label:"成交记录",value:"3",slotName:'chengjiaojilu'},
+        {label:"图片轮播",value:"4",slotName:'shangpinpingjia'},
       ],
       copyText: 'a copy directives',
       textTxt:'测试数组对象去重',
