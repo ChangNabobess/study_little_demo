@@ -20,7 +20,15 @@
           <!-- <h1 class="testH1">这里测试一下，animation中的step属性</h1> -->
           <h1 class="testH1">这里测试一下好像只适配中文</h1>
         </el-row>
-        <TodoList></TodoList>
+        <el-row>
+          <el-col :span="4">
+            <MyTree></MyTree>
+          </el-col>
+          <el-col :span='16'>
+            <TodoList></TodoList>
+          </el-col>
+          <el-col :span="4"></el-col>
+        </el-row>
       </template>
       <template v-slot:guigecanshu>
         {{textTxt}}
@@ -61,13 +69,15 @@ import TabBar from '@/components/TabBar.vue'
 import promise from '@/js/promise'
 import Slideshow from '@/components/slideshow'
 import TodoList from '@/components/todoList'
+import MyTree from '@/components/myTree'
 
 export default {
   name: 'Home',
   components: {
     TabBar,
     Slideshow,
-    TodoList
+    TodoList,
+    MyTree
   },
   data(){
     return{
