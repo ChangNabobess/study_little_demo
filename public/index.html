@@ -7,6 +7,7 @@
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <script type="text/javascript" src="https://geo.datav.aliyun.com/areas_v2/bound/110000_full.json?callback=aliyunshuju"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <link rel="stylesheet" href="//at.alicdn.com/t/font_2581644_k6cv3pphp5.css">
   </head>
   <body>
@@ -21,6 +22,7 @@
     document.body.style.fontSize = '16px'
     window.addEventListener('resize',(e)=>{
       document.documentElement.style.fontSize=(document.body.offsetWidth/screen.width)*100+"px";
+      // console.log(document.documentElement.style.fontSize);
     })
   </script>
 </html>

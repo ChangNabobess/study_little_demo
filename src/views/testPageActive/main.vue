@@ -21,7 +21,8 @@
               :data="tableData"
               style="width: 100%"
               class="testTable"
-              ref='refTable'>
+              ref='refTable'
+              max-height='305'>
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <div class="tringle1"></div>
@@ -132,6 +133,46 @@ export default {
           address: '上海市普陀区真北路',
           shop: '王小虎夫妻店',
           shopId: '10333'
+      }, {
+          id: '12987126',
+          name: '好滋好味鸡蛋仔',
+          category: '江浙小吃、小吃零食',
+          desc: '荷兰优质淡奶，奶香浓而不腻',
+          address: '上海市普陀区真北路',
+          shop: '王小虎夫妻店',
+          shopId: '10333'
+      }, {
+          id: '12987126',
+          name: '好滋好味鸡蛋仔',
+          category: '江浙小吃、小吃零食',
+          desc: '荷兰优质淡奶，奶香浓而不腻',
+          address: '上海市普陀区真北路',
+          shop: '王小虎夫妻店',
+          shopId: '10333'
+      }, {
+          id: '12987126',
+          name: '好滋好味鸡蛋仔',
+          category: '江浙小吃、小吃零食',
+          desc: '荷兰优质淡奶，奶香浓而不腻',
+          address: '上海市普陀区真北路',
+          shop: '王小虎夫妻店',
+          shopId: '10333'
+      }, {
+          id: '12987126',
+          name: '好滋好味鸡蛋仔',
+          category: '江浙小吃、小吃零食',
+          desc: '荷兰优质淡奶，奶香浓而不腻',
+          address: '上海市普陀区真北路',
+          shop: '王小虎夫妻店',
+          shopId: '10333'
+      }, {
+          id: '12987126',
+          name: '好滋好味鸡蛋仔',
+          category: '江浙小吃、小吃零食',
+          desc: '荷兰优质淡奶，奶香浓而不腻',
+          address: '上海市普陀区真北路',
+          shop: '王小虎夫妻店',
+          shopId: '10333'
       }],
       visible: false,
       waringExplain: '',
@@ -184,6 +225,18 @@ export default {
       } else {
         this.waringExplain = ''
       }
+    },
+    getScrollElm() {
+      this.scrollElem = document.getElementById('scrollTable')
+      this.scrollElem.addEventListener('scroll',this.scrollHandler,true)
+    },
+    scrollHandler(){
+      let scrolldown = this.scrollElem.scrollHeight - this.scrollElem.scrollTop - this.scrollElem.clientHeight
+      /* if( scrolldown = 0) {
+        console.log(11);
+      } else { 
+        console.log(scrolldown);
+      } */
     }
   },
   created() {
@@ -198,6 +251,11 @@ export default {
     // console.log(dom[0].attributes);
     // console.log(getComputedStyle(dom[0]).display);
     // console.log(document.styleSheets[0].insertRule);
+    // 添加id名
+    document.getElementsByClassName('el-table__body-wrapper')[0].setAttribute('id','scrollTable');
+    // 添加类名
+    document.getElementsByClassName('el-table__body-wrapper')[0].classList.add('ceshiNewClassName')
+    this.getScrollElm()
   },
 }
 </script>

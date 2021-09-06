@@ -31,25 +31,36 @@
         </el-row>
       </template>
       <template v-slot:guigecanshu>
-        {{textTxt}}
-        <vue-hover-mask @click="handleClick">
-          <!-- 默认插槽 -->
-          <!-- <video 
-            src="https://s3.pstatp.com/aweme/resource/web/static/image/index/tvc-v2_30097df.mp4" 
-            autoplay
-            loop/> -->
-            <img src="https://img1.baidu.com/it/u=1263028917,3538415969&fm=26&fmt=auto&gp=0.jpg" alt="">
-          <!-- action插槽 -->
-          <template v-slot:action>
-            <i class="iconfont zoom"></i>
-            <i class="iconfont delete"></i>
-            <i class="iconfont delete">测试更改</i>
-          </template>
-        </vue-hover-mask>
+        <el-row>
+          {{textTxt}}
+          <vue-hover-mask @click="handleClick">
+            <!-- 默认插槽 -->
+            <!-- <video 
+              src="https://s3.pstatp.com/aweme/resource/web/static/image/index/tvc-v2_30097df.mp4" 
+              autoplay
+              loop/> -->
+              <img src="https://img1.baidu.com/it/u=1263028917,3538415969&fm=26&fmt=auto&gp=0.jpg" alt="">
+            <!-- action插槽 -->
+            <!-- v-slot 指令自 Vue 2.6.0 起被引入 -->
+            <!-- <template v-slot:action> -->
+              <!-- slot 指令自 Vue 2.6.0 起被废弃 -->
+            <template slot="action">
+              <i class="iconfont zoom"></i>
+              <i class="iconfont delete"></i>
+              <i class="iconfont delete">测试更改</i>
+            </template>
+          </vue-hover-mask>
+        </el-row>
+        <el-row>
+          <RemovePeople></RemovePeople>
+        </el-row>
       </template>
       <template v-slot:peijianxiane style="background-color: #d6ecab;border: 2px solid pink;">
         <template>
           <el-button type="primary" @click="changePage">切换页面</el-button>
+        </template>
+        <template>
+          <RotateScreen></RotateScreen>
         </template>
       </template>
       <template v-slot:chengjiaojilu>
@@ -70,6 +81,8 @@ import promise from '@/js/promise'
 import Slideshow from '@/components/slideshow'
 import TodoList from '@/components/todoList'
 import MyTree from '@/components/myTree'
+import RotateScreen from '@/components/rotateScreen'
+import RemovePeople from '@/components/RemovePeople'
 
 export default {
   name: 'Home',
@@ -77,7 +90,9 @@ export default {
     TabBar,
     Slideshow,
     TodoList,
-    MyTree
+    MyTree,
+    RotateScreen,
+    RemovePeople
   },
   data(){
     return{
