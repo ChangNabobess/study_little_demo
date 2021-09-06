@@ -52,7 +52,16 @@
           </vue-hover-mask>
         </el-row>
         <el-row>
-          <RemovePeople></RemovePeople>
+          <el-col :span="6">
+            <div id="content"></div>
+            <el-button type='primary'>点击按钮</el-button>
+          </el-col>
+          <el-col :span="12">
+            <RemovePeople></RemovePeople>
+          </el-col>
+          <el-col :span="6">
+            测试
+          </el-col>
         </el-row>
       </template>
       <template v-slot:peijianxiane style="background-color: #d6ecab;border: 2px solid pink;">
@@ -83,6 +92,7 @@ import TodoList from '@/components/todoList'
 import MyTree from '@/components/myTree'
 import RotateScreen from '@/components/rotateScreen'
 import RemovePeople from '@/components/RemovePeople'
+import {debounce, throttle} from '@/js/debouncethrottle'
 
 export default {
   name: 'Home',
@@ -109,7 +119,8 @@ export default {
           id: 1,
           name: 'zs'
       },
-      url:'https://geo.datav.aliyun.com/areas_v2/bound/110000_full.json?callback=aliyunshuju'
+      url:'https://geo.datav.aliyun.com/areas_v2/bound/110000_full.json?callback=aliyunshuju',
+      num: 1,
     };
   },
   mounted(){
@@ -117,6 +128,8 @@ export default {
     window.aliyunshuju=function(data){
       // console.log('我是回调函数成功之后返回的数据',data);
     }
+    // document.getElementById('content').addEventListener('mousemove',debounce(this.countEvent, 2000, true))
+    document.getElementById('content').addEventListener('mousemove',throttle(this.countEvent,2000))
     this.getMaps()
   },
   methods:{
@@ -288,7 +301,10 @@ export default {
     },
     handleClick() {
       console.log('click')
-    }
+    },
+    countEvent() {
+      document.getElementById('content').innerHTML = this.num++;
+    },
   },
   created(){
     this.test();
@@ -329,5 +345,15 @@ export default {
 	overflow: hidden;
 	animation: typing 20s steps(13, end), /* # of steps = # of chars step规定动画执行几次例如：425px，一共是三个字符，动画分布执行13次*/
 	           blink-caret .5s step-end infinite alternate;
+}
+#content{
+  width: 200px;
+  height: 200px;
+  background-color:darkgray;
+  text-align: center;
+  line-height: 6;
+  color: white;
+  font-size: 30px;
+  margin: auto;
 }
 </style>

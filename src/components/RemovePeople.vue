@@ -16,6 +16,7 @@ export default {
       y: 0,
       antiShakeInterval: null, // 防抖
       time: 0,
+      ids: null
     };
   },
   computed: {},
@@ -23,11 +24,11 @@ export default {
   methods: {
     keyDownHandlerEvent(e){
       if(e.type == 'keydown') {
-        if(this.type == e.keyCode) return
+        // if(this.type == e.keyCode) return
         this.type = e.keyCode
       } else {
         this.type = 0
-        this.stepNum = 0
+        this.mainDom[0].style.backgroundPositionX = 0 + 'px'
       }
       if(this.type>=37 && this.type<=40) {
         switch(this.type){
@@ -52,17 +53,31 @@ export default {
             })
           break;
         }
+        // this.moveBgPic()
       }
     },
     moveBgPic() {
       if (this.type < 37 || this.type > 40) return;
-      this.time --
-      if(this.time > 0) return
-      this.time = 15
-      this.stepNum ++
-      if(this.stepNum > 3) this.stepNum = 0
-      this.mainDomMove()
-      this.mainDom[0].style.backgroundPositionX = -this.stepNum*32 + 'px'
+      /* 节流本地版1  这种 this.time-- 只能通过定义函数体外全局变量使用，如果写到公有类方法中，每次进去都会重新赋值，没有任何意义*/
+       this.time --
+       if(this.time > 0) return 
+       console.log('节流');
+        this.time = 8
+        this.stepNum ++ 
+        if(this.stepNum > 3) this.stepNum = 0
+        this.mainDomMove()
+        this.mainDom[0].style.backgroundPositionX = -this.stepNum*32 + 'px'
+      /* 节流本地版2 */
+      /* if(this.ids) return 
+      // console.log('节流');
+      this.ids = setTimeout(() => {
+        clearTimeout(this.ids)
+        this.ids = null
+        this.stepNum ++ 
+        if(this.stepNum > 3) this.stepNum = 0
+        this.mainDomMove()
+        this.mainDom[0].style.backgroundPositionX = -this.stepNum*32 + 'px'
+      },300) */
     },
     mainDomMove(){
       switch(this.type) {
@@ -102,7 +117,7 @@ export default {
     this.mainDom = document.getElementsByClassName('movePeople')
     document.addEventListener('keydown',this.keyDownHandlerEvent)
     document.addEventListener('keyup',this.keyDownHandlerEvent)
-    this.antiShakeInterval = setInterval(this.moveBgPic, 16);
+    this.antiShakeInterval = setInterval(this.moveBgPic, 16); // 这样加一个倒计时可以解决第二次小人行走时候滑步问题
   },
 }
 </script>
