@@ -53,8 +53,10 @@
         </el-row>
         <el-row>
           <el-col :span="6">
+            <p>鼠标在灰色区域滑动时候有节流效果，点击按钮没有节流效果</p>
             <div id="content"></div>
-            <el-button type='primary'>点击按钮</el-button>
+            <p class="textWrap">测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本</p>
+            <el-button type='primary' @click="countEvent">点击按钮</el-button>
           </el-col>
           <el-col :span="12">
             <RemovePeople></RemovePeople>
@@ -355,5 +357,13 @@ export default {
   color: white;
   font-size: 30px;
   margin: auto;
+}
+.textWrap{
+  width:300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 </style>
