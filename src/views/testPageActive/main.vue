@@ -2,7 +2,9 @@
   <div class="main-test">
     <el-row>
       <el-col :span="2">
-        <DigitRoll :rollDigits="digits" />
+        <!-- <DigitRoll :rollDigits="digits" /> -->
+        <vns :start="0" :end="digits" :times="10" :speed="50"/>
+        <span>元</span>
       </el-col>
       <el-col :span="20">
         <GdMap></GdMap>
@@ -13,7 +15,7 @@
     </el-row>
     <el-row>
       <el-col :span="2">
-        左侧占位符
+        左侧占位符asd
       </el-col>
       <el-col :span="20">
         <template>
@@ -24,7 +26,7 @@
               ref='refTable'
               max-height='305'>
               <el-table-column type="expand">
-                <template slot-scope="props">
+                <template>
                   <div class="tringle1"></div>
                   <div class="tringle2"></div>
                   <textarea class="textarerea" ref="explain" placeholder="请在此处输入黄色预警反馈说明..." v-model="waringExplain"></textarea>
@@ -93,14 +95,15 @@
 </template>
 
 <script>
-import DigitRoll from '@huoyu/vue-digitroll';
 import GdMap from '@/views/map/gdMap'
 import BarChart from '@/views/testPageActive/component/barChart'
 import LineChart from '@/views/testPageActive/component/lineChart'
+import {mapGetters, mapState} from 'vuex'
+import vns from 'vue-number-scroll'
 export default {
   data() {
     return {
-      digits: '53268845',
+      digits: 53268845.523,
       tableData: [{
           id: '12987122',
           name: '好滋好味鸡蛋仔',
@@ -178,16 +181,19 @@ export default {
       waringExplain: '',
       value: '',
       putAway: false, // el-dataPicker 下拉框是否显示
-      setputAway: false
+      setputAway: false,
     };
   },
   components:{
-    DigitRoll,
     GdMap,
     BarChart,
-    LineChart
+    LineChart,
+    vns,
   },
-  compute:{},
+  computed:{
+    ...mapGetters(['getTextDate']),
+    ...mapState({count (state) { return state.routerModule.textDate}})
+  },
   watch: {
     visible:{
       immediate:true,
@@ -221,12 +227,17 @@ export default {
     clickMe(row){
       this.$refs.refTable.toggleRowExpansion(row)
       if(this.$refs.explain) {
-        console.log(this.$refs.explain.value);
+        // console.log(this.$refs.explain.value);
       } else {
         this.waringExplain = ''
       }
     },
     getScrollElm() {
+      const vm = this
+      // console.log(this.$store.getters.getTextDate);
+      // console.log(this.getTextDate);
+      // console.log(this.$store.state.routerModule.textDate);
+      // console.log(this.count);
       this.scrollElem = document.getElementById('scrollTable')
       this.scrollElem.addEventListener('scroll',this.scrollHandler,true)
     },

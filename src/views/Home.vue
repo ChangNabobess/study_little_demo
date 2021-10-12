@@ -58,8 +58,9 @@
             <p class="textWrap">测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本</p>
             <el-button type='primary' @click="countEvent">点击按钮</el-button>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" style="position:relative;">
             <RemovePeople></RemovePeople>
+            <Movesquare></Movesquare>
           </el-col>
           <el-col :span="6">
             测试
@@ -94,6 +95,7 @@ import TodoList from '@/components/todoList'
 import MyTree from '@/components/myTree'
 import RotateScreen from '@/components/rotateScreen'
 import RemovePeople from '@/components/RemovePeople'
+import Movesquare from '@/components/Movesquare'
 import {debounce, throttle} from '@/js/debouncethrottle'
 
 export default {
@@ -104,7 +106,8 @@ export default {
     TodoList,
     MyTree,
     RotateScreen,
-    RemovePeople
+    RemovePeople,
+    Movesquare
   },
   data(){
     return{
@@ -313,6 +316,7 @@ export default {
     this.jsonpgetData();
     //使用vue-jsonp实现跨域请求
     promise() // 类函数
+    // this.$store.dispatch('commitTextData', '我是测试数据，首页打开之后就提交了')
   }
 }
 </script>

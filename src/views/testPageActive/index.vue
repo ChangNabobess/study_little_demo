@@ -28,7 +28,7 @@ export default {
 
   },
   created() {
-
+    this.$store.dispatch('commitTextData', '我是测试数据，首页打开之后就提交了')
   },
   mounted() {
 

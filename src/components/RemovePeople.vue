@@ -61,7 +61,6 @@ export default {
       /* 节流本地版1  这种 this.time-- 只能通过定义函数体外全局变量使用，如果写到公有类方法中，每次进去都会重新赋值，没有任何意义*/
        this.time --
        if(this.time > 0) return 
-       console.log('节流');
         this.time = 8
         this.stepNum ++ 
         if(this.stepNum > 3) this.stepNum = 0
@@ -119,13 +118,16 @@ export default {
     document.addEventListener('keyup',this.keyDownHandlerEvent)
     this.antiShakeInterval = setInterval(this.moveBgPic, 16); // 这样加一个倒计时可以解决第二次小人行走时候滑步问题
   },
+  destroyed(){
+    clearInterval(this.antiShakeInterval)
+  }
 }
 </script>
 
 <style lang='scss' scoped>
 .outSide{
-  width: 600px;
-  height: 600px;
+  width: 200px;
+  height: 100px;
   margin: auto;
   position: relative;
 }
