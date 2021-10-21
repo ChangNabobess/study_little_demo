@@ -31,7 +31,10 @@ export default {
       this.iptName = document.querySelector('#text-name').value
       this.iptChat = document.querySelector('#text-chat').value
       this.chatArea.textContent = `${this.iptName}：${this.iptChat}`
-      getOrgBuyTop().then((res) => {
+      let params = {
+        a: '1'
+      }
+      getOrgBuyTop(params).then((res) => {
         if(verifyResIsSuccess(res)) {
           console.log(111);
         } else {

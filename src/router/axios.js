@@ -22,7 +22,7 @@ const isInWhiteList = function(errorCode, whiteListConfig = []) {
 // 请求超时时间
 axios.defaults.timeout = 300000
 // 跨域请求，允许保存cookie
-axios.defaults.withCredentials = true
+// axios.defaults.withCredentials = true
 NProgress.configure({ showSpinner: false }) // 是否显示环形进度动画，默认true。
 
 axios.interceptors.request.use(
