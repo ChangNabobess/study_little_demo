@@ -78,6 +78,7 @@
       <template v-slot:chengjiaojilu>
         <input type="text" @change="getBaiduData">
         <ul></ul>
+        <RecordChangPage></RecordChangPage>
       </template>
       <template v-slot:shangpinpingjia>
         <Slideshow></Slideshow>
@@ -97,6 +98,7 @@ import RotateScreen from '@/components/rotateScreen'
 import RemovePeople from '@/components/RemovePeople'
 import Movesquare from '@/components/Movesquare'
 import {debounce, throttle} from '@/js/debouncethrottle'
+import RecordChangPage from '@/views/RecordChangPage'
 
 export default {
   name: 'Home',
@@ -107,7 +109,8 @@ export default {
     MyTree,
     RotateScreen,
     RemovePeople,
-    Movesquare
+    Movesquare,
+    RecordChangPage
   },
   data(){
     return{
@@ -134,7 +137,9 @@ export default {
       // console.log('我是回调函数成功之后返回的数据',data);
     }
     // document.getElementById('content').addEventListener('mousemove',debounce(this.countEvent, 2000, true))
-    document.getElementById('content').addEventListener('mousemove',throttle(this.countEvent,2000))
+    if(document.getElementById('content')) {
+      document.getElementById('content').addEventListener('mousemove',throttle(this.countEvent,2000))
+    }
     this.getMaps()
   },
   methods:{

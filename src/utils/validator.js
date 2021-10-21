@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie'
+
 export function isTel(rule,value,callback) {
     const RegExp=/^1[3456789]\d{9}$/;
     if(RegExp.test(value)){
@@ -51,4 +53,20 @@ export function isTel(rule,value,callback) {
     return false
   }
   return false
+}
+
+export function setTitle (str){
+  window.document.title = str
+}
+
+export function setIcon() {
+  let iconArea = '	https://ww4.sinaimg.cn/bmiddle/b4ef4e59gy1gtd3nbm38sj20go0m8gmn.jpg'
+  if(iconArea) {
+    let linkElm = window.document.createElement('link');
+    linkElm.type = 'image/x-icon'
+    linkElm.rel = 'shortcut icon'
+    linkElm.href = iconArea
+    let appendElm = window.document.querySelector('head');
+    appendElm.appendChild(linkElm)
+  }
 }
