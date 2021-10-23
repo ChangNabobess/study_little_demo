@@ -36,9 +36,7 @@ export default {
       }
       getOrgBuyTop(params).then((res) => {
         if(verifyResIsSuccess(res)) {
-          console.log(111);
-        } else {
-          console.log(res);
+          console.log(res.data.data);
         }
       })
     }
