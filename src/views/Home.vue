@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    <head>主页</head>
+    <head>
+      这个主界面的名字怎么没有改变？
+    </head>
     <TabBar :tabList=tabList>
       <template v-slot:shangpinxiangqing class="frist">
         <el-row>
