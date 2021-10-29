@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <head>主页</head>
+    <head>主界页</head>
     <TabBar :tabList=tabList>
       <template v-slot:shangpinxiangqing class="frist">
         <el-row>
