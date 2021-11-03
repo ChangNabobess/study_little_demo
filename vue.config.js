@@ -1,132 +1,127 @@
+const webpack = require('webpack');
+const path = require('path');
+// const UglifyPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin"); // 开启gizp压缩
+let { version, openGzip } = require('./package.json');
+version = version.replace(/./g,'_');
 module.exports = {
-  // 部署应用时的基本 URL
-  publicPath: process.env.NODE_ENV === 'production' ? '192.168.60.110:8080' : '192.168.60.110:8080',
-
-  // build时构建文件的目录 构建时传入 --no-clean 可关闭该行为
-  outputDir: 'dist',
-
-  // build时放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录
-  assetsDir: '',
-
-  // 指定生成的 index.html 的输出路径 (相对于 outputDir)。也可以是一个绝对路径。
-  indexPath: 'index.html',
-
-  // 默认在生成的静态资源文件名中包含hash以控制缓存
-  filenameHashing: true,
-
-  // 构建多页面应用，页面的配置
-  pages: {
-      index: {
-          // page 的入口
-          entry: 'src/index/main.js',
-          // 模板来源
-          template: 'public/index.html',
-          // 在 dist/index.html 的输出
-          filename: 'index.html',
-          // 当使用 title 选项时，
-          // template 中的 title 标签需要是 <title><%= htmlWebpackPlugin.options.title %></title>
-          title: 'Index Page',
-          // 在这个页面中包含的块，默认情况下会包含
-          // 提取出来的通用 chunk 和 vendor chunk。
-          chunks: ['chunk-vendors', 'chunk-common', 'index']
-      },
-      // 当使用只有入口的字符串格式时，
-      // 模板会被推导为 `public/subpage.html`
-      // 并且如果找不到的话，就回退到 `public/index.html`。
-      // 输出文件名会被推导为 `subpage.html`。
-      subpage: 'src/subpage/main.js'
+  publicPath: './', // 基本路径
+  outputDir: 'dist', // 输出文件目录
+  assetsDir: "static",
+  lintOnSave: false, // eslint-loader 是否在保存的时候检查
+  // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
+  // webpack配置
+  chainWebpack: (config) => {
+    // 修复HMR
+    config.resolve.symlinks(true);
+    // 别名配置
+    /* config.resolve.alias
+      .set('@', path.resolve(__dirname, './src'))
+      .set('@a', path.resolve(__dirname, './src/assets'))
+      .set('@c', path.resolve(__dirname, './src/components'))
+      .set('@p', path.resolve(__dirname, './src/pages'))
+      .set('jquery$', 'jquery/dist/jquery.min.js'); */
   },
+  configureWebpack: (config) => {
+    if (process.env.NODE_ENV === 'production') {
+      // 为生产环境修改配置...
+      config.mode = 'production';
 
-  // 是否在开发环境下通过 eslint-loader 在每次保存时 lint 代码 (在生产构建时禁用 eslint-loader)
-  lintOnSave: process.env.NODE_ENV !== 'production',
-
-  // 是否使用包含运行时编译器的 Vue 构建版本
-  runtimeCompiler: false,
-
-  // Babel 显式转译列表
-  transpileDependencies: [],
-
-  // 如果你不需要生产环境的 source map，可以将其设置为 false 以加速生产环境构建
-  productionSourceMap: true,
-
-  // 设置生成的 HTML 中 <link rel="stylesheet"> 和 <script> 标签的 crossorigin 属性（注：仅影响构建时注入的标签）
-  crossorigin: '',
-
-  // 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)
-  integrity: false,
-
-  // 如果这个值是一个对象，则会通过 webpack-merge 合并到最终的配置中
-  // 如果你需要基于环境有条件地配置行为，或者想要直接修改配置，那就换成一个函数 (该函数会在环境变量被设置之后懒执行)。该方法的第一个参数会收到已经解析好的配置。在函数内，你可以直接修改配置，或者返回一个将会被合并的对象
-  configureWebpack: {},
-
-  // 对内部的 webpack 配置（比如修改、增加Loader选项）(链式操作)
-  chainWebpack: () =>{
-
-  },
-
-  // css的处理
-  css: {
-      // 当为true时，css文件名可省略 module 默认为 false
-      modules: true,
-      // 是否将组件中的 CSS 提取至一个独立的 CSS 文件中,当作为一个库构建时，你也可以将其设置为 false 免得用户自己导入 CSS
-      // 默认生产环境下是 true，开发环境下是 false
-      extract: false,
-      // 是否为 CSS 开启 source map。设置为 true 之后可能会影响构建的性能
-      sourceMap: false,
-      //向 CSS 相关的 loader 传递选项(支持 css-loader postcss-loader sass-loader less-loader stylus-loader)
-      loaderOptions: {
-          css: {},
-          less: {}
+      // 将每个依赖包打包成单独的js文件
+      let optimization = {
+        runtimeChunk: 'single',
+        splitChunks: {
+          chunks: 'all',
+          maxInitialRequests: Infinity,
+          minSize: 20000, // 依赖包超过20000bit将被单独打包
+          cacheGroups: {
+            vendor: {
+              test: /[/]node_modules[/]/,
+              name (module) {
+                // get the name. E.g. node_modules/packageName/not/this/part.js  or node_modules/packageName
+                const packageName = module.context.match(/[/]node_modules[/](.*?)([/]|$)/)[1];
+                // npm package names are URL-safe, but some servers don't like @ symbols
+                return `npm.${packageName.replace('@', '')}`;
+              }
+            }
+          }
+        }
+      };
+      Object.assign(config, {
+        output:{ // 将版本号添加进打包的js名中
+          ...config.output,
+          filename: `static/js/[name].[chunkhash].${version}.js`,
+          chunkFilename: `static/js/[name].[chunkhash].${version}.js`
+        },
+        optimization,
+        plugins:[...config.plugins ]
+      });
+      if(openGzip){
+        config.plugins = [
+          ...config.plugins,
+          new CompressionPlugin({
+            test:/.js$|.html$|.css/, //匹配文件名
+            threshold: 10240,//对超过10k的数据压缩
+            deleteOriginalAssets: false //不删除源文件
+          })
+        ]
       }
-  },
-
-  // 所有 webpack-dev-server 的选项都支持
-  devServer: {
-    env: require('./dev.env'),
-    port: 8000,
-    autoOpenBrowser: true,
-    assetsSubDirectory: 'static',
-    host: '192.168.101.90',
-    assetsPublicPath: '/',
-    devtool: 'source-map',
-    cssSourceMap: true,
-    proxyTable:{
-      [devBaseUrl]: {// 遇到这个网关名称，自动切换到下面target目标地址
-        target: projectConfig.DEV_SERVER_PATH, // 目标地址
-        changeOrigin: true, // 
-        pathRewrite: {
-          [`^${devBaseUrl}`]: '/'
-        }
-      },
-      '/gateway/': {
-        target: projectConf.GATE_WAY_ORIGIN,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/gateway/': '/'
-        }
-      },
-      // 微信管理界面
-      '/gpm-wechat': {
-        target: 'http://127.0.0.1:8080',
-        changeOrigin: true
-      },
-      '/gpw-swms': {
-        target: 'https://dev.gcycloud.cn/gpw-swms',
-        // target: 'http://192.168.101.118:8080/gpw-swms',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/gpw-swms': '/'
-        }
-      }
+    } else {
+      // 为开发环境修改配置...
+      config.mode = 'development';
     }
+    Object.assign(config, {
+      // 开发生产共同配置
+      // externals: {
+      //   'vue': 'Vue',
+      //   'element-ui': 'ELEMENT',
+      //   'vue-router': 'VueRouter',
+      //   'vuex': 'Vuex'
+      // } // 防止将某些 import 的包(package)打包到 bundle 中，而是在运行时(runtime)再去从外部获取这些扩展依赖(用于csdn引入)
+      plugins:[
+        ...config.plugins,
+        new webpack.ProvidePlugin({ // 使用ProvidePlugin插件为jQuery添加全局变量
+          jQuery: "jquery",
+          $: "jquery",
+          "windows.jQuery":"jquery"
+        })
+      ]
+    });
   },
-
-  // 是否为 Babel 或 TypeScript 使用 thread-loader
-  parallel: require('os').cpus().length > 1,
-
-  // 向 PWA 插件传递选项
-  pwa: {},
-
-  // 可以用来传递任何第三方插件选项
+  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
+  // css相关配置
+  css: {
+    extract: true, // 是否使用css分离插件 ExtractTextPlugin
+    sourceMap: false, // 开启 CSS source maps?
+    requireModuleExtension: true,
+    loaderOptions: {
+      css: {}, // 这里的选项会传递给 css-loader
+      // postcss: {} // 这里的选项会传递给 postcss-loader
+    }, // css预设器配置项
+    modules: false // 启用 CSS modules for all css / pre-processor files.
+  },
+  parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
+  pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
+  // webpack-dev-server 相关配置
+  devServer: {
+    // open: process.platform === 'darwin',
+    host: '192.168.101.98', // 允许外部ip访问
+    port: 8000, // 端口
+    https: false, // 启用https
+    overlay: {
+      warnings: true,
+      errors: true
+    }, // 错误、警告在页面弹出
+    proxy: {
+      '/domin-name': {
+        target: 'http://192.168.101.59:8000',
+        changeOrigin: true, // 允许websockets跨域
+        // ws: true,
+        pathRewrite: {
+          '^/domin-name': ''
+        }
+      }
+    } // 代理转发配置，用于调试环境
+  }, // 第三方插件配置
   pluginOptions: {}
-}
+};

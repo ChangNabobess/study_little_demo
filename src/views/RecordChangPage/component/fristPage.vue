@@ -7,7 +7,17 @@
         <input type="text" id="text-chat">
         <el-button type="primary" @click="clickHandler">发送</el-button>
       </el-col>
-      <el-col :span="12">右侧占位符</el-col>
+      <el-col :span="12">
+        <RadarBar />
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="12">
+        <TwoDimensionTable />
+      </el-col>
+      <el-col :span="12">
+        右边预留空间
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -15,6 +25,8 @@
 <script>
 import {getOrgBuyTop} from '@/api/main'
 import {verifyResIsSuccess} from '@/utils/auth'
+import RadarBar from './radarBar.vue'
+import TwoDimensionTable from './twoDimensionTable.vue'
 export default {
   data() {
     return {
@@ -34,15 +46,19 @@ export default {
       let params = {
         a: '1'
       }
-      getOrgBuyTop(params).then((res) => {
+      /* getOrgBuyTop(params).then((res) => {
         if(verifyResIsSuccess(res)) {
           console.log(res.data.data);
         }
-      })
+      }) */
     }
   },
   created() {
 
+  },
+  components: {
+    RadarBar,
+    TwoDimensionTable
   },
   mounted() {},
 }
