@@ -60,7 +60,9 @@ export default {
     RadarBar,
     TwoDimensionTable
   },
-  mounted() {},
+  mounted() {
+    console.log(BaseConfig);
+  },
 }
 </script>
 

@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 // const UglifyPlugin = require('uglifyjs-webpack-plugin');
 const CompressionPlugin = require("compression-webpack-plugin"); // 开启gizp压缩
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 let { version, openGzip } = require('./package.json');
 version = version.replace(/./g,'_');
 module.exports = {
@@ -15,12 +16,12 @@ module.exports = {
     // 修复HMR
     config.resolve.symlinks(true);
     // 别名配置
-    /* config.resolve.alias
-      .set('@', path.resolve(__dirname, './src'))
+    config.resolve.alias
+      .set('@', path.resolve(__dirname, './src')) // _dirname 是nodejs的变量，代表当前文件夹目录下的绝对路径
       .set('@a', path.resolve(__dirname, './src/assets'))
       .set('@c', path.resolve(__dirname, './src/components'))
       .set('@p', path.resolve(__dirname, './src/pages'))
-      .set('jquery$', 'jquery/dist/jquery.min.js'); */
+      .set('jquery$', 'jquery/dist/jquery.min.js');
   },
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
@@ -84,7 +85,7 @@ module.exports = {
           jQuery: "jquery",
           $: "jquery",
           "windows.jQuery":"jquery"
-        })
+        }),
       ]
     });
   },

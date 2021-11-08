@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title><%= htmlWebpackPlugin.options.title %></title>
-    <script type="text/javascript" src="https://geo.datav.aliyun.com/areas_v2/bound/110000_full.json?callback=aliyunshuju"></script>
+    <script src="./config.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <link rel="stylesheet" href="//at.alicdn.com/t/font_2581644_k6cv3pphp5.css">
   </head>
@@ -16,6 +16,7 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <!-- <script src="<%= htmlWebpackPlugin.options.title %>"></script> -->
   <script type="text/javascript">
     document.documentElement.style.fontSize = '100px'
     document.body.style.fontSize = '16px'
