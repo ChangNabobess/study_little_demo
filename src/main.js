@@ -11,10 +11,9 @@ import '@/js/directives.js'
 import directives from './js/allDirectives';
 import '@/assets/public.scss';
 import VueHoverMask from 'vue-hover-mask'
-import {setTitle, setIcon} from '@/utils/validator'
 
-setTitle('MyText');
-setIcon()
+UTILS.setTitle('MyText');
+UTILS.setIcon()
 Vue.config.productionTip = false//关闭控制台关于运行环境的提示
 Vue.use(Prient);
 Vue.use(elementui);

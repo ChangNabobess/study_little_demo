@@ -24,7 +24,6 @@
 
 <script>
 import {getOrgBuyTop} from '@/api/main'
-import {verifyResIsSuccess} from '@/utils/auth'
 import RadarBar from './radarBar.vue'
 import TwoDimensionTable from './twoDimensionTable.vue'
 export default {
@@ -47,7 +46,7 @@ export default {
         a: '1'
       }
       /* getOrgBuyTop(params).then((res) => {
-        if(verifyResIsSuccess(res)) {
+        if(UTILS.verifyResIsSuccess(res)) {
           console.log(res.data.data);
         }
       }) */

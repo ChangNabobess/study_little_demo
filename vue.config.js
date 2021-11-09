@@ -23,6 +23,7 @@ module.exports = {
       .set('@p', path.resolve(__dirname, './src/pages'))
       .set('jquery$', 'jquery/dist/jquery.min.js');
   },
+  devtool: 'source-map',
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       // 为生产环境修改配置...
@@ -84,7 +85,8 @@ module.exports = {
         new webpack.ProvidePlugin({ // 使用ProvidePlugin插件为jQuery添加全局变量
           jQuery: "jquery",
           $: "jquery",
-          "windows.jQuery":"jquery"
+          "windows.jQuery":"jquery",
+          UTILS: path.resolve(path.join(__dirname, './src/utils/validator.js'))
         }),
       ]
     });
@@ -109,6 +111,7 @@ module.exports = {
     host: '192.168.101.98', // 允许外部ip访问
     port: 8000, // 端口
     https: false, // 启用https
+    // autoOpenBrowser: true,
     overlay: {
       warnings: true,
       errors: true

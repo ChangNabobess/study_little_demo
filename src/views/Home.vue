@@ -120,7 +120,7 @@ export default {
         {label:"商品详情",value:"0",slotName:'shangpinxiangqing'},
         {label:"规格参数",value:"1",slotName:'guigecanshu'},
         {label:"配件限额",value:"2",slotName:'peijianxiane'},
-        {label:"成交记录",value:"3",slotName:'chengjiaojilu'},
+        {label:"成交记录1",value:"3",slotName:'chengjiaojilu'},
         {label:"图片轮播",value:"4",slotName:'shangpinpingjia'},
       ],
       copyText: 'a copy directives',
