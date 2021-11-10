@@ -1,3 +1,4 @@
+// 参考文档：https://www.jianshu.com/p/b358a91bdf2d
 const webpack = require('webpack');
 const path = require('path');
 // const UglifyPlugin = require('uglifyjs-webpack-plugin');
@@ -6,10 +7,36 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 let { version, openGzip } = require('./package.json');
 version = version.replace(/./g,'_');
 module.exports = {
-  publicPath: './', // 基本路径
+  publicPath: process.env.NODE_ENV === 'production' ? '/production-sub-path/' : '/', // 部署应用包时候的基础路径 == output.publicPath
   outputDir: 'dist', // 输出文件目录
-  assetsDir: "static",
+  assetsDir: "static", // 静态资源路径
+  indexPath: 'index.html', // 指定生成的 index.html 的输出路径 == outputDir
+  filenameHashing: true,// 文件名hash
   lintOnSave: false, // eslint-loader 是否在保存的时候检查
+  runtimeCompiler: false, // 是否使用带有浏览器内编译器的完整构建版本
+  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
+  crossorigin: '', // 设置生成的 HTML 中 <link rel="stylesheet"> 和 <script> 标签的 crossorigin 属性。
+  integrity: false, // 在生成的 HTML 中的 <link rel="stylesheet"> 和 <script> 标签上启用 Subresource Integrity (SRI)。如果你构建后的文件是部署在 CDN 上的，启用该选项可以提供额外的安全性
+  /* pages: {//用于多页配置，默认是 undefined
+    index: {
+      // page 的入口文件
+      entry: 'src/main.js',
+      // 模板文件
+      template: 'public/index.html',
+      // 在 dist/index.html 的输出文件
+      filename: 'index.html',
+      // 当使用页面 title 选项时，
+      // template 中的 title 标签需要是 <title><%= htmlWebpackPlugin.options.title %></title>
+      title: 'Index Page',
+      // 在这个页面中包含的块，默认情况下会包含
+      // 提取出来的通用 chunk 和 vendor chunk。
+      chunks: ['chunk-vendors', 'chunk-common', 'index']
+    },
+    // 当使用只有入口的字符串格式时，
+    // 模板文件默认是 `public/subpage.html`
+    // 如果不存在，就回退到 `public/index.html`。
+    subpage: 'src/subpage/main.js'
+  }, */
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
   // webpack配置
   chainWebpack: (config) => {
@@ -23,7 +50,6 @@ module.exports = {
       .set('@p', path.resolve(__dirname, './src/pages'))
       .set('jquery$', 'jquery/dist/jquery.min.js');
   },
-  devtool: 'source-map',
   configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       // 为生产环境修改配置...
@@ -91,27 +117,25 @@ module.exports = {
       ]
     });
   },
-  productionSourceMap: false, // 生产环境是否生成 sourceMap 文件
   // css相关配置
   css: {
-    extract: true, // 是否使用css分离插件 ExtractTextPlugin
+    extract: true, // 是否使用css分离插件 ExtractTextPlugin 是否将组件中的 CSS 提取至一个独立的 CSS 文件中 (而不是动态注入到 JavaScript 中的 inline 代码)。
     sourceMap: false, // 开启 CSS source maps?
     requireModuleExtension: true,
-    loaderOptions: {
+    loaderOptions: { // 向 CSS 相关的 loader 传递选项
       css: {}, // 这里的选项会传递给 css-loader
       // postcss: {} // 这里的选项会传递给 postcss-loader
-    }, // css预设器配置项
+    },
     modules: false // 启用 CSS modules for all css / pre-processor files.
   },
-  parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
+  parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader(多进程打包)。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
   pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
   // webpack-dev-server 相关配置
   devServer: {
-    // open: process.platform === 'darwin',
+    open: process.env.NODE_ENV == 'production' ? false : true,
     host: '192.168.101.98', // 允许外部ip访问
     port: 8000, // 端口
     https: false, // 启用https
-    // autoOpenBrowser: true,
     overlay: {
       warnings: true,
       errors: true
