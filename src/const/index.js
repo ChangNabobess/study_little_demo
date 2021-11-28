@@ -15,3 +15,5 @@ export const responseCode = {
   // 不统一提示错误的：白名单
   errorCodeWhiteList: errorCodeWhiteList
 }
+
+export const dataType = ['Null', 'Undefined', 'Object', 'Array', 'String', 'Number', 'Boolean', 'Function', 'RegExp'] // 可监测数据类型

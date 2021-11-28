@@ -97,6 +97,124 @@ module.exports = {
     } else {
       // 为开发环境修改配置...
       config.mode = 'development';
+      /* config.plugins.forEach((val) => {
+        console.log(val);
+        VueLoaderPlugin {}
+        DefinePlugin {
+          definitions:
+          { 'process.env': { NODE_ENV: '"development"', BASE_URL: '"/"' } } }
+        CaseSensitivePathsPlugin {
+          options: {},
+          logger:
+          Console {
+            log: [Function: bound consoleCall],
+            debug: [Function: bound consoleCall],
+            info: [Function: bound consoleCall],
+            dirxml: [Function: bound consoleCall],
+            warn: [Function: bound consoleCall],
+            error: [Function: bound consoleCall],
+            dir: [Function: bound consoleCall],
+            time: [Function: bound consoleCall],
+            timeEnd: [Function: bound consoleCall],
+            timeLog: [Function: bound timeLog],
+            trace: [Function: bound consoleCall],
+            assert: [Function: bound consoleCall],
+            clear: [Function: bound consoleCall],
+            count: [Function: bound consoleCall],
+            countReset: [Function: bound consoleCall],
+            group: [Function: bound consoleCall],
+            groupCollapsed: [Function: bound consoleCall],
+            groupEnd: [Function: bound consoleCall],
+            table: [Function: bound consoleCall],
+            Console: [Function: Console],
+            markTimeline: [Function: markTimeline],
+            profile: [Function: profile],
+            profileEnd: [Function: profileEnd],
+            timeline: [Function: timeline],
+            timelineEnd: [Function: timelineEnd],
+            timeStamp: [Function: timeStamp],
+            context: [Function: context],
+            [Symbol(counts)]: Map {},
+            [Symbol(kColorMode)]: 'auto' },
+          pathCache: {},
+          fsOperations: 0,
+          primed: false }
+        FriendlyErrorsWebpackPlugin {
+          compilationSuccessInfo: {},
+          onErrors: undefined,
+          shouldClearConsole: true,
+          formatters:
+          [ [Function: format],
+            [Function: format],
+            [Function: format],
+            [Function] ],
+          transformers:
+          [ [Function: transform],
+            [Function: transform],
+            [Function: transform],
+            [Function] ],
+          previousEndTimes: {} }
+        MiniCssExtractPlugin {
+          options:
+          { filename: 'static/css/[name].[contenthash:8].css',
+            moduleFilename: [Function: moduleFilename],
+            ignoreOrder: false,
+            chunkFilename: 'static/css/[name].[contenthash:8].css' } }
+        HtmlWebpackPlugin {
+          options:
+          { template: 'D:\\Work\\study-little-demo\\public\\index.html',
+            templateParameters: [Function: templateParameters],
+            filename: 'index.html',
+            hash: false,
+            inject: true,
+            compile: true,
+            favicon: false,
+            minify: false,
+            cache: true,
+            showErrors: true,
+            chunks: 'all',
+            excludeChunks: [],
+            chunksSortMode: 'auto',
+            meta: {},
+            title: 'ceshiyixia',
+            xhtml: false } }
+        PreloadPlugin {
+          options:
+          { rel: 'preload',
+            include: 'initial',
+            excludeHtmlNames: [],
+            fileBlacklist: [ /\.map$/, /hot-update\.js$/ ] } }
+        PreloadPlugin {
+          options:
+          { rel: 'prefetch',
+            include: 'asyncChunks',
+            excludeHtmlNames: [],
+            fileBlacklist: [ /\.map/ ] } }
+        CorsPlugin { crossorigin: '', integrity: false, publicPath: '/' }
+        CopyPlugin {
+          patterns:
+          [ { from: 'D:\\Work\\study-little-demo\\public',
+              to: 'D:\\Work\\study-little-demo\\dist',
+              toType: 'dir',
+              ignore: [Array] } ],
+          options: {} }
+        HotModuleReplacementPlugin {
+          options: {},
+          multiStep: undefined,
+          fullBuildTimeout: 200,
+          requestTimeout: 10000 }
+        ProgressPlugin {
+          profile: false,
+          handler: undefined,
+          modulesCount: 500,
+          showEntries: false,
+          showModules: true,
+          showActiveModules: true }
+        if (val instanceof HtmlWebpackPlugin) {
+            console.log(val)
+            console.log(val.options.templateParameters.toString())
+        }
+       }) */
     }
     Object.assign(config, {
       // 开发生产共同配置
@@ -121,19 +239,24 @@ module.exports = {
   css: {
     extract: true, // 是否使用css分离插件 ExtractTextPlugin 是否将组件中的 CSS 提取至一个独立的 CSS 文件中 (而不是动态注入到 JavaScript 中的 inline 代码)。
     sourceMap: false, // 开启 CSS source maps?
-    requireModuleExtension: true,
+    requireModuleExtension: true, // 启用 CSS modules for all css / pre-processor files.
     loaderOptions: { // 向 CSS 相关的 loader 传递选项
-      css: {}, // 这里的选项会传递给 css-loader
+      css: {// 这里的选项会传递给 css-loader
+        /* sass: {
+          // 全局引入公共样式
+          data: `@import "@src/css/base.scss";`
+         } */
+      }, 
       // postcss: {} // 这里的选项会传递给 postcss-loader
     },
-    modules: false // 启用 CSS modules for all css / pre-processor files.
+    // modules: false  // v4及以上已弃用
   },
   parallel: require('os').cpus().length > 1, // 是否为 Babel 或 TypeScript 使用 thread-loader(多进程打包)。该选项在系统的 CPU 有多于一个内核时自动启用，仅作用于生产构建。
   pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
   // webpack-dev-server 相关配置
   devServer: {
     open: process.env.NODE_ENV == 'production' ? false : true,
-    host: '192.168.101.98', // 允许外部ip访问
+    host: '192.168.101.101', // 允许外部ip访问
     port: 8000, // 端口
     https: false, // 启用https
     overlay: {
@@ -147,6 +270,14 @@ module.exports = {
         // ws: true,
         pathRewrite: {
           '^/domin-name': ''
+        }
+      },
+      '/list' :{
+        target: 'https://apis.map.qq.com/ws/district',
+        changeOrigin: true, // 允许websockets跨域
+        // ws: true,
+        pathRewrite: {
+          '^/list': '/list'
         }
       }
     } // 代理转发配置，用于调试环境

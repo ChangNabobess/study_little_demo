@@ -15,14 +15,27 @@
     </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <script>
+      var width = document.documentElement.clientWidth
+      document.documentElement.style.fontSize = '100px'
+      // document.body.style.fontSize = '16px'
+      /* window.addEventListener('resize',(e)=>{
+        console.log(document.body.offsetWidth,screen.width);
+        document.documentElement.style.fontSize=(document.body.offsetWidth/screen.width)*100+"px";
+        // console.log(document.documentElement.style.fontSize);
+      }) */
+      function unitPx(val) {
+        if (width < 1800) {
+          val = val * 0.8
+        } else if(width > 1920) {
+          val = val * 1.1
+        }
+        return val + 'px'
+      }
+      window.onresize = function () {
+        width = document.documentElement.clientWidth
+      }
+    </script>
   </body>
   <!-- <script src="<%= htmlWebpackPlugin.options.title %>"></script> -->
-  <script type="text/javascript">
-    document.documentElement.style.fontSize = '100px'
-    document.body.style.fontSize = '16px'
-    window.addEventListener('resize',(e)=>{
-      document.documentElement.style.fontSize=(document.body.offsetWidth/screen.width)*100+"px";
-      // console.log(document.documentElement.style.fontSize);
-    })
-  </script>
 </html>

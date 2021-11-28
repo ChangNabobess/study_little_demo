@@ -77,27 +77,22 @@ export default {
           name: '王小虎',
           address: '上海市普陀区金沙江路 1519 弄',
           timeconsuming: '支付时效',
-        }]
+        }],
+      num: 0,
     };
   },
   computed: {},
   watch: {},
   methods: {
-    handleEdit(index, row) {
-      console.log(index, row);
-    },
-    handleDelete(index, row) {
-      console.log(index, row);
-    },
     cellStyle({row, column, rowIndex, columnIndex}){
-      return 'border-bottom: transparent !important;'
+      return `border-bottom: transparent !important;--baseNum:${this.num}`
     }
   },
   created() {
 
   },
   mounted() {
-
+    this.num = unitPx(15)
   },
 }
 </script>
@@ -140,6 +135,9 @@ export default {
   }
 }
 .customer-table ::v-deep .el-table__row{
-      background: wheat;
-    }
+  background: wheat;
+  td{
+    font-size: var(--baseNum);
+  }
+}
 </style>

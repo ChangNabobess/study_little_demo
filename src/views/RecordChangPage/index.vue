@@ -25,9 +25,7 @@ export default {
   created() {
 
   },
-  mounted() {
-
-  },
+  mounted() {},
 }
 </script>
 

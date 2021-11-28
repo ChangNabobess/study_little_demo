@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie'
+import { dataType } from '@/const/index'
 
 export function isTel(rule,value,callback) {
     const RegExp=/^1[3456789]\d{9}$/;
@@ -69,4 +69,25 @@ export function setIcon() {
     let appendElm = window.document.querySelector('head');
     appendElm.appendChild(linkElm)
   }
+}
+
+export function createIncrementor(start) {
+  return function(){
+    return start ++
+  }
+}
+
+export function getprotypeType(o){ // 判断数据类型
+  var s = Object.prototype.toString.call(o);
+  return s.match(/\[object (.*?)\]/)[1].toLowerCase();
+}
+
+export function checkDataType() { // @/views/RecordChangPage/component/fristPage.vue 102
+  let type = {}
+  dataType.forEach(function (t) {
+    type['is' + t] = function (o) {
+      return UTILS.getprotypeType(o) === t.toLowerCase();
+    };
+  });
+  return type
 }

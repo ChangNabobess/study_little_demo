@@ -120,7 +120,7 @@ export default {
         {label:"商品详情",value:"0",slotName:'shangpinxiangqing'},
         {label:"规格参数",value:"1",slotName:'guigecanshu'},
         {label:"配件限额",value:"2",slotName:'peijianxiane'},
-        {label:"成交记录1",value:"3",slotName:'chengjiaojilu'},
+        {label:"成交记录",value:"3",slotName:'chengjiaojilu'},
         {label:"图片轮播",value:"4",slotName:'shangpinpingjia'},
       ],
       copyText: 'a copy directives',
@@ -301,11 +301,25 @@ export default {
         console.log('我是组件vue-jsonp返回的数据',json)
       })    
     },
-    getMaps() { // 请求广东省地图数据，但是没有coordinates(坐标系画图)，只有center值能用，存在public-->json-->guangdong.json
+    // https://apis.map.qq.com/ws/district/v1/list 腾讯
+    // https://restapi.amap.com/v3/config/district 高德 兰州新区 center坐标36.4799930, 103.6646868
+   /*  getMaps() { // 请求广东省地图数据，但是没有coordinates(坐标系画图)，只有center值能用，存在public-->json-->guangdong.json
       this.$axios.get('https://restapi.amap.com/v3/config/district',{
         params:{key:'7b1aa3932b00a6f583eb0312e29225dd',
                 subdistrict: '2',
                 keywords:'广东'}}).then((res) => {
+        console.log('请求成功' , res.data);
+      }).catch((err) => {
+        console.log('请求报错' , err);
+      })
+    }, */
+    getMaps() { 
+      // 直接用postMan测试多好
+      // 请求广东省地图数据，但是没有coordinates(坐标系画图)，只有center值能用，存在public-->json-->guangdong.json
+      this.$axios.get('https://apis.map.qq.com/ws/district/v1/list',{
+        params:{key:'BCQBZ-QSUCX-JTH47-TNU3E-KZQ6T-CBBGD',
+                output: 'json',
+                id:'620100'}}).then((res) => {
         console.log('请求成功' , res.data);
       }).catch((err) => {
         console.log('请求报错' , err);
