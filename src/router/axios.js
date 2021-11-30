@@ -27,7 +27,7 @@ NProgress.configure({ showSpinner: false }) // 是否显示环形进度动画，
 
 axios.interceptors.request.use(
   config => {
-    console.log(config);
+    // console.log(config);
     config.headers['Access-Control-Allow-Origin'] = '*'
     config.headers['Access-Control-Allow-Methods'] = 'get,post'
     NProgress.start() // start progress bar

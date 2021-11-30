@@ -26,10 +26,12 @@
           <el-col :span="4">
             <MyTree></MyTree>
           </el-col>
-          <el-col :span='16'>
+          <el-col :span='12'>
             <TodoList></TodoList>
           </el-col>
-          <el-col :span="4"></el-col>
+          <el-col :span="8">
+            <TrafficLight />
+          </el-col>
         </el-row>
       </template>
       <template v-slot:guigecanshu>
@@ -99,6 +101,7 @@ import MyTree from '@/components/myTree'
 import RotateScreen from '@/components/rotateScreen'
 import RemovePeople from '@/components/RemovePeople'
 import Movesquare from '@/components/Movesquare'
+import TrafficLight from '@/components/TrafficLight'
 import {debounce, throttle} from '@/js/debouncethrottle'
 import RecordChangPage from '@/views/RecordChangPage'
 
@@ -112,7 +115,8 @@ export default {
     RotateScreen,
     RemovePeople,
     Movesquare,
-    RecordChangPage
+    RecordChangPage,
+    TrafficLight
   },
   data(){
     return{
@@ -142,7 +146,7 @@ export default {
     if(document.getElementById('content')) {
       document.getElementById('content').addEventListener('mousemove',throttle(this.countEvent,2000))
     }
-    this.getMaps()
+    // this.getMaps()
   },
   methods:{
     changeArr(){
@@ -314,7 +318,7 @@ export default {
       })
     }, */
     getMaps() { 
-      // 直接用postMan测试多好
+      // 直接用postMan测试多好,这样直接请求接口会报跨域错误，还没有结局
       // 请求广东省地图数据，但是没有coordinates(坐标系画图)，只有center值能用，存在public-->json-->guangdong.json
       this.$axios.get('https://apis.map.qq.com/ws/district/v1/list',{
         params:{key:'BCQBZ-QSUCX-JTH47-TNU3E-KZQ6T-CBBGD',

@@ -255,14 +255,13 @@ module.exports = {
   pwa: {}, // PWA 插件相关配置 see https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa
   // webpack-dev-server 相关配置
   devServer: {
+    clientLogLevel: 'info',
+    hot: true,
     open: process.env.NODE_ENV == 'production' ? false : true,
-    host: '192.168.101.101', // 允许外部ip访问
+    host: '192.168.101.100', // 允许外部ip访问
     port: 8000, // 端口
     https: false, // 启用https
-    overlay: {
-      warnings: true,
-      errors: true
-    }, // 错误、警告在页面弹出
+    overlay: true,
     proxy: {
       '/domin-name': {
         target: 'http://192.168.101.59:8000',
