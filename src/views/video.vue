@@ -3,9 +3,13 @@
     <template>
       <el-select ref="selectBulr" v-model="mineStatus" placeholder="请选择城市名称">
         <el-option :value="mineStatusValue" style="height:auto;width:100%;padding: 0px !important;">
-            <el-tree :data="protocolList" node-key="id" ref="tree" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+            <el-tree :data="protocolList"
+                      node-key="id" 
+                      ref="tree" 
+                      :props="defaultProps" 
+                      @node-click="handleNodeClick" />
         </el-option>
-    </el-select>
+      </el-select>
     </template>
     <template>
       <el-row style="margin-top:20px;">
@@ -59,12 +63,16 @@
           </el-form>
           <el-button type="primary" @click="saveForm">测试提交</el-button>
         </el-col>
+        <el-col :span="12">
+          <TextElTag />
+        </el-col>
       </el-row>
     </template>
   </div>
 </template>
 
 <script>
+import TextElTag from '@/components/TextElTag'
 export default {
   data() {
     return {
@@ -245,6 +253,7 @@ export default {
       // console.log(d);
     },
     handleNodeClick(data) {//入围协议选中事件
+    console.log(data);
       if(data.code){
         this.mineStatusValue.push(data);
         this.mineStatus = data.label;
@@ -299,6 +308,9 @@ export default {
     this._changeArr2();
     this.getprotocolList();
   },
+  components:{
+    TextElTag
+  }
 }
 </script>
 

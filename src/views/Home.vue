@@ -104,6 +104,7 @@ import Movesquare from '@/components/Movesquare'
 import TrafficLight from '@/components/TrafficLight'
 import {debounce, throttle} from '@/js/debouncethrottle'
 import RecordChangPage from '@/views/RecordChangPage'
+import {mapState} from 'vuex'
 
 export default {
   name: 'Home',
@@ -337,11 +338,17 @@ export default {
     },
   },
   created(){
+    // console.log('测试一下routerBefore是否有效，在home页面的created里面打印试试',this.userinfo); // 成功的
     this.test();
     this.jsonpgetData();
     //使用vue-jsonp实现跨域请求
     promise() // 类函数
     // this.$store.dispatch('commitTextData', '我是测试数据，首页打开之后就提交了')
+  },
+  computed:{
+    ...mapState({
+      userinfo: state => state.userModule.userinfo
+    })
   }
 }
 </script>

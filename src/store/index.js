@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import userModule from './module/user'
 
 Vue.use(Vuex)
 
@@ -66,6 +67,7 @@ const otherModule={
 export default new Vuex.Store({
   modules: {
     routerModule,
-    otherModule
+    otherModule,
+    userModule
   }
 })

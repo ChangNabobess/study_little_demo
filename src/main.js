@@ -10,7 +10,8 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '@/js/directives.js'
 import directives from './js/allDirectives';
 import '@/assets/public.scss';
-import VueHoverMask from 'vue-hover-mask'
+import VueHoverMask from 'vue-hover-mask' // 遮罩组件
+import './permission' // 权限
 
 UTILS.setTitle('MyText');
 UTILS.setIcon()
