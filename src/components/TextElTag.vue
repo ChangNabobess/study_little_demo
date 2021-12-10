@@ -16,6 +16,7 @@
         v-model="inputValue"
         ref="saveTagInput"
         size="small"
+        clearable
         @keyup.enter.native="handleInputConfirm"
         @blur="handleInputConfirm"
       >
@@ -31,6 +32,7 @@
         @select="handleSelect"
       ></el-autocomplete>
     </div>
+    <input-tag />
   </div>
 </template>
 

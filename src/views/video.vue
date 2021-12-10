@@ -1,17 +1,6 @@
 <template>
   <div class=''>
     <template>
-      <el-select ref="selectBulr" v-model="mineStatus" placeholder="请选择城市名称">
-        <el-option :value="mineStatusValue" style="height:auto;width:100%;padding: 0px !important;">
-            <el-tree :data="protocolList"
-                      node-key="id" 
-                      ref="tree" 
-                      :props="defaultProps" 
-                      @node-click="handleNodeClick" />
-        </el-option>
-      </el-select>
-    </template>
-    <template>
       <el-row style="margin-top:20px;">
         <el-col :span="12">
           <el-form :model="biddingForm" :rules="rules" ref="biddingForm" label-width="150px">
@@ -65,6 +54,33 @@
         </el-col>
         <el-col :span="12">
           <TextElTag />
+          <!-- 下拉树 -->
+          <template>
+            <el-select ref="selectBulr" v-model="mineStatus" placeholder="请选择城市名称">
+              <el-option :value="mineStatusValue" style="height:auto;width:100%;padding: 0px !important;">
+                  <el-tree :data="protocolList"
+                            node-key="id" 
+                            ref="tree" 
+                            :props="defaultProps" 
+                            @node-click="handleNodeClick" />
+              </el-option>
+            </el-select>
+          </template>
+          <div v-for="(item, index) in stepArr" :key="index">
+            <StepDemo :nowClass='item.nowClass'>
+              <template v-slot:stepLeft>
+                <div>
+                  {{item.name}}
+                </div>
+              </template>
+              <template v-slot:stepRight>
+                <div v-for="(innerItem, innerIndex) in item.rightList" :key="innerIndex" class="slotRightcontent">
+                    <div>{{innerItem.innerName}}</div>
+                    <div>{{innerItem.innerContent}}</div>
+                </div>
+              </template>
+            </StepDemo>
+          </div>
         </el-col>
       </el-row>
     </template>
@@ -73,6 +89,7 @@
 
 <script>
 import TextElTag from '@/components/TextElTag'
+import StepDemo from '@/components/StepDemo'
 export default {
   data() {
     return {
@@ -206,7 +223,57 @@ export default {
         inputValm:[{ required: true, message: '请输入选项十三名称', trigger: 'blur' },],
         inputValn:[{ required: true, message: '请输入选项十四名称', trigger: 'blur' },],
         inputValo:[{ required: true, message: '请输入选项十五名称', trigger: 'blur' },],
-      }
+      },
+      stepArr:[
+        {
+          name: '项目采购',
+          nowClass: 'unActiveClass',
+          rightList:[
+            {
+              innerName: '右边项目名称1',
+              innerContent: '花开又见花落 时间太匆忙 春去春来昔年同 往事已成空 一缕轻风吹四季 花落时不慢 花开时也不早 此时触景最相思 孤寂者的灵魂 伤感落寞 我一次次彷徨 浮生多少梦魂事 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            }
+          ]
+        },
+        {
+          name: '电子卖场',
+          nowClass: 'activeClass',
+          rightList:[
+            {
+              innerName: '右边项目名称1',
+              innerContent: '花开又见花落 时间太匆忙 春去春来昔年同 往事已成空 一缕轻风吹四季 花落时不慢 花开时也不早 此时触景最相思 孤寂者的灵魂 伤感落寞 我一次次彷徨 浮生多少梦魂事 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            },
+            {
+              innerName: '右边项目名称2',
+              innerContent: '花开又见花落 时间太匆忙 此时触景最相思 孤寂者的灵魂 伤感落寞 我一次次彷徨 浮生多少梦魂事 花开又见花落 几度夕阳几度逢 红尘深处 遗落一世的情缘...'
+            }
+          ]
+        }
+      ]
     };
   },
   computed: {},
@@ -253,7 +320,7 @@ export default {
       // console.log(d);
     },
     handleNodeClick(data) {//入围协议选中事件
-    console.log(data);
+    // console.log(data);
       if(data.code){
         this.mineStatusValue.push(data);
         this.mineStatus = data.label;
@@ -299,21 +366,31 @@ export default {
       // 校验之后回调
       this.$refs.biddingForm.validate(callback)
     },
-    
   },
-  created() {
-
-  },
+  created() {},
   mounted() {
     this._changeArr2();
     this.getprotocolList();
   },
   components:{
-    TextElTag
+    TextElTag,
+    StepDemo
   }
 }
 </script>
 
 <style lang='scss' scoped>
-
+.el-select{
+  margin-top: 50px;
+}
+.slotRightcontent{
+  display: flex;
+  flex-direction: row;
+  div:nth-child(1){
+    width: 30%;
+  }
+  div:nth-child(2){
+    width: 70%;
+  }
+}
 </style>
