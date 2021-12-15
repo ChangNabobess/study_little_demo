@@ -273,7 +273,8 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      computedNumArr:[1,2,3,4,5,6,7,8,9]
     };
   },
   computed: {},
@@ -366,11 +367,49 @@ export default {
       // 校验之后回调
       this.$refs.biddingForm.validate(callback)
     },
+    compose(...args) {
+      var len = args.length // args函数的个数
+      var count = len - 1
+      var result
+      return function func(...args1) {
+        // func函数的args1参数枚举
+        result = args[count].call(null, args1) // 以n的运算结果为参数，执行n-1的方法
+        // console.log(result); // jack---hello jack---HELLO JACK 
+        if (count > 0) {
+          count--
+          return func.call(null, result) // result 改变this指向输出n的运算结果
+        } else {
+          //回复count初始状态
+          count = len - 1
+          return result
+        }
+      }
+    },
+    computedMaxNum(){
+      let arr = this.computedNumArr
+      let val = Math.max.apply(null,arr)
+      // console.log('使用Math.apply计算数组最大值:', val);
+      let reduceVal = arr.reduce((a,b) => {
+        return a > b ? a : b
+      })
+      // console.log('使用reduce方式计算数组最大值', reduceVal)
+      var greeting = (name) =>  {
+        let num = name.length - 1
+        return `Hello ${name[num]}`
+      }
+      var toUpper = (str) => {
+        let num = str.length - 1
+        return str[num].toUpperCase()
+      }
+      var fn = this.compose(toUpper, greeting)
+      // console.log(fn('jack'))
+    }
   },
   created() {},
   mounted() {
     this._changeArr2();
     this.getprotocolList();
+    this.computedMaxNum();
   },
   components:{
     TextElTag,

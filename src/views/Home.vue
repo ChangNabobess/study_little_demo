@@ -59,8 +59,9 @@
           <el-col :span="6">
             <p>鼠标在灰色区域滑动时候有节流效果，点击按钮没有节流效果</p>
             <div id="content"></div>
+            <el-button type='primary' @click="countEvent">不加节流防抖</el-button>
+            <el-button type='primary' id="havedebounce">有节流防抖</el-button>
             <p class="textWrap">测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本测试文本</p>
-            <el-button type='primary' @click="countEvent">点击按钮</el-button>
           </el-col>
           <el-col :span="12" style="position:relative;">
             <RemovePeople></RemovePeople>
@@ -102,7 +103,7 @@ import RotateScreen from '@/components/rotateScreen'
 import RemovePeople from '@/components/RemovePeople'
 import Movesquare from '@/components/Movesquare'
 import TrafficLight from '@/components/TrafficLight'
-import {debounce, throttle} from '@/js/debouncethrottle'
+import {debounce, throttle, throttleDate, throttleTime, debounceTime} from '@/js/debouncethrottle'
 import RecordChangPage from '@/views/RecordChangPage'
 import {mapState} from 'vuex'
 
@@ -136,6 +137,7 @@ export default {
       },
       url:'https://geo.datav.aliyun.com/areas_v2/bound/110000_full.json?callback=aliyunshuju',
       num: 1,
+      contentElm: null,
     };
   },
   mounted(){
@@ -143,11 +145,8 @@ export default {
     window.aliyunshuju=function(data){
       // console.log('我是回调函数成功之后返回的数据',data);
     }
-    // document.getElementById('content').addEventListener('mousemove',debounce(this.countEvent, 2000, true))
-    if(document.getElementById('content')) {
-      document.getElementById('content').addEventListener('mousemove',throttle(this.countEvent,2000))
-    }
     // this.getMaps()
+    this.testDebounceAndThrottle()
   },
   methods:{
     changeArr(){
@@ -332,6 +331,14 @@ export default {
     },
     handleClick() {
       console.log('click')
+    },
+    testDebounceAndThrottle(){
+      // 防抖是连续点击直到最后一次点击结束之后等待一定时间之后再
+      // document.getElementById('havedebounce').addEventListener('click',debounceTime(2000,this.countEvent))
+      // 立即执行的防抖
+      document.getElementById('havedebounce').addEventListener('click',debounce(this.countEvent,20000))
+      // 节流是连续点击隔两秒请求一次
+      // document.getElementById('havedebounce').addEventListener('click',throttleDate(2000,this.countEvent))
     },
     countEvent() {
       document.getElementById('content').innerHTML = this.num++;
