@@ -147,6 +147,7 @@ export default {
     }
     // this.getMaps()
     this.testDebounceAndThrottle()
+    // this.precompile(1,2)
   },
   methods:{
     changeArr(){
@@ -336,13 +337,35 @@ export default {
       // 防抖是连续点击直到最后一次点击结束之后等待一定时间之后再
       // document.getElementById('havedebounce').addEventListener('click',debounceTime(2000,this.countEvent))
       // 立即执行的防抖
-      document.getElementById('havedebounce').addEventListener('click',debounce(this.countEvent,20000))
+      // document.getElementById('havedebounce').addEventListener('click',debounce(this.countEvent,20000))
       // 节流是连续点击隔两秒请求一次
       // document.getElementById('havedebounce').addEventListener('click',throttleDate(2000,this.countEvent))
     },
     countEvent() {
       document.getElementById('content').innerHTML = this.num++;
     },
+    precompile(a,c){ // 预编译测试
+      console.log(a,c);
+      console.log(a) // ƒ a() {}
+      var a = 123
+      console.log(a) // 123
+      console.log(c)  // ƒ c() {}
+      function a() { } // 
+      if (false) {
+        var d = 678
+      }
+      console.log(d) // undefined
+      console.log(b) // undefined
+      var b = function () { }
+      console.log(b)  // ƒ b() {}
+      function c() { }
+      console.log(c)  // ƒ c() {}
+      // 首先会创建一个GO,就是预编译方法之前的全局对象
+      // 1. 创建ao对象 AO{}
+      // 2. 找形参和变量声明 将变量和形参名 当做 ao对象的属性名 值为undefined
+      // 3. 实参形参相统一 
+      // 4. 在函数体里面找函数声明 会覆盖形参,如果没有函数声明,会直接打印传入参数
+    }
   },
   created(){
     // console.log('测试一下routerBefore是否有效，在home页面的created里面打印试试',this.userinfo); // 成功的
