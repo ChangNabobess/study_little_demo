@@ -335,7 +335,7 @@ export default {
     },
     testDebounceAndThrottle(){
       // 防抖是连续点击直到最后一次点击结束之后等待一定时间之后再
-      // document.getElementById('havedebounce').addEventListener('click',debounceTime(2000,this.countEvent))
+      document.getElementById('havedebounce').addEventListener('click',debounceTime(2000,this.countEvent))
       // 立即执行的防抖
       // document.getElementById('havedebounce').addEventListener('click',debounce(this.countEvent,20000))
       // 节流是连续点击隔两秒请求一次
