@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单页面测试</title>
+</head>
+
+<body>
+
+  <script>
+    var num = 10 
+    var obj = { num: 20 }
+    obj.fn = (function (type,num) {
+      this.num = num * 3 
+      num++ 
+      return function (type,n) {
+        this.num += n 
+        num++ 
+        console.log(num) 
+      }
+    })('自执行',obj.num)
+    var fn = obj.fn // 第一次自执行
+    /* 
+      改变window.num: 20*3 = 60
+      num形成闭包函数内部变量，被保存下来为21
+    */
+    fn('第一次入参为5', 5)
+    /* 
+      第一次执行obj.fn函数中reutrn出来的函数
+      改变的是window.num: 60+5 = 65
+      打印出的是闭包内变量num(21)++: 22
+    */
+    obj.fn('第二次入参为10', 50)
+    /* 
+      第二次执行obj.fn函数中return出来的函数
+      改变的是obj.num: 20+50 = 70
+      打印出的是闭包内部变量num(22)++: 23
+    */
+    console.log(num, obj.num)
+    /* 
+      直接打印时this指向window
+      num指向全局作用域中的num: 65
+      obj.num：70
+    */
+  </script>
+</body>
+
+</html>
