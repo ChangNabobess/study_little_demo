@@ -14,7 +14,7 @@ import VueHoverMask from 'vue-hover-mask' // 遮罩组件
 import './permission' // 权限
 import InputTag from 'vue-input-tag'
 
-UTILS.setTitle('MyText');
+UTILS.setTitle('testVue');
 UTILS.setIcon()
 Vue.config.productionTip = false//关闭控制台关于运行环境的提示
 Vue.use(Prient);

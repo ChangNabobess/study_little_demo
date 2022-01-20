@@ -3,7 +3,7 @@
     <head>
       这个主界面的名字怎么没有改变？
     </head>
-    <TabBar :tabList=tabList>
+    <TabBar :tabList='tabList'>
       <template v-slot:shangpinxiangqing class="frist">
         <el-row>
           <el-col :span="20">
@@ -68,7 +68,7 @@
             <Movesquare></Movesquare>
           </el-col>
           <el-col :span="6">
-            测试
+            <TestJsModule />
           </el-col>
         </el-row>
       </template>
@@ -105,6 +105,7 @@ import Movesquare from '@/components/Movesquare'
 import TrafficLight from '@/components/TrafficLight'
 import {debounce, throttle, throttleDate, throttleTime, debounceTime} from '@/js/debouncethrottle'
 import RecordChangPage from '@/views/RecordChangPage'
+import TestJsModule from '@/views/testJsModule/test1228'
 import {mapState} from 'vuex'
 
 export default {
@@ -118,7 +119,8 @@ export default {
     RemovePeople,
     Movesquare,
     RecordChangPage,
-    TrafficLight
+    TrafficLight,
+    TestJsModule
   },
   data(){
     return{

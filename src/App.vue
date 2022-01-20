@@ -23,19 +23,20 @@ export default {
 
   },
   mounted(){
-
+    this.changeRouter()
   },
   methods:{
-  videoClick(){
-    // console.log(1111);
-    this.$store.commit('commitRouterState','videoPath')
-  },
-  getroutePath(){
-    console.log(this.$route.path);
-  },
-  changepage(){
-    console.log(222);
-  }
+    videoClick(){
+      // console.log(1111);
+      this.$store.commit('commitRouterState','videoPath')
+    },
+    getroutePath(){
+      console.log(this.$route.path);
+    },
+    changepage(){
+      console.log(222);
+    },
+    changeRouter() {}
   },
   watch:{
     ['$route']:{

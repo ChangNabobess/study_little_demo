@@ -11,40 +11,78 @@
 <body>
 
   <script>
-    var num = 10 
-    var obj = { num: 20 }
-    obj.fn = (function (type,num) {
-      this.num = num * 3 
-      num++ 
-      return function (type,n) {
-        this.num += n 
-        num++ 
-        console.log(num) 
-      }
-    })('自执行',obj.num)
-    var fn = obj.fn // 第一次自执行
+    // var num = 10 
+    // var obj = { num: 20 }
+    // obj.fn = (function (type,num) {
+    //   this.num = num * 3 
+    //   num++ 
+    //   return function (type,n) {
+    //     this.num += n 
+    //     num++ 
+    //     console.log(num) 
+    //   }
+    // })('自执行',obj.num)
+    // var fn = obj.fn // 第一次自执行
     /* 
       改变window.num: 20*3 = 60
       num形成闭包函数内部变量，被保存下来为21
     */
-    fn('第一次入参为5', 5)
+    // fn('第一次入参为5', 5)
     /* 
       第一次执行obj.fn函数中reutrn出来的函数
       改变的是window.num: 60+5 = 65
       打印出的是闭包内变量num(21)++: 22
     */
-    obj.fn('第二次入参为10', 50)
+    // obj.fn('第二次入参为10', 50)
     /* 
       第二次执行obj.fn函数中return出来的函数
       改变的是obj.num: 20+50 = 70
       打印出的是闭包内部变量num(22)++: 23
     */
-    console.log(num, obj.num)
+    // console.log(num, obj.num)
     /* 
       直接打印时this指向window
       num指向全局作用域中的num: 65
       obj.num：70
     */
+  //  let obj = {}
+  //  let a = {name: 'xxx'}
+  //  let b = {age: 16}
+  // const a = '0'
+  // const b = 0
+  // let a = Symbol(1)
+  // let b = Symbol('1')
+  //  obj[a] = 'bbb'
+  //  obj[b] = 'ccc'
+  //  console.log(obj[a]);
+  // async function async1() { // 2
+  //   console.log('async1 start');// 2-----async1 start
+  //   await async2();
+  //   console.log('async1 end'); // 6-----async1 end
+  // }
+  // async function async2() { // 2
+  //     console.log('async2'); // 3-----async2
+  // }
+  // console.log('script start'); //  1-------script start
+  // setTimeout(()=>{ // 8
+  //     console.log('setTimeout'); // 8-----setTimeout
+  // },0)
+  // async1();
+  // new Promise((resolve)=>{ // 6
+  //     console.log('promise1'); // 4----promise1
+  //     resolve();
+  // }).then(()=>{
+  //     console.log('promise2'); // 7-----promise2
+  // });
+  // console.log('script end');// 5------script end
+  // b() // call b
+  // console.log(a) // undefined
+
+  // var a = 'Hello world'
+
+  // function b() {
+  //     console.log('call b')
+  // }
   </script>
 </body>
 
