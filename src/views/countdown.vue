@@ -26,6 +26,8 @@
         {{message}}
       </div>
     </template>
+    <iframe src='https://aw.dell-brand.com/pages/tabbar/user-v2' class="iframe" ref="iframe"></iframe>
+    <div v-html="htmls"></div>
     <ShowPdf :pdfshow='pdfshow' @pdfDialogClose='pdfDialogClose'></ShowPdf>
   </div>
 </template>
@@ -49,7 +51,8 @@ export default {
       },
       pdfshow:false,
       daojishi:null,
-      message:'下载Excal'
+      message:'下载Excal',
+      htmls:'<p>1.本抽奖活动为会员用户专享，每位会员用户每轮抽奖仅可参与一次；<br />2.活动奖品为第三方礼品，不支持进行等额商品或现金兑换，奖品一经送出不予退换；<br />3.每期活动中奖用户将在往期记录进行公示，请注意查看。开奖后7-14个工作日内将为您发货（暂不支持港澳台地区）；<br />4.实际寄出时间可能会因快递情况出现延迟，敬请谅解；<br />5.为了不影响抽奖结果的正常发放，请确保所使用的手机号码与小程序授权的手机号码相同，保持手机畅通。若中奖后2周未能联系成功（如您手机未接/拒绝或无法拨通等）或者您拒绝通知的，则将丧失中奖资格，敬请谅解！（我们的呼叫电话号码为：153****9980）<br />6.建议用户接受订阅开奖消息通知，以便于开奖后收到消息及时查看中奖结果；<br />7．本期活动有效期间，2022年05月28日起至2022年06月10日（含本日）止结束。</p>'
     };
   },
   computed: {},
@@ -98,6 +101,14 @@ export default {
         const blob = new Blob([doc.output()], { type: "application/pdf" });
         blob.text().then((blobAsText) => {
           console.log('pdf文件：'+blobAsText);
+          const url = window.URL.createObjectURL(new Blob([blobAsText]));
+          // blob:http://localhost:8080/712dbb0d-21fe-4268-b441-982bca3b22a6
+          const link = document.createElement('a');
+          let fname = 'pdf文件.pdf';
+          link.href = url;
+          link.setAttribute('download', fname);
+          document.body.appendChild(link);
+          link.click();
         });
     },
     downloadPDf() {//下载本地pdf文件
@@ -122,11 +133,16 @@ export default {
     pdfDialogClose(val){
       this.pdfshow=val;
     },
-
+    text(n){
+      if(n<=1) {
+        return 1
+      }
+      return n+this.text(n-1)
+    }
   },
 
   created() {
-
+    console.log(this.text(10));
   },
   mounted() {
     this.getDate();
@@ -143,4 +159,12 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped></style>
+<style lang='scss' scoped>
+.iframe {
+  width: 500px;
+  height: 800px;
+  border: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+</style>

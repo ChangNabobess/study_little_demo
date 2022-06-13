@@ -20,7 +20,8 @@
         </el-row>
         <el-row>
           <!-- <h1 class="testH1">这里测试一下，animation中的step属性</h1> -->
-          <h1 class="testH1">这里测试一下好像只适配中文</h1>
+          <h1 class="testH1">这里测试一下好像只适配中文字符</h1>
+          <p>订单生成中<span class="ellipsis"></span></p>
         </el-row>
         <el-row>
           <el-col :span="4">
@@ -31,6 +32,33 @@
           </el-col>
           <el-col :span="8">
             <TrafficLight />
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="content-box">
+              <header>测试标准盒模型</header>
+              <p>width = content 530</p>
+            </div>
+            <div class="border-box">
+              <header>测试怪异和模型</header>
+              <p>width = content + border + padding 500</p>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <header>头部</header>
+            <nav>头部导航</nav>
+            <main>
+              <article>
+                内容标签
+                <section>段落</section>
+              </article>
+              <aside>侧边栏标签</aside>
+            </main>
+            <footer>底部</footer>
+          </el-col>
+          <el-col :span="8">
+            
           </el-col>
         </el-row>
       </template>
@@ -148,8 +176,11 @@ export default {
       // console.log('我是回调函数成功之后返回的数据',data);
     }
     // this.getMaps()
-    this.testDebounceAndThrottle()
+    this.$nextTick(() => {
+      this.testDebounceAndThrottle()
+    })
     // this.precompile(1,2)
+    this.checkOutBoxStyle()
   },
   methods:{
     changeArr(){
@@ -337,7 +368,7 @@ export default {
     },
     testDebounceAndThrottle(){
       // 防抖是连续点击直到最后一次点击结束之后等待一定时间之后再
-      document.getElementById('havedebounce').addEventListener('click',debounceTime(2000,this.countEvent))
+      // document.getElementById('havedebounce').addEventListener('click',debounceTime(2000,this.countEvent))
       // 立即执行的防抖
       // document.getElementById('havedebounce').addEventListener('click',debounce(this.countEvent,20000))
       // 节流是连续点击隔两秒请求一次
@@ -367,9 +398,36 @@ export default {
       // 2. 找形参和变量声明 将变量和形参名 当做 ao对象的属性名 值为undefined
       // 3. 实参形参相统一 
       // 4. 在函数体里面找函数声明 会覆盖形参,如果没有函数声明,会直接打印传入参数
+    },
+    recallMethods(){
+      let str = '回忆, 一些, 方法'
+      // console.log(str.split(','));
+    },
+    checkOutBoxStyle(){
+      let contentBoxDom = document.querySelector('.content-box')
+      console.log(contentBoxDom.getBoundingClientRect().width);
+      let borderBoxDom = document.querySelector('.border-box')
+      console.log(borderBoxDom.getBoundingClientRect().width);
+      /**
+       * contentBoxDom.getBoundingClientRect()
+          DOMRect {
+                    bottom: 1236
+                    height: 26
+                    left: 8
+                    right: 636.984375
+                    top: 1210
+                    width: 628.984375
+                    x: 8
+                    y: 1210
+                  }
+        window.getComputedStyle(contentBoxDom).width   636.984
+        contentBoxDom.currentStyle.width/height 取到的是最终渲染后的宽和高，只有IE支持此属性。
+      **/
+     
     }
   },
   created(){
+    // this.recallMethods()
     // console.log('测试一下routerBefore是否有效，在home页面的created里面打印试试',this.userinfo); // 成功的
     this.test();
     this.jsonpgetData();
@@ -388,6 +446,11 @@ export default {
 @keyframes typing { from { width: 0; } }
 @keyframes blink-caret { 50% { border-color: transparent; } }
 @import url('//at.alicdn.com/t/font_1223885_a68qqkvtjgr.css');
+@keyframes moveDot {
+  25% { box-shadow: none; }          /* 0个点 */
+  50% { box-shadow: 2px 0; }         /* 1个点 */
+  75% { box-shadow: 2px 0, 6px 0; }  /* 2个点 */
+}
 .iconfont {
   padding: 0 10px;
   font-size: 24px;
@@ -408,13 +471,21 @@ export default {
 .testH1{
   font: bold 200% Consolas, Monaco, monospace;
 	border-right: .1em solid;
-	width: 425px; /* fallback */ // h1的长度
-	// width: 30ch; /* # of chars */
+	// width: 425px; /* fallback */ // h1的长度
+	width: 30ch; /* # of chars */
 	margin: 2em 1em;
 	white-space: nowrap;
 	overflow: hidden;
-	animation: typing 20s steps(13, end), /* # of steps = # of chars step规定动画执行几次例如：425px，一共是三个字符，动画分布执行13次*/
+	animation: typing 20s steps(15, end), /* # of steps = # of chars step规定动画执行几次例如：425px，一共是三个字符，动画分布执行13次*/
 	           blink-caret .5s step-end infinite alternate;
+}
+.ellipsis{
+  display: inline-block;
+  width: 2px;
+  height: 2px;
+  margin-right: 8px;
+  box-shadow: 2px 0, 6px 0, 10px 0;
+  animation: moveDot 4s infinite step-start both;
 }
 #content{
   width: 200px;
@@ -433,5 +504,44 @@ export default {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+.content-box{
+  box-sizing: content-box;
+  width: 500px;
+  height: 100px;
+  padding: 10px;
+  border: 5px solid rgba(0,0,0,1);
+}
+.border-box{
+  box-sizing: border-box;
+  width: 500px;
+  height: 100px;
+  padding: 10px;
+  border: 5px solid salmon;
+}
+header{
+  background: rgba($color: blue, $alpha: .3);
+}
+nav{
+  background: rgba($color: blue, $alpha: .5);
+}
+main{
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  align-items: center;
+  article{
+    width: 80%;
+    height: 100%;
+    background: salmon;
+  }
+  aside{
+    width: 20%;
+    height: 100%;
+    background: hotpink;
+  }
+}
+footer{
+  background: rgba($color: blue, $alpha: .8);
 }
 </style>

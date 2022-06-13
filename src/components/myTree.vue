@@ -72,7 +72,7 @@ export default {
       ulDom.addEventListener('click',this.ulClickHandler)
     },
     ulClickHandler(e){
-      e.stopImmediatePropagation()
+      e.stopImmediatePropagation() // 停止冒泡
       if(!e.target.firstElementChild) return // 点击的元素有没有子元素
       if(e.target.constructor !== HTMLLIElement) return // 利用构造函数判断当前点击的元素是不是li
       if(this.bool) {
