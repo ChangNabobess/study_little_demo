@@ -28,7 +28,8 @@
     </template>
     <iframe src='https://aw.dell-brand.com/pages/tabbar/user-v2' class="iframe" ref="iframe"></iframe>
     <div v-html="htmls"></div>
-    <ShowPdf :pdfshow='pdfshow' @pdfDialogClose='pdfDialogClose'></ShowPdf>
+    <el-button type="primary" @click="editPdf">编辑pdf</el-button>
+    <ShowPdf :pdfshow='pdfshow' :isEdit="isEdit" @pdfDialogClose='pdfDialogClose'></ShowPdf>
   </div>
 </template>
 
@@ -49,6 +50,7 @@ export default {
         text: '倒计时结束',
         color: '#fff'
       },
+      isEdit: false,
       pdfshow:false,
       daojishi:null,
       message:'下载Excal',
@@ -128,6 +130,11 @@ export default {
         })
       },
     showpdf(){
+      this.isEdit = false
+      this.pdfshow=true;
+    },
+    editPdf(){
+      this.isEdit = true
       this.pdfshow=true;
     },
     pdfDialogClose(val){

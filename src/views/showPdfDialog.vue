@@ -41,6 +41,10 @@ export default {
     pdfshow:{
       default:false,
       type:Boolean
+    },
+    isEdit: {
+      default: false,
+      type: Boolean
     }
   },
   data() {
@@ -67,6 +71,12 @@ export default {
     dialogVisible(newVal,oldVal){
       if(newVal==false){
         this.$emit('pdfDialogClose',false);
+      }
+    },
+    isEdit:{
+      immediate: true,
+      handler(newVal,oldVal) {
+        console.log('---------------',newVal);
       }
     }
   },
