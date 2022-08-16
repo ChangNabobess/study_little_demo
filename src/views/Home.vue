@@ -171,6 +171,7 @@ export default {
     };
   },
   mounted(){
+    console.log('----------------------------------------------',UTILS);
     this.changeArr();
     window.aliyunshuju=function(data){
       // console.log('我是回调函数成功之后返回的数据',data);
