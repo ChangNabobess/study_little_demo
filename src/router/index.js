@@ -51,7 +51,7 @@ const scrollBehavior = function (to, from, savedPosition) {
     return savedPosition
   } else {
     // 如果不是通过上述行为切换组件，就会让页面回到顶部
-    return to.meta
+    return to.meta || { x: 0, y: 0 }
 }
 }
 
@@ -60,5 +60,13 @@ const router = new VueRouter({
   routes,
   scrollBehavior
 })
+
+// 解决Vue-Router升级导致的Uncaught(in promise) navigation guard问题
+// router.beforeEach({next('/')})  用户未登录，将路由重定向到其他页面
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location, onResolve, onReject){
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
 
 export default router
