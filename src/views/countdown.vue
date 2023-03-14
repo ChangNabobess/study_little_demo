@@ -69,7 +69,7 @@ export default {
     },
     countDown(){
       var nowtime = new Date(),  //获取当前时间
-          endtime = new Date("2022/01/24");  //定义结束时间
+          endtime = new Date("2024/01/24");  //定义结束时间
       var lefttime = endtime.getTime() - nowtime.getTime(),  //距离结束时间的毫秒数
           leftd = Math.floor(lefttime/(1000*60*60*24)),  //计算天数
           lefth = Math.floor(lefttime/(1000*60*60)%24),  //计算小时数

@@ -28,8 +28,8 @@ const copy = {
       //HTMLInputElement.select() 方法选中一个 <textarea> 元素或者一个带有 text 字段的 <input type='text'> 元素里的所有内容。
       //选中
       textarea.select();
-      // execCommand里可以跑很多例如paste等方法，第一个参数是方法名，第二个是是否展示默认ui，第三个是可选参数列表
-      //复制
+      // execCommand里可以跑很多例如paste等方法，判断当前浏览器是否包含指定方法，第一个参数是方法名，第二个是是否展示默认ui，第三个是可选参数列表
+      //复制 
       const result = document.execCommand('Copy',false,null)
       if (result) {
         console.log('复制成功') // 可根据项目UI仔细设计

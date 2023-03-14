@@ -444,7 +444,7 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-@keyframes typing { from { width: 0; } }
+@keyframes typing { from { width: 10; } }
 @keyframes blink-caret { 50% { border-color: transparent; } }
 @import url('//at.alicdn.com/t/font_1223885_a68qqkvtjgr.css');
 @keyframes moveDot {

@@ -1,6 +1,6 @@
 <template>
   <div class='lingt'>
-    <p>使用Promise+尾递归实现红绿灯(基础版)</p>
+    <p>使用Promise+尾递归实现红绿灯(基础版、尾递归)</p>
     <div></div>
     <div></div>
     <div></div>
