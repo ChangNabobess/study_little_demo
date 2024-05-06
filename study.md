@@ -97,7 +97,7 @@ function getedit(res) {
 
 #### JavaScript 中获取光标位置
 
-主要 API：selectionStart、selectionStart、setSelectionRange
+主要 API：selectionStart、selectionEnd、setSelectionRange
 HtmlElement 元素包含了以上方法，在获取 Dom 元素之后是可以直接通过这些 API 获取光标位置的
 如果使用 Ref 获取的 Dom 元素，可能会拿不到实时的位置数据，可以试一下 click、input 自动带出的 HtmlElement 元素去取值，或者直接用 Dom 方法获取元素再试试
 
@@ -226,3 +226,113 @@ HtmlElement 元素包含了以上方法，在获取 Dom 元素之后是可以直
 ```
 
 #### [Markdown.com.cn（editor）](https://markdown.com.cn/editor/)
+
+### 0506
+
+#### Vue2
+
+选项式 API
+-1、渲染 App
+new 一个新的 vue 实例
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
+```
+
+```javascript
+// app.vue
+<template>
+  <h1>这是一段示范文字</h1>
+</template>
+<script>
+export default {
+  name: 'App'
+}
+</script>
+// main.js
+import Vue from 'vue'
+import App from './App.vue'
+new Vue({
+  el: '#app',
+  components: { App },
+  template: '<App/>'
+})
+
+```
+
+#### Vue3
+
+-1、组合式 API
+
+```javascript
+// 组合式API写法，可以vue2、vue3混合使用
+// 需要声明defineComponent
+<script lang="ts">
+import { defineComponent, ref, provide } from 'vue'
+export default defineComponent({
+ name: 'mediaDialog',
+ props: {
+   name: String,
+   visible: Boolean
+ },
+ setup(props, context) {
+   // 使用 context.emit('update:visible', false)，改变父组件visible的值
+   const handleClose = function() {
+     context.emit('update:visible', false)
+   }
+   return { handleClose }
+ }
+})
+</script>
+// 这个 setup attribute 是一个标识，告诉 Vue 需要在编译时进行一些处理，让我们可以更简洁地使用组合式 API
+<script setup name='searchPage'></script>
+```
+
+-2、使用 v-model 传递参数并修改 在子组件中使用 defineModel 接受
+
+> 如果在子组件中需要获取传递到父组件的值，需要在 nexTick 方法中获取
+
+```javascript
+<!-- Child.vue -->
+<script setup>
+const model = defineModel()
+function update() {
+  model.value++
+}
+</script>
+<template>
+  <div>parent bound v-model is: {{ model }}</div>
+</template>
+<!-- Parent.vue -->
+<Child v-model="countModel" />
+```
+
+-3、渲染 App
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
+```
+
+```javascript
+// app.vue
+<template>
+  <h1>这是一段示范文字</h1>
+</template>;
+// main.js
+import { createApp } from "vue";
+import App from "./App.vue";
+
+createApp(App).mount("#app");
+```
