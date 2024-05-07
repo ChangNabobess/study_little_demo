@@ -337,3 +337,67 @@ import App from "./App.vue";
 
 createApp(App).mount("#app");
 ```
+
+### 0507
+
+#### vue3
+
+- 1、resolveComponent
+  > 按名称手动解析已注册的组件 备注：如果你可以直接引入组件就不需使用此方法
+
+```javascript
+// 类型
+function resolveComponent(name: string): Component | string;
+// 使用示例
+<script setup lang="ts">
+import { SomeComponent } from '@/components/SomeComponent';
+const MyButton = resolveComponent('MyButton');
+</script>
+
+<template>
+  <component :is="clickable ? MyButton : 'div'" />
+  <component :is="SomeComponent" />
+</template>
+```
+
+- 2、resolveDirective
+  > 按名称手动解析已注册的指令
+
+```javascript
+function resolveDirective(name: string): Directive | undefined;
+```
+
+- 3、withDirectives
+
+```javascript
+// 类型
+function withDirectives(
+  vnode: VNode,
+  directives: DirectiveArguments
+): VNode
+
+// [Directive, value, argument, modifiers]
+type DirectiveArguments = Array<
+  | [Directive]
+  | [Directive, any]
+  | [Directive, any, string]
+  | [Directive, any, string, DirectiveModifiers]
+>
+// 示例
+import { h, withDirectives } from 'vue'
+
+// 一个自定义指令
+const pin = {
+  mounted() {
+    /* ... */
+  },
+  updated() {
+    /* ... */
+  }
+}
+
+// <div v-pin:top.animate="200"></div>
+const vnode = withDirectives(h('div'), [
+  [pin, 200, 'top', { animate: true }]
+])
+```
