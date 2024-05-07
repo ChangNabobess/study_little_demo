@@ -232,8 +232,9 @@ HtmlElement 元素包含了以上方法，在获取 Dom 元素之后是可以直
 #### Vue2
 
 选项式 API
--1、渲染 App
-new 一个新的 vue 实例
+
+- 1、渲染 App
+  new 一个新的 vue 实例
 
 ```html
 <!DOCTYPE html>
@@ -268,7 +269,7 @@ new Vue({
 
 #### Vue3
 
--1、组合式 API
+- 1、组合式 API
 
 ```javascript
 // 组合式API写法，可以vue2、vue3混合使用
@@ -294,7 +295,7 @@ export default defineComponent({
 <script setup name='searchPage'></script>
 ```
 
--2、使用 v-model 传递参数并修改 在子组件中使用 defineModel 接受
+- 2、使用 v-model 传递参数并修改 在子组件中使用 defineModel 接受
 
 > 如果在子组件中需要获取传递到父组件的值，需要在 nexTick 方法中获取
 
@@ -313,7 +314,7 @@ function update() {
 <Child v-model="countModel" />
 ```
 
--3、渲染 App
+- 3、渲染 App
 
 ```html
 <!DOCTYPE html>
