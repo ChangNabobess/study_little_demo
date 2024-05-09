@@ -426,10 +426,13 @@ const vnode = withDirectives(h('div'), [
 #### NUXT demo
 
 1. 这个框架像是优化 webpack 配置项的另一种形式，也是基于 VUE 框架开发的，有很多自己的库
+   但是好多页面样式组件都是已经封装好的，这样使用下来不太方便，没有办法个性化设置，针对公司业务开发的话也不能很方便的自定义开发。
+   不过一些好用的 API 可以借鉴一下
+   他对快捷键设置到时挺全的，随处可见
 
-- 1.1[nuxt-中文](https://nuxt.com.cn/);
-- 1.2[nuxt-UI](https:/]ui.nuxt.com/);
-- 1.3[VueUse](https://www.vueusejs.com/);
+- 1.1 [nuxt-中文](https://nuxt.com.cn/)
+- 1.2 [nuxt-UI](https:/]ui.nuxt.com/)
+- 1.3 [VueUse](https://www.vueusejs.com/)
 
 2. nuxt-UI 中一些有意思的 API
    defineShortcuts
@@ -492,3 +495,4 @@ const { metaSymbol } = useShortcuts()
   <UKbd>{{ metaSymbol }}</UKbd>
 </template>
 ```
+#### command 命令行
