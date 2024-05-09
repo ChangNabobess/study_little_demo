@@ -426,9 +426,9 @@ const vnode = withDirectives(h('div'), [
 #### NUXT demo
 
 1. 这个框架像是优化 webpack 配置项的另一种形式，也是基于 VUE 框架开发的，有很多自己的库
-   1.1. [nuxt-中文](https://nuxt.com.cn/);
-   1.2. [nuxt-UI][https:/]ui.nuxt.com/);
-   1.3. [VueUse](https://www.vueusejs.com/);
+  1.1. [nuxt-中文](https://nuxt.com.cn/);
+  1.2. [nuxt-UI](https:/]ui.nuxt.com/);
+  1.3. [VueUse](https://www.vueusejs.com/);
 2. nuxt-UI 中一些有意思的 API
    defineShortcuts
    This module provides a defineShortcuts composable that allows you to define keyboard shortcuts in your app really easily.
