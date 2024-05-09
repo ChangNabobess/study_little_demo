@@ -420,3 +420,73 @@ const vnode = withDirectives(h('div'), [
 - `types` 类型定义文件更改
 - `wip` 开发中
 - `Revert` 还原
+
+### 0509
+
+#### NUXT demo
+
+1. 这个框架像是优化 webpack 配置项的另一种形式，也是基于 VUE 框架开发的，有很多自己的库
+   1.1. (nuxt-中文)[https://nuxt.com.cn/];
+   1.2. (nuxt-UI)[https://ui.nuxt.com/];
+   1.3. (VueUse)[https://www.vueusejs.com/];
+2. nuxt-UI 中一些有意思的 API
+   defineShortcuts
+   This module provides a defineShortcuts composable that allows you to define keyboard shortcuts in your app really easily.
+   > 可以很方便的定义一些快捷键设置，ps:ctrl、command、?、/ 等等。省去 document 监听 keyboard 事件，挺方便的
+
+```javascript
+<template>
+<UModal v-model="isOpen" />
+</template>
+
+<script setup lang="ts">
+const isOpen = ref(false)
+
+defineShortcuts({
+meta_k: {
+  {/*
+    1、Prop: usingInput?: string | boolean
+    2、默认情况下，usingInput为false，这意味着它只会在没有输入被聚焦时触发。当设置为true时，当任何输入聚焦时，快捷方式也会触发。
+   */}
+  usingInput: true,
+  {/*
+    1、Prop: whenever?: WatchSource<boolean>[]
+   */}
+  whenever: [isOpen],
+  handler: () => {
+    isOpen.value = !isOpen.value
+  }
+}
+})
+</script>
+
+```
+
+3. Shortcuts keys are written as the literal keyboard key value. Combinations are made with \_ separator. Chained shortcuts are made with - separator.
+   > Modifiers are also available:
+
+- meta: acts as Command for MacOS and Control for others
+- ctrl: acts as Control
+- shift: acts as Shift and is only necessary for alphabetic keys
+  > Examples of keys:
+- escape: will trigger by hitting Esc
+- meta_k: will trigger by hitting ⌘ and K at the same time on MacOS, and Ctrl and K on Windows and Linux
+- ctrl_k: will trigger by hitting Ctrl and K at the same time on MacOS, Windows and Linux
+- shift_e: will trigger by hitting Shift and E at the same time on MacOS, Windows and Linux
+- ?: will trigger by hitting ? on some keyboard layouts, or for example Shift and /, which results in ? on US Mac keyboards
+- g-d: will trigger by hitting g then d with a maximum delay of 800ms by default
+- arrowleft: will trigger by hitting ← (also: arrowright, arrowup, arrowdown)
+
+4. useShortcuts
+   > To display shortcuts in your app according to the user's OS, you can use the useShortcuts composable.
+   > 要在应用中根据用户的操作系统显示快捷方式，你可以使用 usesshortcuts 组合项。
+
+```javascript
+<script setup lang="ts">
+const { metaSymbol } = useShortcuts()
+</script>
+
+<template>
+  <UKbd>{{ metaSymbol }}</UKbd>
+</template>
+```
