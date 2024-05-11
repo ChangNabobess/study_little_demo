@@ -425,16 +425,21 @@ const vnode = withDirectives(h('div'), [
 
 #### NUXT demo
 
-1. 这个框架像是优化 webpack 配置项的另一种形式，也是基于 VUE 框架开发的，有很多自己的库
-   但是好多页面样式组件都是已经封装好的，这样使用下来不太方便，没有办法个性化设置，针对公司业务开发的话也不能很方便的自定义开发。
-   不过一些好用的 API 可以借鉴一下
-   他对快捷键设置到时挺全的，随处可见
+这个框架像是优化 webpack 配置项的另一种形式，
+页面框架是基于 VUE 框架开发的，有很多自己的私有库
+但是好多页面样式组件都是已经封装好的，这样使用下来不太方便，没有办法个性化设置，针对公司业务开发的话也不能很方便的自定义开发。
+不过一些好用的 API 可以借鉴一下
+
+不仅是对 webPack 配置项的封装优化，还有好多方便操作 dom 的方法
+
+1. Nuxt 常用文档地址
 
 - 1.1 [nuxt-中文](https://nuxt.com.cn/)
 - 1.2 [nuxt-UI](https:/]ui.nuxt.com/)
 - 1.3 [VueUse](https://www.vueusejs.com/)
 
 2. nuxt-UI 中一些有意思的 API
+   他对快捷键设置到时挺全的，随处可见
    defineShortcuts
    This module provides a defineShortcuts composable that allows you to define keyboard shortcuts in your app really easily.
    > 可以很方便的定义一些快捷键设置，ps:ctrl、command、?、/ 等等。省去 document 监听 keyboard 事件，挺方便的
@@ -495,4 +500,60 @@ const { metaSymbol } = useShortcuts()
   <UKbd>{{ metaSymbol }}</UKbd>
 </template>
 ```
+
 #### command 命令行
+
+### 0511
+
+#### Nuxt 好用的 API 参考
+
+1、 DashboardSearchButton <--> DashboardSearch
+这两个组件看起来没什么关联，但是可以用**[useUIState](https://ui.nuxt.com/pro/components/content-search-button#usage)**把两个单独的 UI 组件关联起来
+
+```javascript
+<script setup lang="ts">
+  {/*
+    isDocsSearchModalOpen用来控制DashboardSearch面板的显隐
+    这样无论这两个组件放在哪里都可以方便操作打开关闭
+   */}
+const { toggleDocsSearch, isDocsSearchModalOpen } = useUIState()
+</script>
+
+<template>
+  <UButton label="Open" @click="toggleDocsSearch" />
+</template>
+```
+
+2、nuxt 使用 fetch 分发接口请求 **[useFetch](https://nuxt.com.cn/docs/api/composables/use-fetch)**
+
+```javascript
+<script setup>
+const route = useRoute()
+
+const { data, pending, error, refresh } = await useFetch(`https://api.nuxtjs.dev/mountains/${route.params.slug}`, {
+  pick: ['title']
+})
+</script>
+
+```
+
+3、**_[server](https://nuxt.com.cn/docs/guide/directory-structure/server)_** 目录也挺有意思的，但是，这有啥用？
+
+> server/目录用于在应用程序中注册 API 和服务器处理程序。
+> 每个文件应该导出一个使用 defineEventHandler()或 eventHandler()（别名）定义的默认函数。
+
+```javascript
+-| server/
+---| api/
+-----| hello.ts      # /api/hello
+---| routes/
+-----| bonjour.ts    # /bonjour
+---| middleware/
+-----| log.ts        # 记录所有请求
+
+```
+
+4、vueUse 方法
+4.1 **_[formatTimeAgo](https://vueuse.org/core/useTimeAgo/#non-reactivity-usage)_**
+
+> In case you don't need the reactivity, you can use the formatTimeAgo function to get the formatted string instead of a Ref. formatted string(格式化时间为字符串)
