@@ -283,7 +283,7 @@ export default defineComponent({
    visible: Boolean
  },
  setup(props, context) {
-   // 使用 context.emit('update:visible', false)，改变父组件visible的值
+   // 使用 context.emit('update:visible', false)，改变父组件v-model='visible'的值
    const handleClose = function() {
      context.emit('update:visible', false)
    }
@@ -295,7 +295,9 @@ export default defineComponent({
 <script setup name='searchPage'></script>
 ```
 
-- 2、使用 v-model 传递参数并修改 在子组件中使用 defineModel 接受
+- 2、使用 v-model 传递参数并修改
+  2.1 在子组件中使用 defineModel 接收(ps:如下)
+  2.2emit('update:propsDate')(ps:0506 1、组合式 API)
 
 > 如果在子组件中需要获取传递到父组件的值，需要在 nexTick 方法中获取
 
@@ -537,7 +539,7 @@ const { data, pending, error, refresh } = await useFetch(`https://api.nuxtjs.dev
 
 ```
 
-3、**_[server](https://nuxt.com.cn/docs/guide/directory-structure/server)_** 目录也挺有意思的，但是，这有啥用？
+3、**[server](https://nuxt.com.cn/docs/guide/directory-structure/server)** 目录也挺有意思的，但是，这有啥用？
 
 > server/目录用于在应用程序中注册 API 和服务器处理程序。
 > 每个文件应该导出一个使用 defineEventHandler()或 eventHandler()（别名）定义的默认函数。
@@ -554,6 +556,24 @@ const { data, pending, error, refresh } = await useFetch(`https://api.nuxtjs.dev
 ```
 
 4、vueUse 方法
-4.1 **_[formatTimeAgo](https://vueuse.org/core/useTimeAgo/#non-reactivity-usage)_**
+4.1 **[formatTimeAgo](https://vueuse.org/core/useTimeAgo/#non-reactivity-usage)**
 
 > In case you don't need the reactivity, you can use the formatTimeAgo function to get the formatted string instead of a Ref. formatted string(格式化时间为字符串)
+
+### 0513
+
+#### @vueuse/core **[useBreakpoints](https://www.vueusejs.com/core/useBreakpoints/)**
+
+> 响应式获取视口断点
+
+```javascript
+import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const smAndLarger = breakpoints.greaterOrEqual("sm"); // sm and larger
+const largerThanSm = breakpoints.greater("sm"); // only larger than sm
+const lgAndSmaller = breakpoints.smallerOrEqual("lg"); // lg and smaller
+const smallerThanLg = breakpoints.smaller("lg"); // only smaller than lg
+if (smallerThanLg) {
+  console.log("超小视口");
+}
+```
