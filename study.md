@@ -296,17 +296,22 @@ export default defineComponent({
 ```
 
 - 2、使用 v-model 传递参数并修改
-2.1 在子组件中使用 defineModel 接收(ps:如下)
-2.2emit('update:propsDate')(ps:0506 1、组合式 API)
 
 > 如果在子组件中需要获取传递到父组件的值，需要在 nexTick 方法中获取
 
 ```javascript
+/*
+  1、emit('update:propsDate')(ps:0506 1、组合式 API)
+  2、在子组件中使用 defineModel 接收(ps:如下)
+*/
 <!-- Child.vue -->
 <script setup>
 const model = defineModel()
 function update() {
-  model.value++
+  model.value++;
+  nexTick(() => {
+  console.log(model.value)
+  })
 }
 </script>
 <template>
