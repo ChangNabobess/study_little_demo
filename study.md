@@ -582,3 +582,159 @@ if (smallerThanLg) {
   console.log("超小视口");
 }
 ```
+
+#### Vue **[defineOptions](https://cn.vuejs.org/guide/components/attrs.html#disabling-attribute-inheritance)**
+
+1. 透传进来的 attribute 可以在模板的表达式中直接用 $attrs 访问到。
+
+```javascript
+<script setup>
+defineOptions({
+  inheritAttrs: false // 禁用 Attributes 继承
+})
+</script>
+<span>Fallthrough attribute: {{ $attrs }}</span>
+```
+
+2. 示例
+
+```javascript
+/* 
+  在单根节点组件
+  我们可以通过设定 inheritAttrs: false 和使用 v-bind="$attrs" 来实现
+  所有像 class 和 v-on 监听器这样的透传 attribute 都应用在内部的 <button> 上而不是外层的 <div> 上
+*/
+/* children component */
+<div class="btn-wrapper">
+  <button class="btn" v-bind="$attrs">
+    Click Me
+  </button>
+</div>
+```
+
+3. 在 JavaScript 中访问透传 Attributes
+
+```javascript
+// vue3.x 组合式API获取透传属性
+<script setup>import {useAttrs} from 'vue' const attrs = useAttrs()</script>;
+// Vue3.x 选项是API获取透传属性
+export default {
+  setup(props, ctx) {
+    // 透传 attribute 被暴露为 ctx.attrs
+    console.log(ctx.attrs);
+  },
+};
+```
+
+### 0514
+
+#### [Intl](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Intl)
+
+> Intl 对象是 ECMAScript 国际化 API 的一个命名空间，它提供了精确的字符串对比、数字格式化，和日期时间格式化.
+> Collator，NumberFormat 和 DateTimeFormat 对象的构造函数是 Intl 对象的属性.
+
+```javascript
+Intl.NumberFormat(locales, options);
+// maximumFractionDigits 要使用的分数位数的最大数目
+const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format;
+locales:
+  ['区域设置']-('de-DE','ja-JP', 'en-IN');
+options.style:
+  The formatting style to use.
+    "decimal" (default)
+    For plain number formatting.
+    "currency"
+    For currency formatting.
+    "percent"
+    For percent formatting.
+    "unit"
+    For unit formatting.
+options.currency:
+    "USD"
+    For the dollar.
+    "EUR"
+    For the euro.
+    "CNY"
+    For Chinese RMB.
+    "JPY"
+    For Japanese yen.
+options.currencyDisplay:
+  How to display the currency in currency formatting.
+    "code"
+    Use the ISO currency code.
+    "symbol" (default)
+    Use a localized currency symbol such as €.
+    "narrowSymbol"
+    Use a narrow format symbol ("$100" rather than "US$100").
+    "name"
+    Use a localized currency name such as "dollar".
+```
+
+### 0515
+
+#### **_[useAsyncData](https://nuxt.com.cn/docs/api/composables/use-async-data)_**
+
+> 获取异步解析的数据
+> useAsyncData 是一种组合式，可以直接在设置函数、插件或路由中调用。
+> 它返回响应式的组合式，并处理将响应添加到 Nuxt 负载中，以便在页面水合时从服务器传递到客户端，而不需要在客户端重新获取数据。
+
+```javascript
+<script setup>
+  const {(data, pending, error, refresh)} = await useAsyncData( 'mountains', ()
+  => $fetch('https://api.nuxtjs.dev/mountains') )
+</script>
+```
+
+#### **_[@unovis/vue](https://unovis.dev)_**
+
+1. 一个新的图表插件，和 Echarts 相比的话，功能都差不多，但是有一些模块挺好玩的，可以借鉴
+
+2. 这个图标组件库好像是单独模块开发，组合使用的，拼凑性的[dashboard-Nuxt]()项目有延时，可以参考一下
+
+```javascript
+/* 
+  1、Graph
+  2、Brush
+  3、Free Brush
+  4、Timeline
+*/
+```
+
+### 0517
+
+#### **_[css 属性 attr 使用小技巧](https://developer.mozilla.org/zh-CN/docs/Web/CSS/::after)_**
+
+```html
+<p>
+  这里我们有包含了一些<span tabindex="0" data-descr="鼠标悬停时出现的小弹出窗口"
+    >工具提示</span
+  >的<span tabindex="0" data-descr="文字和标点符号的集合">文字</span>。
+</p>
+```
+
+```css
+span[data-descr] {
+  position: relative;
+  text-decoration: underline;
+  color: #00f;
+  cursor: help;
+}
+
+span[data-descr]:hover::after,
+span[data-descr]:focus::after {
+  content: attr(data-descr);
+  position: absolute;
+  left: 0;
+  top: 24px;
+  min-width: 200px;
+  border: 1px #aaaaaa solid;
+  border-radius: 10px;
+  background-color: #ffffcc;
+  padding: 12px;
+  color: #000000;
+  font-size: 14px;
+  z-index: 1;
+}
+```
+
+![演示结果](https://adicon-cro-test.oss-cn-hangzhou.aliyuncs.com/154416e5228b4a918f4873dc0068efaf.png)
