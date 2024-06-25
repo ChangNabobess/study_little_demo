@@ -5,6 +5,7 @@
 解构赋值，如果所解构的原对象是一维数组或对象，其本质就是对基本数据类型进行等号赋值，那它就是深拷贝；
 如果是多维数组或对象，其本质就是对引用类型数据进项等号赋值，那它就是浅拷贝；
 
+```javascript
 <script>
   function deepClone(source){
   const targetObj = source.constructor === Array ? [] : {}; // 判断复制的目标是数组还是对象
@@ -21,11 +22,13 @@
   return targetObj;
 }
 </script>
+```
 
 ### 04-02
 
 #### 1、input.setSelectionRange(start, end, selectionDirection)的使用;
 
+```javascript
 <html>
 <input
   type="text"
@@ -38,7 +41,6 @@
 <button onclick="selectText()">Select text</button>
 <button onclick="getedit(-1)">光标前移</button>
 <button onclick="getedit(1)">光标后移</button>
-
 </html>
 <style>
   input {
@@ -68,6 +70,7 @@ function getedit(res) {
 }
 
 </script>
+```
 
 ### 0411
 
@@ -738,3 +741,14 @@ span[data-descr]:focus::after {
 ```
 
 ![演示结果](https://adicon-cro-test.oss-cn-hangzhou.aliyuncs.com/154416e5228b4a918f4873dc0068efaf.png)
+
+### 0520
+
+```css
+// 消除input元素 type="number" 时默认的 加减按钮
+/deep/ .ivu-input::-webkit-outer-spin-button,
+/deep/ .ivu-input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+```
