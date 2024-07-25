@@ -752,3 +752,39 @@ span[data-descr]:focus::after {
   margin: 0;
 }
 ```
+
+### 0708
+
+`GitHub 优化搜索快捷方式`
+[参考网址](https://www.cnblogs.com/mq0036/p/18047518)
+1、awesome 加强搜索
+
+- awesome 往往整合了大量的同一领域的资料，收集学习、工具、书籍类相关的项目，方便大家更好的学习。
+
+### 0709 前端导出 PDF\Word\Excel
+
+1. [使用 docxtemplater 导出 word 文档](https://segmentfault.com/a/1190000041301193)
+
+2. [docxtemplater 官网](https://docxtemplater.com/)
+   [docxtemplater API](https://docxtemplater.com/docs/api/)
+   [docxtemplater 示例](https://stackblitz.com/edit/vuejs-docxtemplater-example-wc8qpa?file=button.component.js)
+
+3. [webodf 官网](https://webodf.org/)
+   [webodf GitHub](https://github.com/webodf/WebODF)
+
+### 0711
+
+1. [后端处理文件插件 aspose](https://metrics.aspose.com/)
+
+### 0712
+
+1. [思否 mammoth 组件实践](https://segmentfault.com/a/1190000023212724)
+
+### 0723
+
+1. [JAVA 开源项目目录结构](https://segmentfault.com/a/1190000022110134)
+
+### 0724
+
+1. [jave spring-reading ](https://github.com/xuchengsheng/spring-reading)
+2. [hellogithub](https://hellogithub.com/periodical/volume/99)

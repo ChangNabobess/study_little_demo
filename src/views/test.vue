@@ -1,6 +1,6 @@
 <template>
    <div class="map" ref='bartech'>
-    <div id='bartech' style="width=100%;height:100%"></div>
+    <div id='bartech' style="width:100%;height:100%"></div>
     <ul class="test-ul">
       <li v-for="(i,index) in 10" :key="index" :class="'test-' + i">测试{{i}}界面</li>
     </ul>
