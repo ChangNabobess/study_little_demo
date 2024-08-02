@@ -619,7 +619,7 @@ defineOptions({
 
 ```javascript
 // vue3.x 组合式API获取透传属性
-<script setup>import {useAttrs} from 'vue' const attrs = useAttrs()</script>;
+<script setup>import {useAttrs} from 'vue'; const attrs = useAttrs()</script>;
 // Vue3.x 选项是API获取透传属性
 export default {
   setup(props, ctx) {
@@ -776,10 +776,6 @@ span[data-descr]:focus::after {
 
 1. [后端处理文件插件 aspose](https://metrics.aspose.com/)
 
-### 0712
-
-1. [思否 mammoth 组件实践](https://segmentfault.com/a/1190000023212724)
-
 ### 0723
 
 1. [JAVA 开源项目目录结构](https://segmentfault.com/a/1190000022110134)
@@ -788,3 +784,147 @@ span[data-descr]:focus::after {
 
 1. [jave spring-reading ](https://github.com/xuchengsheng/spring-reading)
 2. [hellogithub](https://hellogithub.com/periodical/volume/99)
+
+### 0726
+
+1. [Word 文档转换成 HTML 文档 参考范例](https://segmentfault.com/a/1190000023212724)
+   mammoth 插件地址:https://github.com/mwilliamson/mammoth.js
+
+这也是前端实现在线编辑、预览 word 文件的一种思路
+但是相比 docxtemplater 插件来说 mammoth 插件的限制还是挺多的，不好用，不推荐
+
+1、word 文件转换为 html 的格式是否和源文件保持一致? mommoth 组件有一些标签和 word 文档是不适配的，可以自定义一些，但是不推荐，局限太多了
+1.1 当前 Mammoth 支持以下主要特性
+·Headings
+·Lists，Table
+·Images
+·Bold, italics, underlines, strikethrough, superscript and subscript
+·Links，Line breaks
+·Footnotes and endnotes
+1.2 可以通过提供适当的样式映射将 WarningHeading 转换为 h1.warning
+
+2、在拿到 html 内容之后再预览，需要在第三方预览组件中展示内容，需要再转换一边，不能保证文件内容样式的准确性
+展示 html 的容器-markdown、v-html
+
+```javascript
+// 简单步骤实现word转Html
+// 1、首先通过FileReader实例获取word文件模板内容
+export function readFileInputEventAsArrayBuffer(event, callback) {
+  const file = event.target.files[0];
+
+  const reader = new FileReader();
+
+  reader.onload = function (loadEvent: Event) {
+    const arrayBuffer = loadEvent.target["result"];
+    callback(arrayBuffer);
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+// 2、调用mammoth.convertToHtml 方法获取html数据项
+mammoth.convertToHtml({ arrayBuffer });
+```
+
+```javascript
+// 针对mammoth插件可优化项-图片
+/* 
+    1、在mammoth插件中图片是以base64格式嵌入文档内的
+*/
+let options = {
+  convertImage: mammoth.images.imgElement(function (image) {
+    return image.read("base64").then(function (imageBuffer) {
+      return {
+        src: "data:" + image.contentType + ";base64," + imageBuffer,
+      };
+    });
+  }),
+};
+/* 
+  2、针对多图或大图的情况，一种比较好的方案是把图片提交到文件资源服务器上
+*/
+const mammothOptions = {
+  convertImage: mammoth.images.imgElement(function (image) {
+    return image.read("base64").then(async (imageBuffer) => {
+      const result = await uploadBase64Image(imageBuffer, image.contentType);
+      return {
+        src: result.data.path, // 获取图片线上的URL地址
+      };
+    });
+  }),
+};
+/* 
+  3、上传图片文件示例
+*/
+async function uploadBase64Image(base64Image, mime) {
+  const formData = new FormData();
+  formData.append("file", base64ToBlob(base64Image, mime));
+
+  return await axios({
+    method: "post",
+    url: "http://localhost:3000/uploadfile", // 本地图片上传的API地址
+    data: formData,
+    config: { headers: { "Content-Type": "multipart/form-data" } },
+  });
+}
+```
+
+2. [turndown Html 文件转化为 markdown 文档](https://github.com/domchristie/turndown)
+   可以结合 mammoth 组件先生成 html 文件之后在转换 markdown 文档
+
+3. 前端也能够自己生成 word 文档(纯代码生产那种)，参考插件：docx 或 html-docx-js
+
+```javascript
+// 参看文档 https://github.com/domchristie/turndown
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+  </head>
+  <body>
+    <h1>阿宝哥 - 动态生成 Word 文档示例</h1>
+    <button type="button" onclick="generate()">
+      点击生成 Docx 文档
+    </button>
+    <script src="https://unpkg.com/docx@5.0.2/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+    <script>
+      async function generate() {
+        const doc = new docx.Document();
+
+        const imageBuffer = await fetch(
+          "https://avatars3.githubusercontent.com/u/4220799"
+        ).then((response) => response.arrayBuffer());
+
+        const image = docx.Media.addImage(doc, imageBuffer, 230, 230);
+
+        doc.addSection({
+          properties: {},
+          children: [
+            new docx.Paragraph({
+              children: [
+                new docx.TextRun({
+                  text: "全栈修仙之路，",
+                  bold: true,
+                }),
+                new docx.TextRun({
+                  text:
+                    "聚焦全栈，专注分享 TypeScript、Web API、Node.js、Deno 等全栈干货。",
+                }),
+              ],
+            }),
+            new docx.Paragraph(image),
+          ],
+        });
+
+        docx.Packer.toBlob(doc).then((blob) => {
+          console.log(blob);
+          saveAs(blob, "abao.docx");
+          console.log("文档生成成功");
+        });
+      }
+    </script>
+  </body>
+</html>
+```
