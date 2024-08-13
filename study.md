@@ -707,6 +707,8 @@ options.currencyDisplay:
 
 #### **_[css 属性 attr 使用小技巧](https://developer.mozilla.org/zh-CN/docs/Web/CSS/::after)_**
 
+- data-[数据属性](https://developer.mozilla.org/zh-CN/docs/Learn/HTML/Howto/Use_data_attributes)
+
 ```html
 <p>
   这里我们有包含了一些<span tabindex="0" data-descr="鼠标悬停时出现的小弹出窗口"
@@ -927,4 +929,222 @@ async function uploadBase64Image(base64Image, mime) {
     </script>
   </body>
 </html>
+```
+
+### 0812
+
+#### React [普通组件](https://react.docschina.org/reference/react-dom/components/common#common-props)
+
+- 所有的内置浏览器组件(特殊的 React 属性适用于所有内置组件)，例如 <div>，都支持一些常见的属性和事件(参考-不全)
+  类似 React 把 html 元素有重新封装一遍，增加了一些自己定义的特定属性，方便用户使用，然后所有的 UI 组件库都是支持这些内置组件的
+
+1. 通用组件（例如 <div>）
+2. ref 回调函数
+3. React 事件对象
+4. AnimationsEvent 处理函数
+5. ClipboardEvent 处理函数
+6. CompositionEvent 处理函数
+7. DragEvent 事件处理函数
+8. FocusEvent 处理函数
+9. Event 处理函数
+10. InputEvent 处理函数
+11. KeyboardEvent 处理函数
+12. MouseEvent 处理函数
+13. PointerEvent 处理函数
+14. TouchEvent 处理函数
+15. TransitionEvent 处理函数
+16. UIEvent 处理函数
+17. WheelEvent 处理函数
+    ...
+
+- 注意
+  你不能同时传递 children 和 dangerouslySetInnerHTML。
+  有些事件，如 onAbort 和 onLoad，在浏览器中不冒泡，但是在 React 中仍然会冒泡。
+
+### 0814
+
+#### React 内置节点 portal
+
+- 使用 [creatPortal](https://react.docschina.org/reference/react-dom/createPortal)
+  方法创建的可以在页面上任意 Dom 节点中渲染内容
+  createPortal 允许你将 JSX 作为 children 渲染至 DOM 的不同部分。
+
+1. creatPortal-基础使用
+
+```javascript
+import { createPortal } from "react-dom";
+
+<div>
+  <p>这个子节点被放置在父节点 div 中。</p>
+  {createPortal(<p>这个子节点被放置在 document body 中。</p>, document.body)}
+</div>;
+```
+
+2. creatPortal-模态框使用
+
+```javascript
+// createPortal(children, domNode, key?)
+import { useState } from "react";
+import { createPortal } from "react-dom";
+export default function App() {
+  const PortalExample = () => {
+    const [showModal, setShowModal] = useState(false);
+    return (
+      <>
+        <button onClick={() => setShowModal(true)}>
+          使用 portal 展示模态（motal）
+        </button>
+        {showModal &&
+          createPortal(
+            <div className="modal">
+              <div>这是一个模态对话框</div>
+              <button onClick={setShowModal(false)}>关闭</button>
+            </div>,
+            document.body
+          )}
+      </>
+    );
+  };
+  return (
+    <>
+      <div className="clipping-container">
+        <PortalExample />
+      </div>
+    </>
+  );
+}
+```
+
+3. creatPortal-地图弹框(将 React 组件渲染在非 ReactDom 组件中)
+
+```javascript
+// App.js
+import { useRef, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { createMapWidget, addPopupToMapWidget } from "./map-widget.js";
+
+export default function Map() {
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const [popupContainer, setPopupContainer] = useState(null);
+
+  useEffect(() => {
+    if (mapRef.current === null) {
+      const map = createMapWidget(containerRef.current);
+      mapRef.current = map;
+      const popupDiv = addPopupToMapWidget(map);
+      setPopupContainer(popupDiv);
+    }
+  }, []);
+
+  return (
+    <div style={{ width: 250, height: 250 }} ref={containerRef}>
+      {popupContainer !== null &&
+        createPortal(<p>来自 React 的你，你好！</p>, popupContainer)}
+    </div>
+  );
+}
+```
+
+```javascript
+// map-widget.js
+import "leaflet/dist/leaflet.css";
+import * as L from "leaflet";
+
+export function createMapWidget(containerDomNode) {
+  const map = L.map(containerDomNode);
+  map.setView([0, 0], 0);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "© OpenStreetMap",
+  }).addTo(map);
+  return map;
+}
+
+export function addPopupToMapWidget(map) {
+  const popupDiv = document.createElement("div");
+  L.popup().setLatLng([0, 0]).setContent(popupDiv).openOn(map);
+  return popupDiv;
+}
+```
+
+#### React 插槽使用 slot
+
+- 演示项目 mobile_Chat-To-main
+
+> 父组件 AppWrapper
+
+```javascript
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
+export const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
+  const signUserOut = async () => {
+    cookies.remove("auth-token");
+    setIsAuth(false);
+    setIsInChat(false);
+  };
+  return (
+    <div className="App">
+      <div className="app-header">
+        <h1>演示React-slot</h1>
+      </div>
+      <div className="app-container">{children}</div>
+    </div>
+  );
+};
+```
+
+> 子组件
+
+```javascript
+import React, { useState } from "react";
+import { Chat } from "./components/Chat";
+import { Auth } from "./components/Auth";
+import { AppWrapper } from "./components/AppWrapper";
+import { CallRoom } from "./components/CallRoom"; // Import CallRoom as default
+import Cookies from "universal-cookie";
+import "./App.css";
+const cookies = new Cookies();
+function ChatApp() {
+  const [isAuth, setIsAuth] = useState(cookies.get("auth-token"));
+  const [isInChat, setIsInChat] = useState(true);
+  const [room, setRoom] = useState("");
+  const [isInCall, setIsInCall] = useState(false); // Track if in a call
+  const [callRoomId, setCallRoomId] = useState(""); // Store call room ID
+  const startCall = (roomId) => {
+    setCallRoomId(roomId);
+    setIsInCall(true);
+  };
+  const endCall = () => {
+    setIsInCall(false);
+    setCallRoomId("");
+  };
+  return (
+    <AppWrapper isAuth={isAuth} setIsAuth={setIsAuth} setIsInChat={setIsInChat}>
+      {isInCall ? (
+        <CallRoom roomId={callRoomId} onEndCall={endCall} />
+      ) : !isInChat ? (
+        <div className="room">
+          <label>Type Room ID:</label>
+          <input onChange={(e) => setRoom(e.target.value)} value={room} />
+          <button
+            onClick={() => {
+              setIsInChat(true);
+            }}
+          >
+            Enter Chat
+          </button>
+          <button
+            onClick={() => startCall(room)} // Start call with the room ID
+          >
+            Start Video Call
+          </button>
+        </div>
+      ) : (
+        <Chat room={room} />
+      )}
+    </AppWrapper>
+  );
+}
+export default ChatApp;
 ```
