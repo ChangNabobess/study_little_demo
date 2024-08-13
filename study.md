@@ -935,10 +935,10 @@ async function uploadBase64Image(base64Image, mime) {
 
 #### React [普通组件](https://react.docschina.org/reference/react-dom/components/common#common-props)
 
-- 所有的内置浏览器组件(特殊的 React 属性适用于所有内置组件)，例如 '<div />'，都支持一些常见的属性和事件(参考-不全)
+- 所有的内置浏览器组件(特殊的 React 属性适用于所有内置组件)，例如 div，都支持一些常见的属性和事件(参考-不全)
   类似 React 把 html 元素有重新封装一遍，增加了一些自己定义的特定属性，方便用户使用，然后所有的 UI 组件库都是支持这些内置组件的
 
-1. 通用组件（例如 '<div />'）
+1. 通用组件（例如 div）
 2. ref 回调函数
 3. React 事件对象
 4. AnimationsEvent 处理函数
