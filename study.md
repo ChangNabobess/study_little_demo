@@ -987,7 +987,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 export default function App() {
   const PortalExample = () => {
-    const [showModal, setShowModal] = useState(false);
+    const [showModal, setShowModal] = false;
     return (
       <>
         <button onClick={() => setShowModal(true)}>
@@ -1147,3 +1147,237 @@ function ChatApp() {
 }
 export default ChatApp;
 ```
+
+### 0914
+
+#### Vue3.x 项目
+
+1. 模块化、组件化开发（软件开发思想）体现的非常好
+   不理解为什么要单独用 render 函数重写很多 UI 组件？
+2. [现代软件开发：架构模式、编程范式、设计模式及云原生方法论](https://cloud.tencent.com/developer/article/2368574)
+3. [软件设计思想](https://developer.aliyun.com/article/868673)
+4. Vue3.x vnode
+
+   > 4.1 封装通用 dialog 确认弹框
+   > 4.1.2 知识点[渲染插槽](https://cn.vuejs.org/guide/extras/render-function#rendering-slots)
+   > 4.1.3 知识点[JSX / TSX](https://cn.vuejs.org/guide/extras/render-function#jsx-tsx)
+   > 4.1.4 知识点[声明渲染函数](https://cn.vuejs.org/guide/extras/render-function#declaring-render-function)
+
+```javascript
+/* 
+    传递插槽
+    slots：在vue3.x中使用JSX语法传递子元素给组件 (比如 slots) 
+    我们需要传递一个插槽函数或者是一个包含插槽函数的对象而非是数组
+    插槽函数的返回值同一个正常的渲染函数的返回值一样——并且在子组件中被访问时总是会被转化为一个 vnodes 数组。
+*/
+const vnode = h("div", { id: "foo" }, []);
+vnode.type; // 'div'
+vnode.props; // { id: 'foo' }
+vnode.children; // []
+vnode.key; // null
+export function confirmComponentService(options = {}) {
+  const {
+    title = "",
+    width = "50%",
+    propsValue = {},
+    component = {
+      render() {
+        return h("div", "组件");
+      },
+    },
+    dialogClass = "no-padding-top-dialog",
+    dialogProps = {},
+    showFooter = true,
+    showCancelButton = true,
+    showConfirmButton = true,
+    cancelButtonText = "取消",
+    confirmButtonText = "确认",
+    footer,
+    onCancel = () => ({}),
+    onConfirm = () => ({}),
+    onClose = () => ({}),
+  } = options;
+  const container = document.createElement("div");
+  const userOnClose = onClose;
+  const lang = localStorage.getItem("lang") || "zh-CN";
+
+  const slots = {
+    default: () =>
+      h(
+        ElConfigProvider,
+        {
+          size: "small",
+          zIndex: 2000,
+          locale: lang === "zh-CN" ? zhCn : enUs,
+        },
+        {
+          default: () =>
+            h(component, {
+              ...propsValue,
+            }),
+        }
+      ),
+    // 但是，这个footer渲染的slot怎么能是数组呢？不是只要插槽函数 || 包含插槽函数的对象吗？
+    // 哦，插槽只能是函数、函数对象，但是Vnodes节点是可以传递数组渲染多个子节点的
+    footer: () =>
+      showFooter
+        ? footer
+          ? footer(handler)
+          : h("div", { class: "flex justify-content-end" }, [
+              showCancelButton
+                ? h(
+                    ElButton,
+                    {
+                      size: "small",
+                      onClick: () => {
+                        handler();
+                        onCancel();
+                      },
+                    },
+                    () => cancelButtonText || "取消"
+                  )
+                : null,
+              showConfirmButton
+                ? h(
+                    ElButton,
+                    {
+                      type: "primary",
+                      size: "small",
+                      onClick: debounce(
+                        () => {
+                          new Promise((resolve, reject) => {
+                            onConfirm(reject); // 控制弹窗是否关闭
+                            resolve();
+                          }).then(() => {
+                            handler();
+                          });
+                        },
+                        500,
+                        { leading: true, trailing: false }
+                      ),
+                    },
+                    () => confirmButtonText || "确定"
+                  )
+                : null,
+            ])
+        : null,
+  };
+  // 获取vnode
+  const vnode = h(
+    ElDialog,
+    {
+      title: title,
+      modelValue: true,
+      width: width || "80%",
+      class: dialogClass,
+      onClose: () => {
+        userOnClose();
+        // 释放元素，避免内存溢出
+        // console.dir(container);
+        render(null, container);
+      },
+      ...dialogProps,
+    },
+    slots
+  );
+  // 重置上下文环境为整个app，否则类似$t这种全局的方法调用会报错
+  vnode.appContext = window.rcApp._context;
+  // 将组件渲染到容器中
+  render(vnode, container);
+  // 将渲染的组件内容添加到body中
+  document.body.appendChild(container.firstElementChild);
+  const vm = vnode.component;
+
+  function handler() {
+    vm.exposed.close();
+  }
+
+  vm.close = handler;
+
+  return vm;
+}
+```
+
+> 4.2 确认弹框使用
+
+```javascript
+const vm = confirmComponentService({
+  title: "table弹窗",
+  width: "50%",
+  // component: () => <div>我是自定义组件</div>,
+  // component: {
+  //   render() {
+  //     return <el-button onClick={() => test()} type="primary">按钮</el-button>;
+  //   },
+  // },
+  // component: () => <el-button onClick={() => test()} type="primary">按钮</el-button>,
+  component: VxeJsxTable,
+  propsValue: {
+    columns: [
+      {
+        zhLabel: "列1",
+        prop: "line1",
+      },
+      {
+        zhLabel: "列2",
+        prop: "line2",
+      },
+      {
+        zhLabel: "操作",
+        slot: ({ row }) => (
+          <el-button onClick={() => test()} type="primary">
+            按钮
+          </el-button>
+        ),
+      },
+    ],
+    data: [
+      {
+        line1: "我是列1",
+        line2: "我是列2",
+      },
+      {
+        line1: "我是列11",
+        line2: "我是列22",
+      },
+    ],
+  },
+  // component: HzztTitle,
+  // propsValue: {
+  //   label: '我是自定义组件',
+  // },
+  cancelButtonText: "取消按钮",
+  confirmButtonText: "确认按钮",
+  onCancel: () => {
+    console.log("取消");
+  },
+  onConfirm: (reject) => {
+    reject();
+    setTimeout(() => {
+      vm.close();
+    }, 500);
+    console.log("确定");
+  },
+});
+```
+
+#### 思考
+
+vue 项目中直接用 vue 文件 export 方式创建组件和使用 js 文件的 render 方式创建组件有什么不一样？
+
+1. 使用 .vue 文件创建组件
+   语法简洁：.vue 文件是 Vue 的单文件组件（SFC，Single File Component），支持模板、脚本和样式的分离。代码更直观易读，便于维护。
+   开发效率高：.vue 文件允许你直接使用模板语法，开发体验更好，特别适合使用 Vue 的指令（如 v-if, v-for 等）。大部分 Vue 项目中更倾向于使用这种方式来创建组件。
+   文件组织清晰：.vue 文件可以包含 template、script 和 style 三个部分，组件的结构清晰，易于维护和复用。
+   热重载支持好：Vue CLI 提供的开发环境对 .vue 文件的热重载支持很好，开发过程中修改 .vue 文件的内容能立即看到效果。
+
+2. 使用 .js 文件的 render 函数创建组件
+   灵活性高：render 函数提供了更底层的渲染控制。你可以完全掌控 DOM 元素的渲染逻辑，适用于复杂场景或需要动态创建 DOM 结构的场景。
+   没有模板的限制：render 函数允许你用纯 JavaScript 来描述 DOM 结构，虽然失去了模板的直观性，但可以利用 JavaScript 的所有特性（如变量、函数、条件逻辑等），让代码在复杂情况下更具灵活性。
+   性能优化：有时使用 render 函数可以带来性能上的一些优势，因为它减少了对模板编译的依赖。
+
+3. 主要区别总结开发体验：
+   .vue 文件更适合大多数开发者，提供了直观的模板语法和分离的结构。
+   render 函数虽然灵活，但书写复杂度较高，适合 需要自定义渲染逻辑的场景。
+   性能：虽然两者性能差别不大，但在一些特定场景下，render 函数可以通过减少模板编译步骤获得略微的性能提升。
+   代码可维护性：.vue 文件结构化更好，便于维护，尤其是在大型项目中。而 render 函数往往会带来更复杂的逻辑，不适合频繁使用。一般来说，Vue 项目中以 .vue 文件为主，render 函数适合在需要灵活控制 DOM 渲染或模板不适用的情况下使用。
