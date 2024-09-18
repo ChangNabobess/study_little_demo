@@ -1302,62 +1302,14 @@ export function confirmComponentService(options = {}) {
 
 ```javascript
 const vm = confirmComponentService({
-  title: "table弹窗",
-  width: "50%",
-  // component: () => <div>我是自定义组件</div>,
-  // component: {
-  //   render() {
-  //     return <el-button onClick={() => test()} type="primary">按钮</el-button>;
-  //   },
-  // },
-  // component: () => <el-button onClick={() => test()} type="primary">按钮</el-button>,
-  component: VxeJsxTable,
-  propsValue: {
-    columns: [
-      {
-        zhLabel: "列1",
-        prop: "line1",
-      },
-      {
-        zhLabel: "列2",
-        prop: "line2",
-      },
-      {
-        zhLabel: "操作",
-        slot: ({ row }) => (
-          <el-button onClick={() => test()} type="primary">
-            按钮
-          </el-button>
-        ),
-      },
-    ],
-    data: [
-      {
-        line1: "我是列1",
-        line2: "我是列2",
-      },
-      {
-        line1: "我是列11",
-        line2: "我是列22",
-      },
-    ],
+  title: "图片预览",
+  width: pxToRem(800),
+  dialogProps: {
+    top: "2vh",
   },
-  // component: HzztTitle,
-  // propsValue: {
-  //   label: '我是自定义组件',
-  // },
-  cancelButtonText: "取消按钮",
-  confirmButtonText: "确认按钮",
-  onCancel: () => {
-    console.log("取消");
-  },
-  onConfirm: (reject) => {
-    reject();
-    setTimeout(() => {
-      vm.close();
-    }, 500);
-    console.log("确定");
-  },
+  component: () => <ImageView src={src} onRotate={(val) => rotate(val, row)} />,
+  showCancelButton: false,
+  showConfirmButton: false,
 });
 ```
 
@@ -1381,3 +1333,70 @@ vue 项目中直接用 vue 文件 export 方式创建组件和使用 js 文件�
    render 函数虽然灵活，但书写复杂度较高，适合 需要自定义渲染逻辑的场景。
    性能：虽然两者性能差别不大，但在一些特定场景下，render 函数可以通过减少模板编译步骤获得略微的性能提升。
    代码可维护性：.vue 文件结构化更好，便于维护，尤其是在大型项目中。而 render 函数往往会带来更复杂的逻辑，不适合频繁使用。一般来说，Vue 项目中以 .vue 文件为主，render 函数适合在需要灵活控制 DOM 渲染或模板不适用的情况下使用。
+
+### 0918
+
+#### new Object [Map](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Map)
+
+```javascript
+/* 
+  1、map的基础使用方法
+*/
+const map1 = new Map();
+
+map1.set("a", 1);
+map1.set("b", 2);
+map1.set("c", 3);
+
+console.log(map1.get("a"));
+// Expected output: 1
+
+map1.set("a", 97);
+
+console.log(map1.get("a"));
+// Expected output: 97
+
+console.log(map1.size);
+// Expected output: 3
+
+map1.delete("b");
+
+console.log(map1.size);
+// Expected output: 2
+
+/* 
+  2、遍历map
+*/
+const myMap = new Map();
+myMap.set(0, "zero");
+myMap.set(1, "one");
+// 使用 for of 便利map值
+for (const [key, value] of myMap) {
+  console.log(`${key} = ${value}`);
+}
+// 0 = zero
+// 1 = one
+
+// 使用forEach遍历map值
+myMap.forEach((value, key) => {
+  console.log(`${key} = ${value}`);
+});
+// 0 = zero
+// 1 = one
+
+/* 
+  3、map转换为数组
+*/
+const kvArray = [
+  ["key1", "value1"],
+  ["key2", "value2"],
+];
+
+// 使用常规的 Map 构造函数可以将一个二维的键值对数组转换成一个 Map 对象
+const myMap = new Map(kvArray);
+
+console.log(myMap.get("key1")); // "value1"
+
+// 使用 Array.from 函数可以将一个 Map 对象转换成一个二维的键值对数组
+console.log(Array.from(myMap)); // 输出和 kvArray 相同的数组
+```
