@@ -1400,3 +1400,94 @@ console.log(myMap.get("key1")); // "value1"
 // 使用 Array.from 函数可以将一个 Map 对象转换成一个二维的键值对数组
 console.log(Array.from(myMap)); // 输出和 kvArray 相同的数组
 ```
+
+### 0920
+
+#### axios 两种使用方法
+
+1. 统一封装 axios 请求发送、拦截处理逻辑。每个使用到的页面单独引入封装好的 axios;
+
+```javascript
+/* 
+  1、封装axios方法，在Utils->request文件路径中(Demo：CRO)
+*/
+import axios, { AxiosRequestConfig } from "axios";
+const request = axios.create({
+  baseURL: process.env.VUE_APP_URL,
+  timeout: 300 * 1000,
+});
+request.interceptors.request.use(
+  (config: AxiosRequestConfig) => {},
+  (err) => {}
+);
+
+request.interceptors.response.use(
+  (res: any) => {},
+  (error) => {}
+);
+
+export default request;
+
+/* 
+  2、在单文件总是用axios
+*/
+import request from "@/utils/request";
+export const archivesAll = (params) => {
+  return request({
+    url: "/alones/archives/find/all",
+    method: "get",
+    params,
+  });
+};
+```
+
+2. 通过注册插件方式使用，每个使用到的页面直接导入 axios 使用;
+
+```javascript
+/*
+  1、封装axios方法，在Plugin->axios->index.js文件路径中(Demo：远程病理)
+*/
+import axios, { AxiosRequestConfig } from "axios";
+const request = axios.create({
+  baseURL: process.env.VUE_APP_URL,
+  timeout: 300 * 1000,
+});
+request.interceptors.request.use(
+  (config: AxiosRequestConfig) => {},
+  (err) => {}
+);
+
+request.interceptors.response.use(
+  (res: any) => {},
+  (error) => {}
+);
+
+export default {
+  install: (app) => {
+    app.config.globalProperties.$http = axios;
+  },
+};
+
+/*
+  2、在Plugin->index.js中引入
+*/
+import axiosPlugin from './axios';
+
+export default {
+  install: (app) => {
+    app.use(axiosPlugin);
+  },
+};
+
+/*
+  3、在入口文件main.js中注册使用
+*/
+import customPlugins from '@/plugins';
+app.use(customPlugins);
+```
+
+#### axios 总结
+
+> 1、通过插件注册机制对 axios 进行的修改是全局的
+> 2、直接引入 axios 时，会自动使用之前配置过的拦截器和设置
+> 3、当你在插件中通过 axios.interceptors.request.use()或 axios.interceptors.response.use()等方法添加拦截器时，修改的是全局 axios 实例。无论在哪里引入 axios，这些全局配置都会生效，因为 axios 的拦截器、默认配置等都作用于这个共享的实例。
