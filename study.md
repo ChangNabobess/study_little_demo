@@ -1218,7 +1218,7 @@ export function confirmComponentService(options = {}) {
         }
       ),
     // 但是，这个footer渲染的slot怎么能是数组呢？不是只要插槽函数 || 包含插槽函数的对象吗？
-    // 哦，插槽只能是函数、函数对象，但是Vnodes节点是可以传递数组渲染多个子节点的
+    // 哦，插槽只能是插槽函数或者包含插槽函数的对象，但是Vnodes节点是可以传递数组渲染多个子节点的
     footer: () =>
       showFooter
         ? footer
@@ -1429,7 +1429,7 @@ request.interceptors.response.use(
 export default request;
 
 /* 
-  2、在单文件总是用axios
+  2、在单文件总是导入封装好的axios使用
 */
 import request from "@/utils/request";
 export const archivesAll = (params) => {
@@ -1491,3 +1491,128 @@ app.use(customPlugins);
 > 1、通过插件注册机制对 axios 进行的修改是全局的
 > 2、直接引入 axios 时，会自动使用之前配置过的拦截器和设置
 > 3、当你在插件中通过 axios.interceptors.request.use()或 axios.interceptors.response.use()等方法添加拦截器时，修改的是全局 axios 实例。无论在哪里引入 axios，这些全局配置都会生效，因为 axios 的拦截器、默认配置等都作用于这个共享的实例。
+
+### 0923
+
+#### Vue3.x 组合式 API useTemplateRef
+
+```javascript
+// 定义
+function useTemplateRef<T>(key: string): Readonly<ShallowRef<T | null>>
+// 使用
+<script setup>
+import { useTemplateRef, onMounted } from 'vue'
+
+const inputRef = useTemplateRef('input')
+
+onMounted(() => {
+  inputRef.value.focus()
+})
+</script>
+
+<template>
+  <input ref="input" />
+</template>
+```
+
+#### Vue3.x 透传 [Attributes](https://cn.vuejs.org/guide/components/attrs#attribute-inheritance)
+
+1. 关闭透传 Attributes 功能
+
+```javascript
+/*
+    1、宏定义defineOptions
+    2、这个宏可以用来直接在 <script setup> 中声明组件选项，而不必使用单独的 <script> 块：
+    defineOptions({
+        inheritAttrs: false,
+        customOptions: {
+          /* ... */
+        }
+    })
+*/
+<script setup>
+import {defineOptions} from 'vue';
+
+defineOptions({
+  inheritAttrs: false
+})
+// ...setup 逻辑
+</script>
+```
+
+2. 如何使用
+
+```javascript
+<script setup>import {useAttrs} from 'vue' const attrs = useAttrs()</script>;
+// 如果没有使用 <script setup>，attrs 会作为 setup() 上下文对象的一个属性暴露：
+export default {
+  setup(props, ctx) {
+    // 透传 attribute 被暴露为 ctx.attrs
+    console.log(ctx.attrs);
+  },
+};
+```
+
+3. 使用技巧 控制透传的元素使用范围
+
+```javascript
+/*
+  想要所有像 class 和 v-on 监听器这样的透传 attribute 都应用在内部的 <button> 上而不是外层的 <div> 上。
+  可以通过设定 inheritAttrs: false 和使用 v-bind="$attrs" 来实现,如下实例
+*/
+<template>
+  <div class="btn-wrapper">
+  <button class="btn" v-bind="$attrs">Click Me</button>
+</div>
+</template>
+<script setup>
+import {defineOptions} from 'vue'
+defineOptions({
+  inheritAttrs:false
+})
+  </script>
+```
+
+4. Vue3.3 新增宏定义 defineModel
+
+```javascript
+// parent Component
+<script setup>
+  import childComponent from './childComponent.vue';
+  let childrenName = ref('');
+</script>
+<templete>
+  <childrenComponent v-model:name=childrenName />
+</templete>
+
+// children Component
+<script setup>
+  {/*  plan A */}
+  let name = defineModel("name", {type: String, default: ''});
+  {/* plan B */}
+  {/* const name = defineModel<string>({ required: true }) */}
+</script>
+<templete>
+  <input v-model="name"/>
+</templete>
+```
+
+5. defineModel 修饰符和转换器
+
+```javascript
+/* 
+  修饰符和转换器
+  当存在修饰符时，我们可能需要在读取或将其同步回父组件时对其值进行转换。我们可以通过使用 get 和 set 转换器选项来实现这一点：
+*/
+const [modelValue, modelModifiers] = defineModel({
+  // get() 省略了，因为这里不需要它
+  set(value) {
+    // 如果使用了 .trim 修饰符，则返回裁剪过后的值
+    if (modelModifiers.trim) {
+      return value.trim();
+    }
+    // 否则，原样返回
+    return value;
+  },
+});
+```
