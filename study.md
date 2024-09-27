@@ -1616,3 +1616,36 @@ const [modelValue, modelModifiers] = defineModel({
   },
 });
 ```
+
+### 0925
+
+#### 前端数据库[window.indexedDB](https://developer.mozilla.org/zh-CN/docs/Web/API/IndexedDB_API/Using_IndexedDB)
+
+### 0927
+
+#### [mitt](https://www.npmjs.com/package/mitt)
+
+#### Base64 convert File
+
+> 源码来源 telepathology->telepathology_ui->adk->adk_back
+
+```javascript
+export function covertBase64UrlToFile(urlData) {
+  const arr = urlData.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bytes = window.atob(urlData.split(",")[1]); // 对用base64编码过的字符串进行解码
+  const ab = new ArrayBuffer(bytes.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < bytes.length; i++) {
+    ia[i] = bytes.charCodeAt(i);
+  }
+  return new File(
+    [ab],
+    `${new Date().getTime()}.${mime.split("/")?.last || "png"}`,
+    {
+      type: mime || "image/png",
+      lastModified: new Date(),
+    }
+  );
+}
+```
