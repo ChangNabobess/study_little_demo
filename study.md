@@ -1649,3 +1649,13 @@ export function covertBase64UrlToFile(urlData) {
   );
 }
 ```
+
+### 1010
+
+#### 查看 npm 镜像源地址(总是记不住，所以记下来)
+
+[查看更改 npm 镜像源](https://www.cnblogs.com/xuhongfei/p/17769162.html)
+
+```javascript
+npm config get registry
+```
