@@ -963,7 +963,7 @@ async function uploadBase64Image(base64Image, mime) {
 
 ### 0814
 
-#### React 内置节点 portal
+#### React 内置节点 portal 传送组件
 
 - 使用 [creatPortal](https://react.docschina.org/reference/react-dom/createPortal)
   方法创建的可以在页面上任意 Dom 节点中渲染内容 createPortal 允许你将 JSX 作为 children 渲染至 DOM 的不同部分。
@@ -1015,6 +1015,13 @@ export default function App() {
 ```
 
 3. creatPortal-地图弹框(将 React 组件渲染在非 ReactDom 组件中)
+
+- 用法 createPortal(children, domNode, key?)
+  children：React 可以渲染的任何内容，如 JSX 片段（<div /> 或 <SomeComponent /> 等等）、Fragment（<>...</>）、字符串或数字，以及这些内容构成的数组。
+
+  domNode：某个已经存在的 DOM 节点，例如由 document.getElementById() 返回的节点。在更新过程中传递不同的 DOM 节点将导致 portal 内容被重建。
+
+  可选参数 key：用作 portal key 的独特字符串或数字。
 
 ```javascript
 // App.js
@@ -1659,3 +1666,32 @@ export function covertBase64UrlToFile(urlData) {
 ```javascript
 npm config get registry
 ```
+
+### 1011
+
+#### encodeURLComponent 转义字符串，简单加密
+
+- (encodeURIComponent 参考地址)[https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent]
+
+#### Vue3.x 内置传送组件
+
+- [<Teleport>](https://cn.vuejs.org/guide/built-ins/teleport.html#teleport) 是一个内置组件，
+  它可以将一个组件内部的一部分模板“传送”到该组件的 DOM 结构外层的位置去。
+  通常使用场景比较多的地方在模态框
+
+```JavaScript
+<button @click="open = true">Open Modal</button>
+
+<Teleport to="body">
+  <div v-if="open" class="modal">
+    <p>Hello from the modal!</p>
+    <button @click="open = false">Close</button>
+  </div>
+</Teleport>
+```
+
+- 可选参数
+
+1. to: <Teleport> 接收一个 to prop 来指定传送的目标。to 的值可以是一个 CSS 选择器字符串，也可以是一个 DOM 元素对象。这段代码的作用就是告诉 Vue“把以下模板片段传送到 body 标签下”。
+2. disabled: 在某些情况下禁用 Teleport
+3. defer: 延迟加载 Teleport
