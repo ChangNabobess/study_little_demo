@@ -1695,3 +1695,274 @@ npm config get registry
 1. to: <Teleport> 接收一个 to prop 来指定传送的目标。to 的值可以是一个 CSS 选择器字符串，也可以是一个 DOM 元素对象。这段代码的作用就是告诉 Vue“把以下模板片段传送到 body 标签下”。
 2. disabled: 在某些情况下禁用 Teleport
 3. defer: 延迟加载 Teleport
+
+### 1016
+
+#### Vue3.x 响应式核心理论补充
+
+组合式 API
+响应性状态管理
+
+- 1、 ref() 函数、reactive()
+  深层响应性：修改嵌套对象或数组的时候也能监听到，非原始值需要深层响应的时候使用 reactive()函数
+
+非响应性状态管理
+
+- 2、ShallowRef()、shallowReactive() [官方文档](https://cn.vuejs.org/api/reactivity-advanced#shallowref)
+  ref()、reactive()的浅层作用形式
+
+```javascript
+/* 
+  1、是说修改复杂结构、深层次引用数据对象类型的时候不会触发视图更新，但是修改整个数据对象的时候会触发更新视图
+*/
+const shallowArray = shallowRef([
+  /* 巨大的列表，里面包含深层的对象 */
+]);
+// 这不会触发更新...
+shallowArray.value.push(newObject);
+// 这才会触发更新
+shallowArray.value = [...shallowArray.value, newObject];
+// 这不会触发更新...
+shallowArray.value[0].foo = 1;
+// 这才会触发更新
+shallowArray.value = [
+  {
+    ...shallowArray.value[0],
+    foo: 1,
+  },
+  ...shallowArray.value.slice(1),
+];
+```
+
+> 2.1 shallowRef() 搭配 triggerRef() 一起使用
+> 结合不可变数据结构使用[官网示例](https://cn.vuejs.org/guide/extras/reactivity-in-depth#immutable-data)
+> 推荐结合 Immer 插件一起使用
+
+**问题：结合不可变数据结构使用是什么意思啊，看不懂，是说要在不改变原始数据的情况下修改视图吗？**
+
+```javascript
+const shallow = shallowRef({
+  greet: "Hello, world",
+});
+
+// 触发该副作用第一次应该会打印 "Hello, world"
+watchEffect(() => {
+  console.log(shallow.value.greet);
+});
+
+// 这次变更不应触发副作用，因为这个 ref 是浅层的
+shallow.value.greet = "Hello, universe";
+
+// 打印 "Hello, universe"
+triggerRef(shallow);
+```
+
+- 3、customRef() 自定义 ref()
+
+> 3.1 curstomRef()-类型定义
+
+```javascript
+function customRef<T>(factory: CustomRefFactory<T>): Ref<T>
+
+type CustomRefFactory<T> = (
+  track: () => void,
+  trigger: () => void
+) => {
+  get: () => T
+  set: (value: T) => void
+}
+```
+
+> 3.2 curstomRef()-应用实例,节流函数
+
+```javascript
+import { customRef } from "vue";
+
+export function useDebouncedRef(value, delay = 200) {
+  let timeout;
+  return customRef((track, trigger) => {
+    return {
+      get() {
+        track();
+        return value;
+      },
+      set(newValue) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          value = newValue;
+          trigger();
+        }, delay);
+      },
+    };
+  });
+}
+```
+
+> 3.3 useDebouncedRef()-在组件中使用
+
+```javascript
+<script setup>
+import { useDebouncedRef } from './debouncedRef'
+const text = useDebouncedRef('hello')
+</script>
+
+<template>
+  <input v-model="text" />
+</template>
+```
+
+- 4、 watchEffect() **立即运行一个函数，同时响应式地追踪其依赖**，并在依赖更改时重新执行
+  [官方文档](https://cn.vuejs.org/api/reactivity-core.html#watcheffect)
+
+> 4.1 watchEffect() 类型定义
+
+```javascript
+/*
+  第一个参数就是要运行的副作用函数。这个副作用函数的参数也是一个函数，用来注册清理回调。
+  清理回调会在该副作用下一次执行前被调用，可以用来清理无效的副作用，例如等待中的异步请求 (参见下面的示例)。
+
+  第二个参数是一个可选的选项，可以用来调整副作用的刷新时机或调试副作用的依赖
+*/
+function watchEffect(
+  effect: (onCleanup: OnCleanup) => void,
+  options?: WatchEffectOptions
+): WatchHandle
+
+type OnCleanup = (cleanupFn: () => void) => void
+
+interface WatchEffectOptions {
+  /*
+    'pre'(组件渲染之前) defaultProps;
+    'post'(组件渲染之后)[别名:watchPostEffect];
+    'sync'(响应式依赖发生改变时)[别名:watchSyncEffect];
+  */
+  flush?: 'pre' | 'post' | 'sync'
+  /*
+    onTrack、onTrigger调试侦听器的依赖，仅会在开发模式下工作。
+  */
+  onTrack?: (event: DebuggerEvent) => void
+  onTrigger?: (event: DebuggerEvent) => void
+}
+
+interface WatchHandle {
+  (): void // 可调用，与 `stop` 相同
+  pause: () => void // 暂停
+  resume: () => void // 恢复
+  stop: () => void // 停止
+}
+```
+
+> 4.2 watchEffect() 示例
+
+```javascript
+import { onWatcherCleanup } from "vue";
+/* 
+  onCleanup 函数在Vue@3.5 版本之后直接注入vue实例作为组合式函数使用了
+*/
+watchEffect(
+  {
+    flush: "post",
+    onTrack(e) {
+      debugger;
+    },
+    onTrigger(e) {
+      debugger;
+    },
+  },
+  async (onCleanup) => {
+    const { response, cancel } = doAsyncWork(newId);
+    // watchEffect 副作用清理
+    // 如果 `id` 变化，则调用 `cancel`，
+    // 如果之前的请求未完成，则取消该请求
+    onCleanup(cancel); // vue@3.5之前
+    // onWatcherCleanup(cancel); // vue@3.5之后
+    data.value = await response;
+  }
+);
+```
+
+- 5、watch() 侦听一个或多个响应式数据源，并**在数据源变化时调用所给的回调函数**。
+  [官方文档](https://cn.vuejs.org/api/reactivity-core.html#watch)
+
+> 5.1 watch 类型定义
+
+```javascript
+// 侦听单个来源
+function watch<T>(
+  source: WatchSource<T>,
+  callback: WatchCallback<T>,
+  options?: WatchOptions
+): WatchHandle
+
+// 侦听多个来源
+function watch<T>(
+  sources: WatchSource<T>[],
+  callback: WatchCallback<T[]>,
+  options?: WatchOptions
+): WatchHandle
+
+type WatchCallback<T> = (
+  value: T,
+  oldValue: T,
+  onCleanup: (cleanupFn: () => void) => void
+) => void
+
+type WatchSource<T> =
+  | Ref<T> // ref
+  | (() => T) // getter
+  | T extends object
+  ? T
+  : never // 响应式对象
+
+interface WatchOptions extends WatchEffectOptions {
+  immediate?: boolean // 默认：false
+  deep?: boolean | number // 默认：false
+  flush?: 'pre' | 'post' | 'sync' // 默认：'pre'
+  onTrack?: (event: DebuggerEvent) => void
+  onTrigger?: (event: DebuggerEvent) => void
+  once?: boolean // 默认：false (3.4+)
+}
+
+interface WatchHandle {
+  (): void // 可调用，与 `stop` 相同
+  pause: () => void
+  resume: () => void
+  stop: () => void
+}
+```
+
+> 5.2 watch 示例
+
+```javascript
+import { onWatcherCleanup } from "vue";
+// 侦听多个监听源
+watch(
+  [fooRef, barRef],
+  ([foo, bar], [prevFoo, prevBar]) => {
+    let cancel = null;
+    if (foo == bar) {
+      cancel = () => {
+        /* Do Somthing */
+      };
+    }
+    onWatcherCleanup(cancel);
+  },
+  {
+    deep: true,
+    immediate: true,
+    flush: "pre",
+    onTrack(e) {
+      debugger;
+    },
+    onTrigger(e) {
+      debugger;
+    },
+  }
+);
+```
+
+**与 watchEffect() 相比**watch() 使我们可以:
+
+1、懒执行副作用；
+2、更加明确是应该由哪个状态触发侦听器重新执行；
+3、可以访问所侦听状态的前一个值和当前值。
