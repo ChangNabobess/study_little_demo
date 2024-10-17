@@ -1966,3 +1966,62 @@ watch(
 1、懒执行副作用；
 2、更加明确是应该由哪个状态触发侦听器重新执行；
 3、可以访问所侦听状态的前一个值和当前值。
+
+### 1017
+
+#### [reactive 的局限性](https://cn.vuejs.org/guide/essentials/reactivity-fundamentals.html#limitations-of-reactive)
+
+- 1、 数据类型的限制(需要引用数据类型-Object、Array、Map...,原始/基础的数据类型不行-Number、String、Boolean、undefined...)
+- 2、 没办法解构使用
+- 3、 不能替换整个对象
+
+**文档描述里面有好多解包名词，是什么意思？看不懂**
+
+#### computed 和 methods 不同
+
+- 1、 computed 有缓存，methods 每次试图刷新都要计算一遍，不利于性能优化
+- 2、计算属性是只读的，可以用 getter、setter 函数设置 computer 属性
+
+```javascript
+import { ref, computed } from "vue";
+
+const firstName = ref("John");
+const lastName = ref("Doe");
+
+const fullName = computed({
+  // getter
+  get() {
+    return firstName.value + " " + lastName.value;
+  },
+  // setter
+  set(newValue) {
+    // 注意：我们这里使用的是解构赋值语法
+    [firstName.value, lastName.value] = newValue.split(" ");
+  },
+});
+```
+
+#### c# 小知识点
+
+- 1、C# DBHelper 类 （数据库帮助类）
+- 2、C# \_db.Queryable<table_name>(); 支持链式调用
+
+```c#
+/*
+  1、通常出现在使用 ORM 框架（对象关系映射）的上下文中，尤其是 SqlSugar 框架;
+  2、[ORM](https://www.cnblogs.com/Can-daydayup/p/15911410.html#_label1) 是 Object Relational Mapping 的缩写，译为“对象关系映射”，是一种程序设计技术，用于实现面向对象编程语言里不同类型系统的数据之间的转换;
+  3、SqlSugar 是一个流行的 C# ORM 框架，支持多种数据库，使用简单，且性能较好;
+  4、_db 是 SqlSugarClient 的实例，通过它可以对数据库进行查询、插入、更新、删除等操作;
+ */
+  var list = _db.Queryable<User>()
+              .Where(u => u.Age > 18)  // 查询年龄大于18的用户
+              .OrderBy(u => u.Name)     // 按照名字排序
+              .ToList();                // 执行查询并返回结果列表
+
+  _db：通常是一个 SqlSugarClient 的实例，表示数据库上下文。
+  Queryable<User>()：表示对 User 表进行查询。
+  User 是一个映射到数据库表的实体类。
+  Where(u =>u.Age > 18)：筛选条件，类似于 SQL 中的 WHERE 子句。
+  OrderBy(u =>u.Name)：排序，类似于 SQL 中的 ORDER BY 子句。
+  ToList()：执行查询并将结果转换为一个列表。
+```
