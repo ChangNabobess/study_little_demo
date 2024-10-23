@@ -2025,3 +2025,16 @@ const fullName = computed({
   OrderBy(u =>u.Name)：排序，类似于 SQL 中的 ORDER BY 子句。
   ToList()：执行查询并将结果转换为一个列表。
 ```
+
+### 1023
+
+- Git 分支实战-修改本地分支并同步至远程
+
+```javascript
+Step1: git branch // 查看本地分支
+Step2: git branch -r // 查看远程分支
+Step3: git branch -m old_branch_name new_branch_name // 修改分支名称
+Step4: git push origin --delete old_branch_name // 删除远程分支，仅供参考，去git仓库直接删除更快
+Step5: git push -origin new_branch_name // 和远程仓库同步新建的本地分支
+Step6: git fetch -p // 更新本地仓库的远程跟踪分支,实测有效，可以删除好多origin/开头的虚拟分支
+```
