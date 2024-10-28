@@ -2038,3 +2038,48 @@ Step4: git push origin --delete old_branch_name // 删除远程分支，仅供�
 Step5: git push -origin new_branch_name // 和远程仓库同步新建的本地分支
 Step6: git fetch -p // 更新本地仓库的远程跟踪分支,实测有效，可以删除好多origin/开头的虚拟分支
 ```
+
+### 1024
+
+- C# 类
+  类定义多个方法，方法实现类
+
+### 1028
+
+- 1、 C# (JsonConverter 类)[https://learn.microsoft.com/zh-cn/dotnet/api/system.text.json.serialization.jsonconverter?view=net-8.0]
+  将对象或值转换为 JSON，或是从 JSON 转换为对象或值。
+
+```c#
+using Newtonsoft.Json;
+
+// 假设你有一个 JSON 字符串
+string jsonString = "{\"Name\":\"John\", \"Age\":30}";
+
+// 定义一个类来映射 JSON 数据
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+
+// 使用 DeserializeObject 方法将 JSON 字符串转换为 Person 对象
+Person person = JsonConvert.DeserializeObject<Person>(jsonString);
+
+// 现在你可以使用 person 对象了
+Console.WriteLine(person.Name); // 输出: John
+Console.WriteLine(person.Age);  // 输出: 30
+
+```
+
+- 2、数据传输对象 (DTO)[https://learn.microsoft.com/zh-cn/aspnet/web-api/overview/data/using-web-api-with-entity-framework/part-5]
+  (CSDN 详解 DTO)[https://blog.csdn.net/fishandfishand/article/details/139601403]
+
+DTO 是一种类型定义类，数据传输对象，属于一种设计模式，使用的时候可以直接 new 一个新对象出来使用；
+优点：
+1、减少表节点过多暴漏在客户端，用什么拿什么就行-隐藏实体对象的细节；
+2、方便使用，在多个方法之间传递参数时候，像 InterFace 一样规范化-解耦合-DTO 可以将实体对象与业务逻辑层解耦，是系统更加灵活；
+3、减少网络通信的次数和数据量(这一点是记住的，没有见过)-减少网络通信；
+
+- 3、Extent 数据扩展
+
+- 4、Trick Or Treat (不给糖就捣蛋)
