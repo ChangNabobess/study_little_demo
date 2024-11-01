@@ -2083,3 +2083,73 @@ DTO 是一种类型定义类，数据传输对象，属于一种设计模式，�
 - 3、Extent 数据扩展
 
 - 4、Trick Or Treat (不给糖就捣蛋)
+
+### 1030
+
+- 1、Vue 3.x 学习路径
+  1.1 [组合式 API](https://vueschool.io/courses/vue-3-composition-api)
+  1.2 [AI 结合](https://vueschool.io/courses/ai-chat-bot-with-vue-js-and-gpt-4)
+
+### 1101
+
+- 1、前端在线文档编辑器[CKEditor 5](https://ckeditor.com/docs/ckeditor5/latest/index.html);
+  CKEditor 是一个前端富文本编辑器组件，可以导出 Word、Pdf 文档；
+  但是、但是，文档 Demo 好像需要自己写一套 Html 样式填充进去，官方有各种组件可以使用，像 UI 组件一样，引入 Dom 节点使用；
+
+[组件介绍文档](https://ckeditor.com/docs/ckeditor5/latest/features/index.html);
+
+[CKEditor 生成 PDF](https://ckeditor.com/docs/ckeditor5/latest/features/converters/export-pdf.html);
+
+```javascript
+import { ClassicEditor } from "ckeditor5";
+import { ExportPdf } from "ckeditor5-premium-features";
+
+ClassicEditor.create(document.querySelector("#editor"), {
+  plugins: [ExportPdf /* ... */],
+  toolbar: ["exportPdf", "|" /* ... */],
+  exportPdf: {
+    tokenUrl: "https://example.com/cs-token-endpoint",
+    stylesheets: ["path/to/editor-styles.css", "path/to/my-styles.css"],
+    fileName: "my-file.pdf",
+    converterOptions: {
+      format: "A4",
+      margin_top: "20mm",
+      margin_bottom: "20mm",
+      margin_right: "12mm",
+      margin_left: "12mm",
+      page_orientation: "portrait",
+    },
+  },
+})
+  .then(/* ... */)
+  .catch(/* ... */);
+```
+
+[CKEditor 生成 Word](https://ckeditor.com/docs/ckeditor5/latest/features/converters/export-word.html);
+
+```javascript
+import { ClassicEditor } from "ckeditor5";
+import { ExportWord } from "ckeditor5-premium-features";
+
+ClassicEditor.create(document.querySelector("#editor"), {
+  plugins: [ExportWord /* ... */],
+  toolbar: ["exportWord", "|" /* ... */],
+  exportWord: {
+    tokenUrl: "https://example.com/cs-token-endpoint",
+    fileName: "my-file.docx",
+    converterOptions: {
+      document: {
+        size: "A4", // Default value, you do not need to specify it explicitly for A4.
+        margin: {
+          top: "20mm",
+          bottom: "20mm",
+          right: "12mm",
+          left: "12mm",
+        },
+      },
+    },
+  },
+})
+  .then(/* ... */)
+  .catch(/* ... */);
+```
