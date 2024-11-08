@@ -2153,3 +2153,83 @@ ClassicEditor.create(document.querySelector("#editor"), {
   .then(/* ... */)
   .catch(/* ... */);
 ```
+
+### 1105
+
+- gird 栅格布局[grid-template-columns](https://developer.mozilla.org/zh-CN/docs/Web/CSS/grid-template-columns)
+
+```javascript
+<style lang="less">
+  .grid-class-content{
+    place-items: end;
+    grid-template-columns: 1fr auto; // 每个定义了 <flex> 的网格轨道会按比例分配剩余的可用空间
+  }
+</style>
+```
+
+### 1108
+
+#### 1、Visual studio 软件搜索快捷键
+
+> ctrl + shift + t (文件中搜索)
+> ctrl + t (代码中搜索)
+
+#### 2、存储过程是什么？
+
+是封装好的工具类？类似前端 Utils 类
+**以下是专业解释**
+
+- 存储过程（Stored Procedure）是数据库中一组**为完成特定任务而编写的 SQL 语句集合**。
+  **它存储在数据库服务器中，可以被客户端或其他应用程序调用执行**。
+  存储过程允许数据库开发人员将复杂的业务逻辑封装在数据库内部，**提供一种集中化、可重用的 SQL 逻辑管理方式**。
+
+> 2.1 存储过程的创建
+
+```sql
+CREATE PROCEDURE GetEmployeeDetails
+    @EmployeeID INT
+AS
+BEGIN
+    SELECT FirstName, LastName, Position, Salary
+    FROM Employees
+    WHERE EmployeeID = @EmployeeID;
+END;
+
+```
+
+> 2.2 存储过程的调用
+
+```sql
+EXEC GetEmployeeDetails @EmployeeID = 1;
+```
+
+- 2.3 存储过程的应用场景
+
+  > 2.3.1 业务逻辑处理：将复杂的业务逻辑放在存储过程中，以简化应用程序的代码。【这不就是 Helper、Utils 工具类吗】
+  > 2.3.2 批量处理：可以在存储过程中执行多个 SQL 操作，如批量插入、更新和删除操作。
+  > 2.3.3 数据导入和导出：处理数据导入导出操作，例如从其他表或外部数据源中导入数据。
+  > 2.3.4 数据计算：在数据库层进行聚合、汇总等操作，从而减少客户端的计算工作。
+
+- 2.4 存储过程的缺点
+
+  > 2.4.1 移植性差：存储过程的代码在不同数据库系统中可能不兼容，导致移植困难。
+  > 2.4.2 调试困难：相比应用程序代码，存储过程在调试上较为复杂。
+  > 2.4.3 维护成本高：当业务逻辑较多时，存储过程变得复杂，维护困难。
+
+- 2.5 总结
+
+存储过程在数据库开发中扮演着重要角色，适用于处理大量数据或复杂业务逻辑的操作，但在系统设计中要平衡使用，避免其过度复杂化。
+
+#### 3、SQL 语句中 width(nolock)的解释：
+
+- 3.1 width(nolock) 是一个 SQL 语句选项，它的作用是让查询在读取数据时绕过锁机制，从而提高并发性能，避免查询操作被其他事务锁住而阻塞。
+
+- 3.1 width(nolock)的功能及原理
+  > 3.1.1、跳过共享锁；
+  > 3.1.2、避免阻塞；
+  > 3.1.3、不阻塞其他事务；
+- 2.2 width(nolock)的弊端
+  > 3.2.1、脏读（查询期间会读到其他事务未处理完成的事件，俗称脏数据）；
+  > 3.2.2、幻读（查询期间会读到其他事务未提交的数据，俗称幻数据）；
+  > 3.2.3、不可重复读（查询期间会读到其他事务更新的数据，俗称不可重复读数据）；
+  > 3.2.4、索引扫描不完整：在极端情况下，WITH(NOLOCK) 可能导致索引扫描不完整，导致遗漏一些记录
