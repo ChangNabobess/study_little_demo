@@ -2233,3 +2233,25 @@ EXEC GetEmployeeDetails @EmployeeID = 1;
   > 3.2.2、幻读（查询期间会读到其他事务未提交的数据，俗称幻数据）；
   > 3.2.3、不可重复读（查询期间会读到其他事务更新的数据，俗称不可重复读数据）；
   > 3.2.4、索引扫描不完整：在极端情况下，WITH(NOLOCK) 可能导致索引扫描不完整，导致遗漏一些记录
+
+### 1111
+
+#### 1、[pointer-events](https://developer.mozilla.org/zh-CN/docs/Web/CSS/pointer-events)
+
+- 使用示例：阻止 click 事件继续向下传递；类似[event.preventDefault()];
+
+#### 2、[Vue 中的事件修饰符.self、.capture 和.passive](https://juejin.cn/post/7156585783447519263)
+
+- 参考案例 STUDY-LITTLE-DEMO --> Trycapture.html;
+  > 筛选一些需要学习的时间修饰符记录，还有一些未记录，参考 Vue 官方文档；
+
+```html
+<!-- 阻止默认事件，会触发event.preventDefault(); -->
+<div v-on.prevent></div>
+<!-- 不阻止默认事件，反而是先执行默认事件; -->
+<div v-on.passive></div>
+<!-- target是否为当前Dom元素；只有事件从元素本身发出才触发处理函数 -->
+<div v-on.self></div>
+<!-- 在捕获模式添加事件监听器 -->
+<div v-on.capture></div>
+```
