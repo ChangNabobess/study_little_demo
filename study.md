@@ -2255,3 +2255,112 @@ EXEC GetEmployeeDetails @EmployeeID = 1;
 <!-- 在捕获模式添加事件监听器 -->
 <div v-on.capture></div>
 ```
+
+### 1112
+
+#### 1、c#中 DynamicParameters 的使用
+
+DynamicParameters 是 Dapper 库中的一个类，用于在执行 SQL 查询时动态地传递参数。Dapper 是一个轻量级的 ORM（对象关系映射）框架，通过 DynamicParameters，可以在运行时方便地添加、删除或更新参数，从而实现灵活的 SQL 查询参数化。
+
+> 应用示例
+
+```csharp
+/*
+  基本查询语句 WHERE 1=1 这是一个常用技巧，用于方便动态拼接多个条件，避免处理第一个 AND 的情况
+  WHERE 1=1 这种写法实际目的是为了获取逻辑值"True"，主要用于动态拼接SQL、查询表结构
+*/
+var sqlSelect = "SELECT * FROM Dictionary WHERE 1=1";
+// 如果 dictcode 或 dictname 字段包含 @dictname 的值，就返回结果
+sqlSelect += " and (dictcode like @dictname or dictname like @dictname)";
+var parameters = new DynamicParameters();
+// @dictname 参数：添加了 %，实现 LIKE 查询的模糊匹配功能。
+parameters.Add("@dictname", "%" + searchValue + "%");
+
+using (var connection = new SqlConnection(connectionString))
+{
+    var result = connection.Query(sqlSelect, parameters);
+}
+
+```
+
+#### 2、c# 参数修饰符 [out](https://learn.microsoft.com/zh-cn/dotnet/csharp/language-reference/keywords/method-parameters#out-parameter-modifier)
+
+在方法中返回指定关键字的值。在参数声明中添加 out 关键字，在对应方法中需要单独赋值给需要返回的关键字；
+**需要注意，以下限制适用于使用 out 关键字：**
+2.1、异步方法中不允许使用 out 参数。
+2.2、迭代器方法中不允许使用 out 参数。
+2.3、属性不能作为 out 参数传递。
+
+#### 3、.NET 8 方法[tryparse](https://learn.microsoft.com/zh-cn/dotnet/api/system.int32.tryparse?view=net-8.0)
+
+> 3.1 方法定义
+
+```csharp
+/*
+  s
+  String
+  要分析的字符串。
+
+  provider
+  IFormatProvider
+  一个对象，提供有关 s的区域性特定格式设置信息。
+
+  result
+  Int32
+  此方法返回时，包含成功分析 s 或失败时未定义的值的结果。
+*/
+public static bool TryParse (string? s, IFormatProvider? provider, out int result);
+```
+
+> 3.2 方法示例
+
+```csharp
+using System;
+
+public class Example
+{
+   public static void Main()
+   {
+      string[] values = { null, "160519", "9432.0", "16,667",
+                          "   -322   ", "+4302", "(100);", "01FA" };
+      foreach (var value in values)
+      {
+         int number;
+
+         bool success = int.TryParse(value, out number);
+         if (success)
+         {
+            Console.WriteLine($"Converted '{value}' to {number}.");
+         }
+         else
+         {
+            Console.WriteLine($"Attempted conversion of '{value ?? "<null>"}' failed.");
+         }
+      }
+   }
+}
+// The example displays the following output:
+//       Attempted conversion of '<null>' failed.
+//       Converted '160519' to 160519.
+//       Attempted conversion of '9432.0' failed.
+//       Attempted conversion of '16,667' failed.
+//       Converted '   -322   ' to -322.
+//       Converted '+4302' to 4302.
+//       Attempted conversion of '(100);' failed.
+//       Attempted conversion of '01FA' failed.
+```
+
+#### 、SQL 语句学习
+
+> .1 SELECT
+
+```sql
+/*
+  小知识点1：
+  ctrl + k + c 添加注释
+  ctrl + k + u 取消注释
+*/
+SELECT * FROM table_name;
+SELECT column1,column2 FROM table_name;
+SELECT DISTINCT column1,column2 FROM table_name; // 去重筛选列表项
+```
