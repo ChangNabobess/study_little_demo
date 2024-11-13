@@ -2364,3 +2364,45 @@ SELECT * FROM table_name;
 SELECT column1,column2 FROM table_name;
 SELECT DISTINCT column1,column2 FROM table_name; // 去重筛选列表项
 ```
+
+### 1113
+
+#### 1、SqlServe 窗口函数 (ROW_NUMBER())[https://learn.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql?view=sql-server-ver16]
+
+- 1.1、语法
+<!--
+  理解1：PARTITION: 分割、分离；
+  理解2：给查询的表数据增加行号；
+  理解3：支持分组、排序，增加行号的功能；
+-->
+
+```sql
+ROW_NUMBER ( )
+    OVER ( [ PARTITION BY value_expression , ... [ n ] ] order_by_clause )
+```
+
+- 1.2、练习
+
+```sql
+-- 筛选表 TEST_TABLE_NAME 中 age !== 0; 的数据，并且按照 Salary 字段降序排列，并且增加行号；
+create table TEST_TABLE_NAME(
+  id int Null,
+  name varchar(50),
+  age int null,
+  sex varchar(2),
+  salary demil(10, 2)
+)
+insert into TEST_TABLE_NAME values(1, 'zhangsan', 18, '男', 1234.23 );
+insert into TEST_TABLE_NAME values(2, 'lisi', 19, '女', 3432.34 );
+insert into TEST_TABLE_NAME values(3, 'wangwu', 0, '男', 7893.54 );
+insert into TEST_TABLE_NAME values(4, 'zhaoliu', 20, '女', 2387.63 );
+insert into TEST_TABLE_NAME values(5, 'liubei', 3, '男', 8297.94 );
+insert into TEST_TABLE_NAME values(6, 'guanyu', 58, '女', 1325.76 );
+insert into TEST_TABLE_NAME values(7, 'zhangfei', 26, '男', 5657.44 );
+insert into TEST_TABLE_NAME values(8, 'xiaojie', 67, '男', 3965.85 );
+insert into TEST_TABLE_NAME values(9, 'xiaoli', 10, '女', 7854.36 );
+insert into TEST_TABLE_NAME values(10, 'xiaozhang', 23, '男', 5760.45 );
+
+SELECT [name],[age],[salary], ROW_NUMBER() OVER(order by salary DESC)
+ From TEST_TABLE_NAME WHERE age <> 0;
+```
