@@ -2406,3 +2406,87 @@ insert into TEST_TABLE_NAME values(10, 'xiaozhang', 23, '男', 5760.45 );
 SELECT [name],[age],[salary], ROW_NUMBER() OVER(order by salary DESC)
  From TEST_TABLE_NAME WHERE age <> 0;
 ```
+
+### 1114
+
+#### sql 语句练习(demo-数据对接测试库)
+
+```sql
+--查询1001实验室暂停合作的所有客户，按照客户ID降序
+select * From [DataServicePlatFormDB].[dbo].[pf_dict_companies] where labcode = '1001' and statusflag = 2 order by customerid ASC;
+```
+
+#### V2 --> V3 的不同
+
+- 1、获取环境变量
+
+```javascript
+// V2
+VUE_APP_BASE_URL;
+// V3
+import.meta.env.VITE_NAME;
+```
+
+- 2、V2-V3 不同点
+  **2.1、V3 专有：**
+  > [v-bind](https://cn.vuejs.org/api/sfc-css-features#v-bind-in-css)、[插槽选择器](https://cn.vuejs.org/api/sfc-css-features#slotted-selectors)、[全局选择器](https://cn.vuejs.org/api/sfc-css-features#global-selectors)
+  > **2.2、V2、V3 都支持：**
+  > 深度选择器
+
+```vue
+<template>
+  <div class="parent_div_class">
+    我是父组件DIV
+    <childrenComponent />
+  </div>
+</template>
+
+<script script setup name="parentComponent">
+import { ref } from "vue";
+import childrenComponent from "./childrenComponent.vue";
+const theme = ref({
+  color: "green",
+  background: "yellow",
+  border: "1px solid #000",
+});
+</script>
+
+<style lang="scss" scoped>
+/*
+  V3：CSS中使用v-bind直接绑定单文件组件中的JS变量；
+  V2：在Dom元素上绑定style样式，在CSS中使用var变量引用
+*/
+.parent_div_class {
+  color: v-bind("theme.value.color");
+}
+/*
+  深度选择器_V3写法
+*/
+.parent_div_class {
+  :deep(.children_div_class) {
+    background-color: "red";
+  }
+}
+/*
+  深度选择器_V2写法
+*/
+.parent_div_class >>> .children_div_class {
+  background-color: "red";
+}
+/* 
+  插槽选择器_V3写法
+*/
+:slotted(div) {
+  color: red;
+}
+</style>
+```
+
+```vue
+<template>
+  <div class="children_div_class">
+    <p>我是子组件</p>
+  </div>
+</template>
+<script script setup name="childrenComponent"></script>
+```
