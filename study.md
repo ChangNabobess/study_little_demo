@@ -2255,6 +2255,10 @@ EXEC GetEmployeeDetails @EmployeeID = 1;
 <!-- 在捕获模式添加事件监听器 -->
 <div v-on.capture></div>
 ```
+  
+### 1102
+- V3使用openAi
+(openAi参考文档)[https://github.com/openai/openai-node/discussions/217]
 
 ### 1112
 
@@ -2468,7 +2472,7 @@ const theme = ref({
   }
 }
 /*
-  深度选择器_V2写法
+  深度选择器_V2写法，官方已经不推荐
 */
 .parent_div_class >>> .children_div_class {
   background-color: "red";
@@ -2489,4 +2493,53 @@ const theme = ref({
   </div>
 </template>
 <script script setup name="childrenComponent"></script>
+```
+
+### 1116
+#### c# 速成指南B站视频学习笔记
+- 1、csharp项目入口文件main函数基础结构
+```csharp
+using System;
+namespace CMS
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello Word");
+        } 
+    }
+}
+```
+
+- 2、什么是方法
+```csharp
+  // 方法示例，实战代码在 D:\Work\myself\ConsoleTestApp
+  <Access Specifier><Modifier><Return Type><Method Name>(Params List)
+  {
+    Methods Body
+  }
+  // ============================Access Specifier访问修饰符 6个
+  public // 公共方法，随便调用
+  private // 私有方法，其他Class不能调用
+  protected // 受保护方法，只能在当前类、派生类中调用
+  private protected // 组合效果
+  internal // 内部方法，同一个程序集中的所有类可以调用
+  protected internal // 组合效果
+
+  // ============================Modifier声明修饰符 8个
+  static // 静态
+  abstract // 抽象
+  virtual // 许派生类重写的虚函数
+  override // 允许方法继承后重写
+  new // 可以隐藏基类成员
+  sealed // 表示不能被继承
+  partial // 允许在同一个程序集分散定义
+  extern // 用于声明外部实现的extern
+```
+- 3、c#代码注释、反注释、格式化快捷键**和数据库的注释方法好像一样**
+```csharp
+ctrl + k + c // 代码格式化
+ctrl + k + u // 代码取消注释
+ctrl + k + d // 格式化代码
 ```
