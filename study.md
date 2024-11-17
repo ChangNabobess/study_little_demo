@@ -2496,7 +2496,7 @@ const theme = ref({
 ```
 
 ### 1116
-#### c# 速成指南B站视频学习笔记
+#### c# 速成指南B站视频学习笔记-DAY1-基础结构
 - 1、csharp项目入口文件main函数基础结构
 ```csharp
 using System;
@@ -2543,3 +2543,34 @@ ctrl + k + c // 代码格式化
 ctrl + k + u // 代码取消注释
 ctrl + k + d // 格式化代码
 ```
+
+### 1117
+
+#### c# 速成指南B站视频学习笔记-DAY2-function传参
+- 1、值传参、引用传参、输出传参
+```csharp
+using System;
+namespace transferExam{
+  class transferExamClass{
+    public static void main(string[] args){
+      int x = 1, y = 2;
+      refswap(ref x, ref y);
+      Console.WriteLine($"x={x},y={y}");
+      outputSwap(out x, out y);
+      Console.WriteLine($"x={x},y={y}");
+    }
+    // 引用传参
+    static void refswap(ref int x,ref int y) {
+      int temp = x;
+      x = y;
+      y = temp;
+    }
+    // 输出传参
+    static void outputSwap(out int x,out int y){
+      x = 10;
+      y = 15;
+    }
+  }
+}
+```
+- 2、c# [基础数据类型](https://www.runoob.com/csharp/csharp-data-types.html)
