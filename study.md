@@ -2255,10 +2255,11 @@ EXEC GetEmployeeDetails @EmployeeID = 1;
 <!-- 在捕获模式添加事件监听器 -->
 <div v-on.capture></div>
 ```
-  
+
 ### 1102
-- V3使用openAi
-(openAi参考文档)[https://github.com/openai/openai-node/discussions/217]
+
+- V3 使用 openAi
+  (openAi 参考文档)[https://github.com/openai/openai-node/discussions/217]
 
 ### 1112
 
@@ -2420,7 +2421,7 @@ SELECT [name],[age],[salary], ROW_NUMBER() OVER(order by salary DESC)
 select * From [DataServicePlatFormDB].[dbo].[pf_dict_companies] where labcode = '1001' and statusflag = 2 order by customerid ASC;
 ```
 
-#### V2 --> V3 的不同
+#### V2 --> V3 迁移指南
 
 - 1、获取环境变量
 
@@ -2433,8 +2434,7 @@ import.meta.env.VITE_NAME;
 
 - 2、V2->V3 [迁移指南](https://v3-migration.vuejs.org/zh/)
   **2.1、V3 专有：**
-  > [v-bind](https://cn.vuejs.org/api/sfc-css-features#v-bind-in-css)、[插槽选择器](https://cn.vuejs.org/api/sfc-css-features#slotted-selectors)、[全局选择器](https://cn.vuejs.org/api/sfc-css-features#global-selectors)
-  **2.2、V2、V3 都支持：**
+  > [v-bind](https://cn.vuejs.org/api/sfc-css-features#v-bind-in-css)、[插槽选择器](https://cn.vuejs.org/api/sfc-css-features#slotted-selectors)、[全局选择器](https://cn.vuejs.org/api/sfc-css-features#global-selectors) > **2.2、V2、V3 都支持：**
   > 深度选择器
 
 ```vue
@@ -2496,8 +2496,11 @@ const theme = ref({
 ```
 
 ### 1116
-#### c# 速成指南B站视频学习笔记-DAY1-基础结构
-- 1、csharp项目入口文件main函数基础结构
+
+#### c# 速成指南 B 站视频学习笔记-DAY1-基础结构
+
+- 1、csharp 项目入口文件 main 函数基础结构
+
 ```csharp
 using System;
 namespace CMS
@@ -2507,12 +2510,13 @@ namespace CMS
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Word");
-        } 
+        }
     }
 }
 ```
 
 - 2、什么是方法
+
 ```csharp
   // 方法示例，实战代码在 D:\Work\myself\ConsoleTestApp
   <Access Specifier><Modifier><Return Type><Method Name>(Params List)
@@ -2537,7 +2541,9 @@ namespace CMS
   partial // 允许在同一个程序集分散定义
   extern // 用于声明外部实现的extern
 ```
+
 - 3、c#代码注释、反注释、格式化快捷键**和数据库的注释方法好像一样**
+
 ```csharp
 ctrl + k + c // 代码格式化
 ctrl + k + u // 代码取消注释
@@ -2546,8 +2552,10 @@ ctrl + k + d // 格式化代码
 
 ### 1117
 
-#### c# 速成指南B站视频学习笔记-DAY2-function传参
+#### c# 速成指南 B 站视频学习笔记-DAY2-function 传参
+
 - 1、值传参、引用传参、输出传参
+
 ```csharp
 using System;
 namespace transferExam{
@@ -2573,4 +2581,95 @@ namespace transferExam{
   }
 }
 ```
+
 - 2、c# [基础数据类型](https://www.runoob.com/csharp/csharp-data-types.html)
+
+### 1118
+
+#### V2 --> V3 迁移指南
+
+Vue 2 没有“app”的概念，我们定义的应用只是通过 new Vue() 创建的根 Vue 实例。从同一个 Vue 构造函数创建的每个根实例共享相同的全局配置，因此创造了 createApp 应用实例
+
+- 1、V3 createApp
+  **1.1 为了解决以下问题**
+  > 1.1.1 在测试期间，全局配置很容易意外地污染其他测试用例。用户需要仔细地存储原始全局配置，并在每次测试后恢复；
+  > 1.1.2 全局配置使得在同一页面上的多个“应用”在全局配置不同时共享同一个 Vue 副本非常困难(就是说一个页面上多个 Vue 应用实例必须同事访问同一个 vue 实例，包括方法、参数)；
+  > **1.2 有以下优点**
+  > 1.2.1 减少数据污染，因为每个应用实例都有自己的数据，不会与其他应用共享数据；
+  > 1.2.2 结合打包工具(Rollup、vite、webpack)提供的 treeShaking 函数，更好的优化 dist 包体积；
+  > 1.2.3 可以实现单个页面同时挂载多个 vue 实例，数据空间隔离，互不影响，PS(微前端架构、渐进式迁移、内嵌第三方应用、多功能管理后台、多个团队协作开发、动态加载多个小应用)
+- 2、(V2(ignoredElements)与 V3(isCustomElement))[https://v3-migration.vuejs.org/zh/breaking-changes/global-api.html#config-ignoredelements-%E6%9B%BF%E6%8D%A2%E4%B8%BA-config-iscustomelement]
+  >
+
+```javascript
+// 之前
+Vue.config.ignoredElements = ["my-el", /^ion-/];
+
+// 之后
+const app = createApp({});
+app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith("ion-");
+```
+
+- 3、V2(mixmin) -> V3(extends)[https://cn.vuejs.org/api/options-composition#extends]
+  **这种写法可以用，但是不推荐，官方推荐使用(组合式函数-Composables)[https://cn.vuejs.org/guide/reusability/composables#what-is-a-composable]实现**
+
+> 3.1 extends 使用范例
+
+```javascript
+/*
+                相同点                   不同点
+  mixmin   所有选项 (setup() 除外)       组合功能
+  extends  都将使用相关的策略进行合并     关注继承关系
+*/
+const CompA = { ... }
+
+const CompB = {
+  extends: CompA,
+  ...
+}
+```
+
+> 3.2 组合式函数使用范例 mouse.js
+> **(官网很好玩的异步状态示例)[https://cn.vuejs.org/guide/reusability/composables#async-state-example]**
+> 使用到 WatchEffect（组合式 API）、toValue（工具函数）；
+
+```javascript
+import { ref, onMounted, onUnmounted } from "vue";
+// ***************按照惯例，组合式函数名以“use”开头****************
+export function useMouse() {
+  // 被组合式函数封装和管理的状态
+  const x = ref(0);
+  const y = ref(0);
+
+  // 组合式函数可以随时更改其状态。
+  function update(event) {
+    x.value = event.pageX;
+    y.value = event.pageY;
+  }
+
+  // 一个组合式函数也可以挂靠在所属组件的生命周期上
+  // 来启动和卸载副作用
+  onMounted(() => window.addEventListener("mousemove", update));
+  onUnmounted(() => window.removeEventListener("mousemove", update));
+
+  // 通过返回值暴露所管理的状态
+  return { x, y };
+}
+```
+
+> 3.3 mouse.js 使用
+
+```javascript
+<script setup>
+import { useMouse } from './mouse.js'
+
+const { x, y } = useMouse()
+</script>
+
+<template>Mouse position is at: {{ x }}, {{ y }}</template>
+```
+
+- 4、V3 组合式函数约定和最佳实践重点
+  > 4.1 输入参数即便不依赖于 ref 或 getter 的响应性，最好处理一下输入参数是 ref 或 getter 而非原始值的情况。可以利用 toValue() 工具函数来实现
+  > 4.2 返回值我们推荐的约定是组合式函数始终返回一个包含多个 ref 的普通的非响应式对象，这样该对象在组件中被解构为 ref 之后仍可以保持响应性，因为从组合式函数返回一个响应式对象会导致在对象解构过程中丢失与组合式函数内状态的响应性连接。与之相反，ref 则可以维持这一响应性连接。
+  > 4.3 (与其他模式的比较)[https://cn.vuejs.org/guide/reusability/composables#comparisons-with-other-techniques]
