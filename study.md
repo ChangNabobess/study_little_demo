@@ -2427,10 +2427,10 @@ VUE_APP_BASE_URL;
 import.meta.env.VITE_NAME;
 ```
 
-- 2、V2-V3 不同点
+- 2、V2->V3 [迁移指南](https://v3-migration.vuejs.org/zh/)
   **2.1、V3 专有：**
   > [v-bind](https://cn.vuejs.org/api/sfc-css-features#v-bind-in-css)、[插槽选择器](https://cn.vuejs.org/api/sfc-css-features#slotted-selectors)、[全局选择器](https://cn.vuejs.org/api/sfc-css-features#global-selectors)
-  > **2.2、V2、V3 都支持：**
+  **2.2、V2、V3 都支持：**
   > 深度选择器
 
 ```vue
