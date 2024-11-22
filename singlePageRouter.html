@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History API Router</title>
+    <style>
+      .active {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 导航 -->
+    <nav>
+      <a href="/" data-link>Home</a>
+      <a href="/about" data-link>About</a>
+      <a href="/contact" data-link>Contact</a>
+    </nav>
+
+    <!-- 路由容器 -->
+    <div id="app">
+      <!-- 页面内容将动态加载到这里 -->
+    </div>
+
+    <script>
+      // 定义路由表
+      const routes = {
+        "/": "<h1>Welcome to Home Page</h1>",
+        "/about": "<h1>About Us</h1>",
+        "/contact": "<h1>Contact Us</h1>",
+      };
+
+      // 路由渲染函数
+      function render() {
+        const path = window.location.pathname;
+        const app = document.getElementById("app");
+        app.innerHTML = routes[path] || "<h1>404 - Page Not Found</h1>"; // 渲染内容
+      }
+
+      // 路由导航函数
+      function navigateTo(url) {
+        history.pushState(null, null, url); // 修改地址栏 URL
+        render(); // 渲染页面
+      }
+
+      // 拦截导航链接点击事件
+      document.addEventListener("click", (e) => {
+        if (e.target.matches("[data-link]")) {
+          e.preventDefault();
+          navigateTo(e.target.href);
+        }
+      });
+
+      // 监听浏览器的前进/后退事件
+      window.addEventListener("popstate", render);
+
+      // 初始渲染
+      render();
+    </script>
+  </body>
+</html>

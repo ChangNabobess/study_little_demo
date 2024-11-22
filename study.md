@@ -2593,13 +2593,12 @@ Vue 2 没有“app”的概念，我们定义的应用只是通过 new Vue() 创
 - 1、V3 createApp
   **1.1 为了解决以下问题**
   > 1.1.1 在测试期间，全局配置很容易意外地污染其他测试用例。用户需要仔细地存储原始全局配置，并在每次测试后恢复；
-  > 1.1.2 全局配置使得在同一页面上的多个“应用”在全局配置不同时共享同一个 Vue 副本非常困难(就是说一个页面上多个 Vue 应用实例必须同事访问同一个 vue 实例，包括方法、参数)；
+  > 1.1.2 全局配置使得在同一页面上的多个“应用”在全局配置不同时共享同一个 Vue 副本非常困难(就是说一个页面上多个 Vue 应用实例必须同时访问同一个 vue 实例，包括方法、参数)；
   > **1.2 有以下优点**
   > 1.2.1 减少数据污染，因为每个应用实例都有自己的数据，不会与其他应用共享数据；
   > 1.2.2 结合打包工具(Rollup、vite、webpack)提供的 treeShaking 函数，更好的优化 dist 包体积；
   > 1.2.3 可以实现单个页面同时挂载多个 vue 实例，数据空间隔离，互不影响，PS(微前端架构、渐进式迁移、内嵌第三方应用、多功能管理后台、多个团队协作开发、动态加载多个小应用)
 - 2、(V2(ignoredElements)与 V3(isCustomElement))[https://v3-migration.vuejs.org/zh/breaking-changes/global-api.html#config-ignoredelements-%E6%9B%BF%E6%8D%A2%E4%B8%BA-config-iscustomelement]
-  >
 
 ```javascript
 // 之前
@@ -2673,3 +2672,182 @@ const { x, y } = useMouse()
   > 4.1 输入参数即便不依赖于 ref 或 getter 的响应性，最好处理一下输入参数是 ref 或 getter 而非原始值的情况。可以利用 toValue() 工具函数来实现
   > 4.2 返回值我们推荐的约定是组合式函数始终返回一个包含多个 ref 的普通的非响应式对象，这样该对象在组件中被解构为 ref 之后仍可以保持响应性，因为从组合式函数返回一个响应式对象会导致在对象解构过程中丢失与组合式函数内状态的响应性连接。与之相反，ref 则可以维持这一响应性连接。
   > 4.3 (与其他模式的比较)[https://cn.vuejs.org/guide/reusability/composables#comparisons-with-other-techniques]
+
+### 1119
+
+- 1、createApp
+
+  > 应用实例暴露了 Vue 2 全局 API 的一个子集，经验法则是，**任何全局改变 Vue 行为的 API 现在都会移动到应用实例上**
+
+- 2、组件内使用 vue 应用实例的方法
+
+```typescript
+// 通过单例模式导出应用实例
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+
+// 创建并导出应用实例
+export const app = createApp(App);
+
+app.use(router).use(store).mount("#app");
+```
+
+```typescript
+// 小项目就挂在到window对象上，可以用，不推荐
+import { createApp } from "vue";
+import App from "./App.vue";
+
+const app = createApp(App);
+
+// 将全局配置挂载到 window 对象
+(window as any).$globalConfig = {
+  theme: "dark",
+  apiEndpoint: "https://api.example.com",
+};
+
+app.mount("#app");
+```
+
+- 3、顺手记一下，vue3.x 全局事件总线传参、vuex、pinan
+
+```typescript
+// 使用全局事件总线或依赖注入
+import { createApp } from "vue";
+import App from "./App.vue";
+
+const app = createApp(App);
+
+// 全局配置项
+const globalConfig = {
+  theme: "dark",
+  apiEndpoint: "https://api.example.com",
+};
+
+app.provide("globalConfig", globalConfig);
+// import { inject } from "vue";
+// const globalConfig = inject('globalConfig'); // 子组件接收
+
+app.mount("#app");
+
+// 使用vuex
+import { createStore } from "vuex";
+
+export default createStore({
+  state: {
+    globalConfig: {
+      theme: "dark",
+      apiEndpoint: "https://api.example.com",
+    },
+  },
+  getters: {
+    globalConfig: (state) => state.globalConfig,
+  },
+});
+```
+
+- 4、(Vue3.x 不兼容 IE11(不支持原生 Promise),**Proxy 没有完美的替换 Polyfill(修正补丁)**)[https://github.com/vuejs/rfcs/blob/master/active-rfcs/0038-vue3-ie11-support.md]
+  IE 目前支持到 ES5,ES6 版本内容仅部分支持;可以通过(caniuse)[https://caniuse.com/]网站测试使用方法是否支持 IE11;
+  > 4.1 为什么 Proxy 无法 Polyfill？
+
+```javascript
+  1、Proxy 是语言级别的特性
+    Proxy 直接作用于 JavaScript 引擎的底层操作，比如对象属性的访问控制、拦截等。这些行为无法通过普通 JavaScript 实现。
+  2、Vue 3 的依赖
+    Vue 3 的响应式系统基于 Proxy 来实现细粒度的依赖跟踪和变更检测。它需要拦截对象的读取 (get) 和写入 (set) 操作，而在 Vue 2 中，
+    这些功能是通过Object.defineProperty 实现的。但是 Object.defineProperty 的能力有限，无法动态地添加新属性的拦截，而 Proxy 可以处理这些场景。
+  3、IE11 的局限性
+    IE11 是基于较老的 JavaScript 标准（ES5）实现的，并不支持 ES6 中的许多特性，比如 Map、Set 和 Proxy。
+```
+
+### 1120
+
+#### V3 插槽
+
+- 1、具名插槽
+
+```vue
+<template>
+  <SlotTemplate>
+    <!-- 正常写法 -->
+    <div v-slot:slotname></div>
+    <!-- 语法糖写法 -->
+    <div #slotname></div>
+  </SlotTemplate>
+</template>
+```
+
+- 2、条件插槽
+
+```vue
+<template>
+  <div class="card">
+    <div v-if="$slots.header" class="card-header">
+      <slot name="header" />
+    </div>
+
+    <div v-if="$slots.default" class="card-content">
+      <slot />
+    </div>
+
+    <div v-if="$slots.footer" class="card-footer">
+      <slot name="footer" />
+    </div>
+  </div>
+</template>
+```
+
+- 3、动态插槽
+
+```vue
+<template>
+  <base-layout>
+    <template v-slot:[dynamicSlotName]> ... </template>
+
+    <!-- 缩写为 -->
+    <template #[dynamicSlotName]> ... </template>
+  </base-layout>
+</template>
+```
+
+- 4、高级列表组件实例
+
+```vue
+<!-- 
+    它会渲染一个列表，并
+    同时会封装一些加载远端数据的逻辑、
+    使用数据进行列表渲染、
+    或者是像分页或无限滚动这样更进阶的功能 
+-->
+<template>
+  <FancyList :api-url="url" :per-page="10">
+    <template #item="{ body, username, likes }">
+      <div class="item">
+        <p>{{ body }}</p>
+        <p>by {{ username }} | {{ likes }} likes</p>
+      </div>
+    </template>
+  </FancyList>
+</template>
+```
+
+> FancyList 可以多次渲染 <slot> 并每次都提供不同的数据 (注意我们这里使用了 v-bind 来传递插槽的 props)
+
+```vue
+<template>
+  <ul>
+    <li v-for="item in items">
+      <slot name="item" v-bind="item"></slot>
+    </li>
+  </ul>
+</template>
+```
+
+### 1122
+
+#### V3
+
+- :key 主要是作为 vue 虚拟 Dom 算法提示的，如果数据有 id，最好用 id，如果数据没有，最好用 index。
+  在 V2 中 v-if | v-else | v-else-if 要求必须添加 key，但是 V3 不需要了；
+  v-for 渲染还是需要绑定 key 的
