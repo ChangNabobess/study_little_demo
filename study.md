@@ -2846,8 +2846,187 @@ export default createStore({
 
 ### 1122
 
-#### V3
+#### V3 key
 
 - :key 主要是作为 vue 虚拟 Dom 算法提示的，如果数据有 id，最好用 id，如果数据没有，最好用 index。
   在 V2 中 v-if | v-else | v-else-if 要求必须添加 key，但是 V3 不需要了；
   v-for 渲染还是需要绑定 key 的
+
+### 1125
+
+- 1、有状态组件，状态是指 data？
+
+```Vue
+<script>
+export default {
+  data() {
+    return {
+      count: 0,
+    };
+  },
+  methods: {
+    increment() {
+      this.count++;
+    },
+  },
+};
+</script>
+```
+
+- 2、函数式组件
+
+```Vue
+<script>
+// Vue 2 函数式组件示例
+export default {
+  functional: true,
+  props: ['level'],
+  render(h, { props, data, children }) {
+    return h(`h${props.level}`, data, children)
+  }
+}
+// Vue 3 函数式组件实例
+import { h } from 'vue'
+
+const DynamicHeading = (props, context) => {
+  return h(`h${props.level}`, context.attrs, context.slots)
+}
+
+DynamicHeading.props = ['level']
+
+export default DynamicHeading
+</script>
+```
+
+- 3、在 Vue 3 中，由于**函数式组件被定义为纯函数**，因此异步组件需要通过将其包裹在新的 defineAsyncComponent 助手方法中来显式地定义；
+
+```vue
+<script>
+const asyncModalWithOptions = defineAsyncComponent({
+  loader: () => import("./Modal.vue"),
+  delay: 200,
+  timeout: 3000,
+  errorComponent: ErrorComponent,
+  loadingComponent: LoadingComponent,
+});
+</script>
+```
+
+- 4、defineAsyncComponent 方法是接收一个返回 Promise 的加载函数；
+  **ES6 模块中的动态导入函数 import 就是返回一个 Promise 函数**
+
+```vue
+<script>
+import { defineAsyncComponent } from "vue";
+
+const AsyncComp = defineAsyncComponent(() => {
+  return new Promise((resolve, reject) => {
+    // ...从服务器获取组件
+    resolve(/* 获取到的组件 */);
+  });
+});
+// ... 像使用其他一般组件一样使用 `AsyncComp`
+</script>
+```
+
+- 5、defineAsyncComponent 可选配置项：**惰性激活（通过 requestIdleCallback 进行激活）**，有以下配置项：
+
+```vue
+<script>
+import { defineAsyncComponent, hydrateOnIdle } from "vue";
+const AsyncComp = defineAsyncComponent({
+  loader: () => import("./Comp.vue"),
+  // hydrate: hydrateOnIdle(/* 传递可选的最大超时 */),
+  // hydrate: hydrateOnVisible(rootMargin: '100px'), // 在可见时激活
+  // hydrate: hydrateOnMediaQuery('(max-width:500px)'), // 在媒体查询匹配时激活
+  // hydrate: hydrateOnInteraction(["wheel", "mouseover"]), // 在交互时激活
+  hydrate: myStrategy, // 自定义策略
+});
+
+// 也可以是自定义策略
+const myStrategy: HydrationStrategy = (hydrate, forEachElement) => {
+  // forEachElement 是一个遍历组件未激活的 DOM 中所有根元素的辅助函数，
+  // 因为根元素可能是一个模板片段而非单个元素
+  forEachElement((el) => {
+    // ...
+  });
+  // 准备好时调用 `hydrate`
+  hydrate();
+  return () => {
+    // 如必要，返回一个销毁函数
+  };
+};
+</script>
+```
+
+- 6、resolveComponent 渲染组件，因为 render 渲染函数脱离页面上下文，所以不能直接使用 h('component-name')直接渲染内部组件了；
+
+```javascript
+function resolveComponent(name: string): Component | string;
+import { h, resolveComponent } from 'vue'
+
+export default {
+  setup() {
+    const ButtonCounter = resolveComponent('ButtonCounter')
+
+    return () => {
+      return h(ButtonCounter)
+    }
+  }
+}
+```
+
+- 7、在 Vue3.x 中被移除的 API-keyup
+  > 按键修饰符 (以前 keyCodes-自定义别名、键码)v-on.keyup.enter || v-on.keyup.13 --> (现在 (kebab-cased)[https://developer.mozilla.org/zh-CN/docs/Web/API/KeyboardEvent/code])v-on.keyup.page-down
+
+```vue
+<template>
+  <div v-on:keyup.page-down="pageDownFun">{{ msg }}</div>
+  <div v-on:keyup.p="clickPWordFun">{{ msg }}</div>
+</template>
+```
+
+- 8、$once()、$on()、$off()等事件监听 API 被移除，使用第三方组件 mitt、tiny-emitter 替代；
+  **没明白在 Vue 3 中，借助这些 API 从一个组件内部监听其自身触发的事件已经不再可能了，是为什么**
+
+```vue
+<!-- 
+  V2是创建一个应用实例对象；
+  V3是使用creatApp创建的应用实例；
+ -->
+<script>
+// eventBus.js
+import emitter from "tiny-emitter/instance";
+
+export default {
+  $on: (...args) => emitter.on(...args),
+  $once: (...args) => emitter.once(...args),
+  $off: (...args) => emitter.off(...args),
+  $emit: (...args) => emitter.emit(...args),
+};
+</script>
+```
+
+- 9、模板引用 useTemplateRef，ref 方法的替代函数
+
+```vue
+<template>
+  <ul>
+    <li v-for="(item, index) in lists" :key="index" ref="items">{{ item }}</li>
+  </ul>
+</template>
+<script>
+import { onMounted, ref, useTemplateRef } from "vue";
+let lists: Array<number> = ref([1, 2, 3]);
+let items = ref();
+let itemsRef = useTemplateRef("items");
+onMounted(() => {
+  // 自己写的
+  itemsRef.value.forEach((item: any) => {
+    alert(`li-item-ref:${item.innerText}`);
+  });
+  // 官网例子
+  alert(items.value.map((i) => i.textContent));
+});
+</script>
+```
