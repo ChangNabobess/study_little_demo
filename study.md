@@ -2854,6 +2854,8 @@ export default createStore({
 
 ### 1125
 
+#### V2-V3 迁移指南 60%
+
 - 1、有状态组件，状态是指 data？
 
 ```Vue
@@ -3030,3 +3032,93 @@ onMounted(() => {
 });
 </script>
 ```
+
+### 1127
+
+#### V2-V3 迁移指南总结一下
+
+##### 一、受影响的改变
+
+- **1 全局 API**
+  1.1、渲染(#app-替换|插入)、挂载($mount)、构建(new Vue：Vue 实例 | creatApp：应用实例)模式；
+- **2 模板指令**
+  2.1、v-model 修饰符(native)、Prop Name change(value | modelValue)；
+  2.2、v-if、v-for 优先级 change(v-for | v-if)；
+- **3 组件**
+  3.1 异步导入组件需要使用 defineAsyncComponent 助手方法实现(Object | Function)；
+  3.2 emits 需要单独定义一个组件可以向其父组件触发的事件，不定义直接抛发给父组件的情况下 vue 会默认绑定到组件的根节点上；
+- **4 渲染函数**
+  4.1、h(参数: render(h) | 全局引入的：由于 VNode 是上下文无关的，不能再用字符串 ID 隐式查找已注册组件。取而代之的是，需要使用一个导入的 resolveComponent 方法)；
+
+  ```vue
+  <script>
+  // Vue2.x
+  Vue.component('button-counter', {
+    data() {
+      return {
+        count: 0
+      }
+    },
+    template: `
+      <button @click="count++">
+        Clicked {{ count }} times.
+      </button>
+    `
+  })
+
+  export default {
+    render(h) {
+      return h('button-counter')
+    }
+  }
+
+  // Vue3.x
+  import { h, resolveComponent } from 'vue'
+  export default {
+    setup() {
+      const ButtonCounter = resolveComponent('button-counter')
+      return () => h(ButtonCounter)
+    }
+  }
+  </script>
+  ```
+
+- **5 API**
+  5.1 按键修饰符(键码：v-on:keyup.112 | 使用 kebab-cased (短横线) 名称:v-on:keypress.q)；
+  5.2 事件 API ($emit\$on\$once\$off | mitt\tiny-emitter 组件)；
+
+##### 二、不受影响的改变
+
+- **1 全局 API**
+  1.1TreeShaking 优化，减少包体积
+- **2 API**
+  2.1 filter、mixmin 建议取消使用；
+  2.2 directive
+  2.3 transition class name 修改
+  2.4 VNode 生命周期事件
+
+  ```vue
+  <template>
+    <child-component @vue:updated="onUpdated">
+  </template>
+  ```
+
+  2.5 在 prop 的默认函数中访问 this
+
+  ```vue
+  <script>
+  import { inject } from "vue";
+  export default {
+    props: {
+      theme: {
+        default(props) {
+          // `props` 是传递给组件的、
+          // 在任何类型/默认强制转换之前的原始值，
+          // 也可以使用 `inject` 来访问注入的 property
+          return inject("theme", "default-theme");
+        },
+      },
+    },
+  };
+  </script>
+  ```
