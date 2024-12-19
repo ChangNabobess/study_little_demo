@@ -3136,7 +3136,48 @@ onMounted(() => {
 
 ```javascript
 // 创建Vue3.x项目
-npm creat vue@latest
+npm create vue@latest
 // 创建React项目
 npx create-next-app@latest
 ```
+
+### 1128
+
+#### 不使用 next、Remix、Gatsby 等框架，自己搭建一套纯前端工程架构
+
+next、Remix、Gatsby 都是 React 社区产物，主打全栈开发使用，对于纯前端项目不太友好，主要是需要通过 jenkins 打包构建的过程比较麻烦，目前还没有研究明白，且研究呢！！！
+
+> 使用 (Vite)[https://cn.vitejs.dev/guide/] 构建 react 前端框架，省事便捷
+
+```javascript
+// 创建Vite项目，可以自由配置模板选项
+npm create vite@latest
+```
+
+#### React 结合 TypeScript 有一些常用的推断类型存在@/types/react 中
+
+### 1216
+
+#### React 是单项数据流素，但 Vue 是双向数据流，两者都是 MVVM 架构，但 Vue 更适合做 SPA，React 更适合做 SSR；
+
+#### 新名词
+
+> OAOO:once and only once
+> DRY:don't repeat yourself
+
+#### React 哲学
+
+1. react 设计的理念是将组建作为纯函数渲染;
+
+> (纯函数：1、输入相同，输出相同，只负责自己的任务);
+
+2. 严格模式下 React 会调用两次组件函数，是为了检验组件是否为纯函数；
+3. 不满足纯函数的组件会造成：突变（mutation）；
+4. 可以在函数内部创建状态函数，添加组件内部渲染逻辑，这种解决方式成为组件内部"mutation";
+5. [memo](https://react.docschina.org/reference/react/memo)跳过重新渲染;
+
+### 1219
+
+#### 如何修改 antd_design antTable 组件的底部滚动条样式
+
+> (参考链接)[https://www.cnblogs.com/wen-web/p/18374031]；**来之不易的参考链接，慎用**
