@@ -3181,3 +3181,12 @@ npm create vite@latest
 #### 如何修改 antd_design antTable 组件的底部滚动条样式
 
 > (参考链接)[https://www.cnblogs.com/wen-web/p/18374031]；**来之不易的参考链接，慎用**
+
+### 0107
+#### c#小知识
+1. ConcurrentDictionary 此集合类是一个线程安全实现;
+2. IConfigurationRoot 接口;
+3. ConfigurationBuilder 
+
+### 0108
+#### .core后缀文件夹主要作用是项目底层机制相关代码
