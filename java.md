@@ -48,7 +48,7 @@ public class Test{
 3. 基础数据类型
 <table>
 	<tr>
-	    <th colspan="3">java与JS数据类型对比</th>
+	    <th colspan="3" style="text-align:'center'">java与JS数据类型对比</th>
 	</tr>
 	<tr>
 	    <td>数据类型</td>
