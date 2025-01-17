@@ -35,17 +35,20 @@ public class Test{
 }
 ```
 
-| 功能     | java                | javaScript |
-| -------- | ------------------- | ---------- |
-| 整型     | byte short int long |            |
-| 浮点型   | float double        |            |
-| 布尔类型 | Boolean             |            |
-| 字符型   | Char                |            |
-| 引用类型 | String              |            |
-| 常量     | final               |            |
-| 其他     | Var 关键字          |            |
-
 3. 基础数据类型
+   **测试简陋型表格**
+   | 功能 | java | javaScript |
+   | -------- | ------------------- | ---------- |
+   | 整型 | byte short int long | |
+   | 浮点型 | float double | |
+   | 布尔类型 | Boolean | |
+   | 字符型 | Char | |
+   | 引用类型 | String | |
+   | 常量 | final | |
+   | 其他 | Var 关键字 | |
+
+**测试完整型表格**
+
 <table>
 	<tr>
 	    <td>数据类型</td>
