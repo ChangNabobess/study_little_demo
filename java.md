@@ -18,3 +18,70 @@
 5. **JVM**：内存模型；
 
 - 补充知识点：JAVA 之父是 James Gosling；
+
+### 0117
+
+1. **[【IDEA】idea 设置默认 maven 配置, 避免每次设置 maven](https://blog.51cto.com/u_16108342/10304913?articleABtest=0)**
+
+2. 访问修饰符，声明修饰
+   public private proceted
+   static abstract new
+
+```java
+public class Test{
+   public static void main(String[] args){
+      System.out.println("Hello Word")
+   }
+}
+```
+
+| 功能     | java                | javaScript |
+| -------- | ------------------- | ---------- |
+| 整型     | byte short int long |            |
+| 浮点型   | float double        |            |
+| 布尔类型 | Boolean             |            |
+| 字符型   | Char                |            |
+| 引用类型 | String              |            |
+| 常量     | final               |            |
+| 其他     | Var 关键字          |            |
+
+3. 基础数据类型
+<table>
+	<tr>
+	    <th colspan="3">java与JS数据类型对比</th>
+	</tr>
+	<tr>
+	    <td>数据类型</td>
+	    <td>Java</td>
+	    <td>JavaScript</td>  
+	</tr>
+   <tr>
+	    <td>整型</td>
+	    <td>byte short int long</td>
+       <td rowspan="7">Null Undefined Boolean Number String Symbol BigInt</td>
+	</tr>
+   <tr>
+	    <td>浮点型</td>
+	    <td>float double</td>
+	</tr>
+   <tr>
+	    <td>布尔类型</td>
+	    <td>Boolean</td>
+	</tr>
+   <tr>
+	    <td>字符型</td>
+	    <td>char</td>
+	</tr>
+   <tr>
+	    <td>引用类型</td>
+	    <td>String</td>
+	</tr>
+   <tr>
+	    <td>常量</td>
+	    <td>final</td>
+	</tr>
+   <tr>
+	    <td>其他</td>
+	    <td>Var</td>
+	</tr>
+</table>
