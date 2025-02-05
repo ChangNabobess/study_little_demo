@@ -93,3 +93,27 @@ public class Test{
 	    <td>Var</td>
 	</tr>
 </table>
+
+### 0120
+
+```java
+/*
+   2的8次方是256
+   计算机的最小存储单位是byte，从00000000~111111111
+   十进制就是0~255
+*/
+// 数字类型
+byte baseType = 0;
+short baseshorttype = 0;
+int baseinttype = 0;
+long baselongtype = 0;
+float basefloattype = 0;
+double basedoubletype = 0;
+// 布尔类型
+Boolean basebooleantype = true;
+// 字符类型
+char basechartype = 'a';
+
+```
+
+
