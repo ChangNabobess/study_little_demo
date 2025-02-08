@@ -2864,3 +2864,41 @@ npm create vite@latest
 #### 如何修改 antd_design antTable 组件的底部滚动条样式
 
 > (参考链接)[https://www.cnblogs.com/wen-web/p/18374031]；**来之不易的参考链接，慎用**
+
+### 0208
+
+#### 1、使用 rimraf
+
+- 1、在命令行直接使用 rimraf
+
+```node
+<!-- 安装 rimraf -->
+npm install rimraf --save-dev;
+npx rimraf node_modules;
+<!-- 使用rimraf删除其他文件夹异曲同工 -->
+rimraf <path-to-folder>
+```
+
+- 2、在 package.json 中添加 script
+
+配置
+
+```json
+{
+  "scripts": {
+    "clean": "rimraf node_modules"
+  }
+}
+```
+
+执行
+
+```node
+npm run clean;
+```
+
+#### 2、不适用 rimraf，直接用脚本命令删除文件
+
+win 下：rmdir/s/q node_modules;
+linux 下：rm -rf node_modules;
+精简版：rd /s/q node_modules;
