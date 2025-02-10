@@ -2902,3 +2902,53 @@ npm run clean;
 win 下：rmdir/s/q node_modules;
 linux 下：rm -rf node_modules;
 精简版：rd /s/q node_modules;
+
+### 0210
+
+#### ES6 新增 Map、Set 方法
+
+- 1、[Map](https://juejin.cn/post/6985033972531068942#heading-0)是被称为字典的数据结构
+
+```javascript
+/* 
+  clear
+    从映射中移除所有元素。
+  delete
+    从映射中移除指定的元素。
+  forEach
+    对映射中的每个元素执行指定操作。
+  get
+    返回映射中的指定元素。
+  has
+    如果映射包含指定元素，则返回 true。
+  set
+    添加一个新建元素到映射。
+  toString
+    返回映射的字符串表示形式。
+  valueOf
+    返回指定对象的原始值。
+*/
+const mapgather = new Map();
+mapgather.set("name", "zhangsan");
+mapgather.set("age", 18);
+mapgather.get("name");
+mapgather.has("age");
+```
+
+- 2、[Set](https://juejin.cn/post/6985033972531068942#heading-0)是被成为集合的数据结构
+
+```javascript
+/* 
+  add(value)：向集合添加一个新的项
+  delete(value)：从集合中移除一个值
+  has(value)：如果值在集合中存在，返回true,否则false
+  clear(): 移除集合里所有的项
+  遍历方法
+  keys()：返回一个包含集合中所有键的数组
+  values()：返回一个包含集合中所有值的数组
+  entries：返回一个包含集合中所有键值对的数组(感觉没什么用就不实现了)
+  forEach()：用于对集合成员执行某种操作，没有返回值
+*/
+```
+
+#### 在线预览 PPT [onlyOffice](https://www.onlyoffice.com/)
