@@ -116,4 +116,54 @@ char basechartype = 'a';
 
 ```
 
+### 0212
 
+#### java 声明修饰符：sealed
+
+```java
+// 使用范例
+public sealed class Base permits Sub1, Sub2 {};
+```
+
+### 0214
+
+#### 面向对象基础
+
+<table>
+<tr> 
+    <td>**知识点**</td>
+    <td>**详情**</td>
+</tr>
+<tr> 
+    <td>构造函数</td>
+    <td>实现类的特殊方法，必须和类名保持一致</td>
+</tr>
+<tr> 
+    <td>方法重载</td>
+    <td>@Overload</td>
+</tr>
+<tr> 
+    <td>方法重写</td>
+    <td>@Override</td>
+</tr>
+<tr> 
+    <td>继承</td>
+    <td>extends、向上转型(upcasting)、向下转型(downcasting)</td>
+</tr>
+<tr> 
+    <td>阻止继承</td>
+    <td>密封类：sealed；必须搭配final、no-sealed、sealed一起使用</td>
+</tr>
+<tr> 
+    <td>阻止继承平替方法</td>
+    <td>abstract抽象类</td>
+</tr>
+<tr> 
+    <td>类型转换</td>
+    <td>String s = (String)obj;// 向下转型</td>
+</tr>
+<tr> 
+    <td>多态(实际类型和引用类型的应用)</td>
+    <td>针对某个类型的方法调用,真正执行的方法取决于运行时实际类型的方法，只有在运行的时候才能知道具体的类型</td>
+</tr>
+</table>

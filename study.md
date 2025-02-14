@@ -2952,3 +2952,7 @@ mapgather.has("age");
 ```
 
 #### 在线预览 PPT [onlyOffice](https://www.onlyoffice.com/)
+
+### 0212
+
+#### css 颜色值：black 是浏览器预定义颜色值，可以直接使用浏览器认识的颜色值
