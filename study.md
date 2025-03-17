@@ -2956,3 +2956,26 @@ mapgather.has("age");
 ### 0212
 
 #### css 颜色值：black 是浏览器预定义颜色值，可以直接使用浏览器认识的颜色值
+
+### 0317
+
+#### 作用于插槽：v-slot
+
+```vue
+<!-- 子组件 <MyComponent> 的模板 -->
+<template>
+  <div>
+    <slot :text="greetingMessage" :count="1"></slot>
+  </div>
+  当需要接收插槽 props
+  时，默认插槽和具名插槽的使用方式有一些小区别。下面我们将先展示默认插槽如何接受
+  props，通过子组件标签上的 v-slot 指令，直接接收到了一个插槽 props 对象：
+</template>
+<!-- 
+  父组件 使用MyComponent 
+  slotProps是子组件传递的所有props参数
+-->
+<MyComponent v-slot="slotProps">
+  {{ slotProps.text }} {{ slotProps.count }}
+</MyComponent>
+```
