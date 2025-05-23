@@ -334,3 +334,43 @@ namespace transferExam{
 #### [DataTable 类](https://learn.microsoft.com/zh-cn/dotnet/api/system.data.datatable?view=netframework-4.8.1)
 
 - 表示内存中数据的一个表。
+
+### 0515
+> c#文件后缀名定义使用
+- .cs: c#源文件；
+- .dll: 动态链接库；
+- .exe: 可执行文件；
+- .pdb: 程序调试数据库文件；
+- .config: 配置文件；
+- .resx: 语言资源文件；
+- .resw: 语言资源文件；
+- .resjson: 语言资源文件；
+
+| 后缀                                 | 通常职责                                                | 举例                                 |
+| ------------------------------------ | ------------------------------------------------------- | ------------------------------------ |
+| `Application`                        | 应用层，处理业务用例，协调 `Domain` 与 `Infrastructure` | DTO、Service、Command、Query 等      |
+| `Core` 或 `Domain`                   | 核心业务模型层，定义实体类、业务接口、领域服务、事件等  | 实体类、接口、业务规则               |
+| `Infrastructure` 或 `DatabaseAccess` | 基础设施层，负责数据库、缓存、第三方服务等              | EF Core、Redis、HTTP 等实现          |
+| `Migrator`                           | 数据迁移、建表等初始化逻辑                              | `DbContext.Database.Migrate()`、脚本 |
+| `WebApi` 或 `Host`                   | 应用的启动入口，API 控制器、配置、日志等                | Program.cs、Startup.cs、Controllers  |
+| `Quartz`                             | 定时任务模块（Quartz.NET 是常用库）                     | 任务调度 Job、调度器配置等           |
+| `Tests`                              | 单元测试或集成测试                                      | NUnit、xUnit、Moq 等                 |
+
+
+> DLL 动态数据库连接
+
+
+### 0522
+```c#
+/* 
+  Task 表示 “正在执行或尚未开始执行的操作”，它最终会产生一个结果（或者什么都不返回），你可以等待它完成。
+      同步转异步，不阻塞线程，支持高并发。约等于Promise；
+  [FromBody]	参数 model 从 HTTP 请求的 Body 中提取（通常是 JSON）；
+      将 HTTP 请求的正文（Body）反序列化为参数对象，是Asp.core.Mvc 中的一个特性；
+      JSON是序列化的对象，[FormBody]可以将Post请求体中的参数根据AuthenticateModel映射反序列化为AuthenticateModel对象；
+  AuthenticateModel model	一个自定义的类对象，用于接收请求体中的用户名密码等登录信息；
+*/
+// TODO 一下方法的定义实现是.NET框架的模型绑定(Model Binding)、模型验证(Model Validation)机制实现的
+public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model){}
+```
+

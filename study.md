@@ -2979,3 +2979,53 @@ mapgather.has("age");
   {{ slotProps.text }} {{ slotProps.count }}
 </MyComponent>
 ```
+
+### 0516
+```html
+<!-- 
+  EJS 语法
+  在HtmlWebpackPlugin插件中配置metadata、themeHash、commit_id值就能在html文件中使用
+ -->
+<title><%= htmlWebpackPlugin.options.title %></title>
+<meta name="version" content="<%= htmlWebpackPlugin.options.commit_id %>">
+<link href="/BlueTheme.<%= htmlWebpackPlugin.options.commit_id %>.css" rel="stylesheet" type="text/css">
+```
+- 系统切换主题Plan1:
+> 1、准备所有主题css样式文件(root、UI样式修改)；
+> 2、在切换主题的时候修改Html文件中的样式引入文件link;
+> 3、在页面样式设置公共样式变量，根据主题切换变量值；
+
+### 0521 
+- 数据的序列化
+  ```
+  const data = { name: 'zhangsan', age: 18 };
+  const dataStr = JSON.stringify(data);
+  ```
+- 数据的反序列化
+  ```
+  const dataStr = '{"name":"zhangsan","age":18}';
+  const data = JSON.parse(dataStr);
+  ```
+JSON.stringify() \ JSON.parse() 方法可以增加参数，修改数据类型；
+```
+const jsonWithDate = '{"name":"张三","birthDate":"2000-01-01T00:00:00.000Z"}';
+const objWithDate = JSON.parse(jsonWithDate, (key, value) => {
+  if (key === 'birthDate') {
+    return new Date(value);
+  }
+  return value;
+});
+console.log(objWithDate.birthDate instanceof Date); // 输出：true
+  ```
+> 小数据集（<10KB）：JSON.parse性能足够好;
+> 中等数据集（10KB-1MB）：MessagePack等二进制格式开始显示优势;
+> 大数据集（>1MB）：流式解析或Web Worker方案效果最佳;
+
+### 0523 
+> 切换Node版本工具 nvm
+```javascript
+// 基本常用语法
+nvm install 16.13.1;
+nvm use 16;
+nvm ls;
+```
