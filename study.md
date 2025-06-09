@@ -3029,3 +3029,35 @@ nvm install 16.13.1;
 nvm use 16;
 nvm ls;
 ```
+
+### 0603
+> lodash 好用方法 
+chunk 将数组（array）拆分成多个 size 长度的区块，并将这些区块组成一个新数组。 如果array 无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。
+方便处理上限数据，比如后端只接受10条10条这样的参数；
+
+
+### 0609
+```javascript
+// 取模用法(Base)
+i % 2 ; // 奇偶判断 
+i % 10; // 有序分组
+i % 3 == 0; // 3的倍数判断
+// 时间逻辑处理
+const hour12 = new Date().getHours() % 12 || 12;
+const lastDigitOfSecond = new Date().getSeconds() % 10;
+// 颜色轮换
+const colors = ['red', 'blue', 'green'];
+divs.forEach((div, i) => {
+  div.style.background = colors[i % colors.length];
+});
+// 数组轮询
+let pointer = 0;
+setInterval(() => {
+  console.log(arr[pointer]);
+  pointer = (pointer + 1) % arr.length;
+}, 1000);
+// 按步分批处理
+list.forEach((item, i) => {
+  const batch = i % 4; // 把数据分为4个批次处理
+});
+```

@@ -374,3 +374,22 @@ namespace transferExam{
 public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateModel model){}
 ```
 
+### 0529
+> linq、Dapper、EF框架的区别
+| 名称                        | 类型        | 说明                                                    |
+| ------------------------- | --------- | ------------------------------------------- |
+| **EF (Entity Framework)** | ORM 框架    | 提供完整的数据访问功能（自动建表、查询、跟踪更改等）                  |
+| **Dapper**                | 微型 ORM 框架 | 更轻量、更快、更接近手写 SQL，但也能自动映射实体                  |
+| **LINQ**                  | 语言特性      | 一种统一查询语法，EF 能直接用 LINQ 查询，Dapper 不支持 LINQ 查询 |
+
+> 功能比对
+| 特性/能力         | Entity Framework      | Dapper          | LINQ             |
+| ------------- | --------------------- | --------------- | ---------------- |
+| 类型            | 全功能 ORM               | 微型 ORM          | 查询语言特性（不是 ORM）   |
+| 查询方式          | 支持 LINQ 和 SQL         | 只支持 SQL（支持参数化）  | 可用于对象集合/EF 查询    |
+| 自动建表/迁移       | ✅ 支持 Code First       | ❌ 不支持           | ❌ 不支持            |
+| 复杂SQL操作（多表联查） | 不灵活，需手动编写SQL          | 非常灵活            | ❌ 不适合            |
+| 性能            | 中等                    | 很快，接近手写 ADO.NET | 性能取决于底层实现        |
+| 适合场景          | 快速开发、复杂对象管理           | 高性能、可控性强、轻量服务   | 查询集合、EF 查询、内存过滤等 |
+| 数据追踪          | 支持自动追踪（ChangeTracker） | 不支持             | 不涉及              |
+
