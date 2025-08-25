@@ -167,3 +167,161 @@ public sealed class Base permits Sub1, Sub2 {};
     <td>针对某个类型的方法调用,真正执行的方法取决于运行时实际类型的方法，只有在运行的时候才能知道具体的类型</td>
 </tr>
 </table>
+
+### 0825 MQ消费队列
+
+1. connectionFactory; 创建连接工厂
+2. connection; 创建连接
+3. channel; 创建管道、通道
+4. queueDeclare; 创建队列
+5. basicConsume; 消费队列
+6. basicAck; 确认消费
+7. basicReject; 拒绝消费
+8. basicNack; 拒绝消费
+9. basicPublish; 发布消息
+10. basicGet; 获取消息
+11. basicRecover; 恢复消费
+12. basicRecoverAsync; 异步恢复消费
+13. basicQos; 设置消费队列的QOS
+```java
+<dependency>
+  <groupId>com.rabbitmq</groupId>
+  <artifactId>amqp-client</artifactId>
+  <version>5.20.0</version>
+</dependency>
+/* ----生产者发送消息，不适用交换机模式----- */
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+public class Producer {
+    private final static String QUEUE_NAME = "test_async_queue";
+
+    public static void main(String[] args) throws Exception {
+        // 1. 创建连接工厂
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");  // RabbitMQ 服务地址
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+
+        // 2. 创建连接 & 信道
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+
+            // 3. 声明队列
+            channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+
+            // 4. 异步发送多条消息
+            for (int i = 1; i <= 5; i++) {
+                String message = "Hello MQ, this is message " + i;
+                // 发送消息
+                channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+                System.out.println(" [x] Sent '" + message + "'");
+                Thread.sleep(500); // 模拟间隔
+            }
+        }
+    }
+}
+
+/* ----消费者接收消息----- */
+import com.rabbitmq.client.*;
+
+public class Consumer {
+    private final static String QUEUE_NAME = "test_async_queue";
+
+    public static void main(String[] args) throws Exception {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        // 声明队列（要和生产者保持一致）
+        // 直连模式
+        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+
+        System.out.println(" [*] Waiting for messages...");
+
+        // 异步监听队列
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" [x] Received '" + message + "'");
+        };
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
+    }
+}
+
+```
+| 产品              | 特点                  | 适用场景           |
+| --------------- | ------------------- | -------------- |
+| **RabbitMQ**    | 功能丰富，支持复杂路由，延时队列    | 通用消息队列、异步处理    |
+| **Kafka**       | 高吞吐、可回溯、分区机制        | 日志采集、大数据分析、事件流 |
+| **RocketMQ**    | 阿里开源，支持事务消息、顺序消息    | 电商订单、金融交易      |
+| **ActiveMQ**    | 老牌 MQ，支持 JMS 协议     | 传统 Java 企业系统   |
+| **Redis**（简单队列） | 基于 list/pubsub，轻量、快 | 临时消息、简单任务分发    |
+
+> MQ消息队列各大厂也会封装一些可复用的、实用的、兼容性强的工厂类，PS:ONSFactory(RocketMQ SDK)
+
+#### RabbitMQ灵活路由模式，实用交换机exchange
+```java
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+/* 
+    消息生产者
+*/
+public class TopicProducer {
+    private final static String EXCHANGE_NAME = "test_exchange_topic";
+    public static void main(String[] args) throws Exception {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost"); // 默认端口是5672
+        try{
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            // 声明一个管道名称 交换机和队列之间的绑定关系，可以带上匹配规则。
+            channel.exchangeDeclare(EXCHANGE_NAME,'topic');
+            String routingKeys = {
+                'log.success',
+                'log.error',
+                'log.info',
+                'log.warn'
+            }
+            for(String routingKey: routingKeys){
+                String message = "Hello MQ, this is message " + routingKey;
+                channel.basicPublish(EXCHANGE_NAME,routingKey,null, message.getBytes('utf-8'));
+                System.out.println(" [x] Sent '" + routingKey + "':'" + message + "'");
+            }
+        }
+    }
+}
+```
+```java
+import com.rabbitmq.client.*;
+/* 
+    消费者
+ */
+public class TopicConsumer {
+    Prictive static string EXCHANGE_NAME = 'test_exchange_topic';
+    public static void main(String[] args) throws Exception{
+        ConnectionFactory factory = new ConnectionFactory();
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+        channel.exchangeDeclare(EXCHANGE_NAME, 'topic');
+        String queueName = channel.queueDeclare().getQueue();
+        // 接收多有日志
+        // 主题模式，RoutingKey 支持 模糊匹配（* 匹配一个单词，# 匹配多个单词）。
+        // channel.queueBind(queueName, EXCHANGE_NAME, 'log.#');
+        // System.out.println('[X]接收所有日志类型数据');
+        // 只接受错误类型日志
+        channel.queueBind(queueName, EXCHANGE_NAME, 'log.error');
+        System.out.println('[X]只接受错误日志信息');
+        DeliverCallback deliverCallback = (customerTag, delivery) => {
+            String message = new String(delivery.getBody(), 'utf-8');
+            System.out.println('[X] Received ' + message);
+        }
+        channel.basicConsume(queueName, true, deliverCallback, cutsomerTag => {});
+    }
+}
+```

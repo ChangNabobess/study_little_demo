@@ -3061,3 +3061,8 @@ list.forEach((item, i) => {
   const batch = i % 4; // 把数据分为4个批次处理
 });
 ```
+
+### 0715 
+> 名词解释
+- CI: Continuous Integration（持续集成）
+- CLI: Command Line Interface（命令行界面）
