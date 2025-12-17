@@ -3066,3 +3066,21 @@ list.forEach((item, i) => {
 > 名词解释
 - CI: Continuous Integration（持续集成）
 - CLI: Command Line Interface（命令行界面）
+
+### 25-12-17
+#### git reset 和 git revert 的区别
+
+- git reset --hard <commitSHA> 重置
+- git reset --mixed <commitSHA>
+- git reset --soft <commitSHA>
+| 模式 (Mode) | HEAD (指针) | 暂存区 (Index) |工作区 (Working Tree) |作用
+| -------- | ---------- | --------------- | ----------- |----------- 
+| --hard | 移到目标提交 | 匹配目标提交 |匹配目标提交 |彻底丢弃目标提交之后的所有修改。最危险。
+| --mixed (默认)| 移到目标提交| 匹配目标提交 |保持不变 |取消暂存。目标提交之后的所有修改变为未暂存状态。
+| --soft | 移到目标提交 | 保持不变 | 保持不变 | 取消提交。目标提交之后的所有修改变为已暂存状态，可以直接 git commit。
+
+- git revert <commitSHA>  撤销
+假设版本 C 添加了 10 行代码。执行 git revert C 后：
+Git 计算出撤销版本 C 需要做哪些反向操作（即删除那 10 行代码）。
+Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状态。
+结果： 版本 C 仍然存在于历史中，新的提交 D 紧随其后。历史记录是干净、连续的。

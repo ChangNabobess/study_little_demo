@@ -258,7 +258,7 @@ module.exports = {
     clientLogLevel: 'info',
     hot: true,
     open: process.env.NODE_ENV == 'production' ? false : true,
-    host: '10.0.101.139', // 允许外部ip访问
+    host: '10.0.101.185', // 允许外部ip访问
     port: 8000, // 端口
     https: false, // 启用https
     overlay: true,
