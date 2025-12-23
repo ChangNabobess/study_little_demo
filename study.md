@@ -3104,4 +3104,168 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
 
 ### 25-12-23
 #### 大文件切片上传
+- 1、用Upload上传文件，调用worke子线程监听上传进度；
+  ```js
+    // upload接收到几个文件就创建几个worker线程，防止主线程阻塞
+    const workerUploadService = new WorkerUploadService(file, this.chunkSize, {id: file.uid});
+    workerUploadService.listen(() => {
+      // 在这里处理子线程的上传进度；
+    })
+  ```
+- 2、添加Worker子线程(添加file、chunkSize、params)；
+  ```js
+    self.onmessage = (e) => {
+      const {timestamp, file, chunkSize, token, params, orgCode} = e.data;
+      self.chunkSize = chunkSize;
+      self.token = token;
+      self.orgCode = orgCode;
+      self.params = params;
+      self.count = 0;
+      const fileReader = new FileReader();
+      const totalNum = Math.floor(file.size / self.chunkSize) + 1;
+      const md5 = new SparkMD5.ArrayBuffer();
+      console.log(`文件大小：${file.size}`);
+      fileReader.onload = (e) => {
+        md5.append(e.target.result);
+        console.log(`${file.name} start upload`);
+        const totalMd5 = md5.end();
+        uploadChunkKFB(file, 1, totalNum, totalMd5);
+      };
+      fileReader.onerror = () => {
+        self.postMessage({
+          params: self.params,
+          value: 0,
+          status: 'error',
+          name: file.name,
+        });
+        console.log(e);
+        console.log(`${file.name} 解析失败`);
+      };
+      console.log(`传输${file.name}文件时间: ${new Date() - timestamp}ms`);
+      fileReader.readAsArrayBuffer(file.slice(0, 1024 * 1024 * 1024));
+    };
+  ```
+- 3、通过file.slice()方法将文件进行切片，在上传完切片文件之后判断上传进度，完成之后关闭线程，未完成，继续派发子线程上传剩余文件；
+  ```js
+  function xmlLargeUpload(fd) {
+    return new Promise((res, rej) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', `${apiUrl}/upload/large`);
+      xhr.setRequestHeader('Accept', 'application/vnd.hzzt.v4+json');
+      xhr.setRequestHeader('Authorization', self.token);
+      xhr.setRequestHeader('X-ORG-CODE', self.orgCode || '1001');
+      xhr.send(fd);
+      xhr.onload = () => {
+        try {
+          res(JSON.parse(xhr.responseText));
+        } catch (e) {
+          rej(e);
+        }
+      };
+      xhr.ontimeout = (e) => {
+        rej(e);
+      };
+      xhr.onerror = (e) => {
+        rej(e);
+      };
+      xhr.onreadystatechange = () => {
+      };
+    });
+  }
+  ```
+  ```js
+  function uploadChunkKFB(blob, num, totalNum, totalMd5) {
+    const fileReader = new FileReader();
+    const largeUpload = () => {
+      if (num > totalNum) {
+        self.postMessage({
+          params: self.params,
+          value: 0,
+          status: 'error',
+          name: blob.name,
+        });
+        console.log(`${blob.name} error upload`);
+      } else {
+        // 使用slice分割文件；
+        const chunkSize =
+          num === totalNum ?
+            blob.slice((num - 1) * self.chunkSize) :
+            blob.slice((num - 1) * self.chunkSize, num * self.chunkSize);
+        fileReader.readAsBinaryString(chunkSize);
+      }
+    };
+    fileReader.onload = (e) => {
+      const md5 = new SparkMD5();
+      const fd = new FormData();
+      md5.appendBinary(e.target.result);
+      const chunkSize =
+        num === totalNum ?
+          blob.slice((num - 1) * self.chunkSize) :
+          blob.slice((num - 1) * self.chunkSize, num * self.chunkSize);
+      const currentMd5 = md5.end();
+      fd.append('blob', chunkSize);
+      fd.append('file_name', blob.name);
+      fd.append('num', num);
+      fd.append('total_num', totalNum);
+      fd.append('md5', currentMd5);
+      fd.append('total_md5', totalMd5);
+      Object.keys(self.params).forEach((key) => {
+        fd.append(key, self.params[key]);
+      });
+      xmlLargeUpload(fd).then((body) => {
+        self.count = 0;
+        if (body.code === 0) {
+          if (num > totalNum) {
+            self.postMessage({
+              params: self.params,
+              value: 100,
+              status: 'error',
+              name: blob.name,
+            });
+            console.log(`${blob.name} error upload`);
+          } else if (body.lack?.length > 0) {
+            num = body.lack[0];
+            const process = (body.msg * 100).toFixed(2) / 1;
+            self.postMessage({
+              params: self.params,
+              value: process,
+              status: 'uploading',
+              name: blob.name,
+            });
+            console.log(`${blob.name}上传进度: ${process}%`);
+            // 上传状态都正常，还没全部上传完，循环调用上传函数；
+            largeUpload();
+          }
+        } else if (body.code === 1) {
+          self.postMessage({
+            params: self.params,
+            value: 100,
+            status: 'success',
+            path: body.path,
+            name: blob.name,
+          });
+          console.log(`${blob.name} upload success`);
+        } else {
+          num++;
+          largeUpload();
+        }
+      }).catch(() => {
+        self.count++;
+        // 连续失败5次认为上传失败
+        if (self.count > 5) {
+          self.postMessage({
+            params: self.params,
+            value: 0,
+            status: 'error',
+            name: blob.name,
+          });
+          console.log(`${blob.name} upload error`);
+        } else {
+          largeUpload();
+        }
+      });
+    };
 
+    largeUpload();
+  }
+  ```
