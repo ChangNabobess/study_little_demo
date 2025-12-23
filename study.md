@@ -3095,9 +3095,13 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
 
 ### 25-12-22
 #### 今天研究了claude API 
--> claude API可以集成在终端中，但是对于网络要求比较高，需要美区节点+全局代理(因为终端的IP访问默认时不通过代理的，所以需要设置终端访问代理，
-  PS:set http_proxy=http://127.0.0.1:10808)+允许局域网的链接。
-  这些网络设置都通过了之后，才能正常通过npm命令安装claude(npm install -g @anthropic-ai/claude-code)
--> 全部准备工作完毕之后，还需要重置API Key($5/月)才能正常使用，因为登录方式只有Claude pro、Claude plus、claude console等方式，
-  我用的是claude console登陆方式，我的账户(billing)里面没有积分(credits);
--> 不好用，得充钱呢，还是Gemini好用；
+> claude API可以集成在终端中，但是对于网络要求比较高，需要美区节点+全局代理(因为终端的IP访问默认时不通过代理的，所以需要设置终端访问代理，
+> PS:set http_proxy=http://127.0.0.1:10808)+允许局域网的链接。
+> 这些网络设置都通过了之后，才能正常通过npm命令安装claude(npm install -g @anthropic-ai/claude-code)
+> 全部准备工作完毕之后，还需要重置API Key($5/月)才能正常使用，因为登录方式只有Claude pro、Claude plus、claude console等方式，
+> 我用的是claude console登陆方式，我的账户(billing)里面没有积分(credits);
+> 不好用，得充钱呢，还是Gemini好用；
+
+### 25-12-23
+#### 大文件切片上传
+
