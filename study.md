@@ -3269,3 +3269,31 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
     largeUpload();
   }
   ```
+
+### 25-12-24
+#### sharedWorker待研究；
+#### gemini 也用不了
+- gemini cli->Gemini Code Assist权限->需要在cloud.google平台中拥有Google Cloud project开源项目->启用之后需要设置IAM给google账
+- 号设置对应访问权限->在Gemini管理中心gemini产品中启用Code Assist->要关联结算账户，用于后续的计费，开始90天会有$300免费赠金
+- <span style="color: red;">主要是需要添加付款方式（借记卡、储蓄卡）</span>，俺没有
+
+### 25-12-25
+#### (gemini内核知乎讲解)[https://zhuanlan.zhihu.com/p/1976305837011116648?utm_source=chatgpt.com]
+- 名词解释
+|ReAct | （reason + act）循环，通过 "观察-思考-行动" 闭环实现智能决策与执行的核心流程|
+|core |核心 |
+|cli| 命令行接口 |
+
+### 25-12-26
+#### git命令行积累
+```bash
+git branch -d 11.0; // 删除本地分支
+git branch 12.0; // 创建新的分支
+git checkout 12.0; // 切换到新创建的分支
+git push --set-upstream origin 12.0; // 推送本地分支到远端仓库
+
+git branch -m 12.0 12.1; // 重命名分支
+git push origin --delete 12.0; // 删除远端分支
+git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支到远端仓库
+
+``` 
