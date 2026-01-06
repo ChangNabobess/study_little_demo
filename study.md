@@ -3084,6 +3084,7 @@ list.forEach((item, i) => {
 Git 计算出撤销版本 C 需要做哪些反向操作（即删除那 10 行代码）。
 Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状态。
 结果： 版本 C 仍然存在于历史中，新的提交 D 紧随其后。历史记录是干净、连续的。
+<span style="color: red;">只会撤销这一次hash版本的提交内容，其他提交记录的内容不会改动</span>
 
 
 ### 25-12-18
@@ -3297,3 +3298,10 @@ git push origin --delete 12.0; // 删除远端分支
 git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支到远端仓库
 
 ``` 
+
+### 25-12-31
+#### 常用git命令
+```bash
+git checkout -b new_branch;
+git push origin new_branch;
+```
