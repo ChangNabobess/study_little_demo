@@ -3305,3 +3305,14 @@ git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支
 git checkout -b new_branch;
 git push origin new_branch;
 ```
+### 26-01-03
+#### MCP
+> 部署应用可以用http协议部署MCP服务器，添加扩展插件可以使用streamable http作为有状态、无状态服务尝试以下
+> 但是MCP不支持streamable http，需要在后续更新中注意；
+- MCP 是model context prompt，分为Tooles、resource、prompt
+- 这个Anthropic官方的讲解视频是不是把Agent和Claude产品结合在一起讲了，而不是单纯的讲解MCP概念；
+- 之前我理解的MCP是服务于client-tooles之间的使用协议，规定大家使用哪种什么方法调用不同的AI模型；
+- 这个Anthropic讲解视频感觉很老的样子，需要自己搭建服务，创建数据库、维护base数据，编写search_fun、extract_fun等工具方法
+- 通过loop_chat询问用户，然后调用claude模型分析用户需求，根据claude模型返回的content.type类型判断是需要调用search_fun、extract_fun等工具方法，还是直接将结果展示给用户
+> 痛点1:没有超长上下文记忆功能；
+> 痛点2:数据来源单一，不能直接根据用户场景实时获取数据信息；
