@@ -342,10 +342,10 @@ function update() {
   <h1>这是一段示范文字</h1>
 </template>;
 // main.js
-import { createApp } from "vue";
-import App from "./App.vue";
+import { createApp } from 'vue';
+import App from './App.vue';
 
-createApp(App).mount("#app");
+createApp(App).mount('#app');
 ```
 
 ### 0507
@@ -415,6 +415,24 @@ const vnode = withDirectives(h('div'), [
 ### 0508
 
 #### git 提交命令行
+
+```bash
+# <type>(<scope>): <subject>;
+perf(table): 优化大数据量渲染性能;
+```
+
+# scope（作用范围）推荐写法
+
+|---(view)---|---页面---|
+|---(component)---|---组件---|
+|---(api) | 接口|
+|---(store)---|---状态管理---|
+|---(router)---|--- 路由---|
+|---(table)---|---表格---|
+|---(form)---|---表单---|
+|---(build)---|---构建---|
+
+# subject（一句话规则）
 
 - `feat` 增加新功能
 - `fix` 修复问题/BUG
@@ -575,14 +593,14 @@ const { data, pending, error, refresh } = await useFetch(`https://api.nuxtjs.dev
 > 响应式获取视口断点
 
 ```javascript
-import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
+import { useBreakpoints, breakpointsTailwind } from '@vueuse/core';
 const breakpoints = useBreakpoints(breakpointsTailwind);
-const smAndLarger = breakpoints.greaterOrEqual("sm"); // sm and larger
-const largerThanSm = breakpoints.greater("sm"); // only larger than sm
-const lgAndSmaller = breakpoints.smallerOrEqual("lg"); // lg and smaller
-const smallerThanLg = breakpoints.smaller("lg"); // only smaller than lg
+const smAndLarger = breakpoints.greaterOrEqual('sm'); // sm and larger
+const largerThanSm = breakpoints.greater('sm'); // only larger than sm
+const lgAndSmaller = breakpoints.smallerOrEqual('lg'); // lg and smaller
+const smallerThanLg = breakpoints.smaller('lg'); // only smaller than lg
 if (smallerThanLg) {
-  console.log("超小视口");
+  console.log('超小视口');
 }
 ```
 
@@ -608,8 +626,8 @@ defineOptions({
   所有像 class 和 v-on 监听器这样的透传 attribute 都应用在内部的 <button> 上而不是外层的 <div> 上
 */
 /* children component */
-<div class="btn-wrapper">
-  <button class="btn" v-bind="$attrs">
+<div class='btn-wrapper'>
+  <button class='btn' v-bind='$attrs'>
     Click Me
   </button>
 </div>
@@ -817,7 +835,7 @@ export function readFileInputEventAsArrayBuffer(event, callback) {
   const reader = new FileReader();
 
   reader.onload = function (loadEvent: Event) {
-    const arrayBuffer = loadEvent.target["result"];
+    const arrayBuffer = loadEvent.target['result'];
     callback(arrayBuffer);
   };
 
@@ -834,9 +852,9 @@ mammoth.convertToHtml({ arrayBuffer });
 */
 let options = {
   convertImage: mammoth.images.imgElement(function (image) {
-    return image.read("base64").then(function (imageBuffer) {
+    return image.read('base64').then(function (imageBuffer) {
       return {
-        src: "data:" + image.contentType + ";base64," + imageBuffer,
+        src: 'data:' + image.contentType + ';base64,' + imageBuffer,
       };
     });
   }),
@@ -846,7 +864,7 @@ let options = {
 */
 const mammothOptions = {
   convertImage: mammoth.images.imgElement(function (image) {
-    return image.read("base64").then(async (imageBuffer) => {
+    return image.read('base64').then(async (imageBuffer) => {
       const result = await uploadBase64Image(imageBuffer, image.contentType);
       return {
         src: result.data.path, // 获取图片线上的URL地址
@@ -859,13 +877,13 @@ const mammothOptions = {
 */
 async function uploadBase64Image(base64Image, mime) {
   const formData = new FormData();
-  formData.append("file", base64ToBlob(base64Image, mime));
+  formData.append('file', base64ToBlob(base64Image, mime));
 
   return await axios({
-    method: "post",
-    url: "http://localhost:3000/uploadfile", // 本地图片上传的API地址
+    method: 'post',
+    url: 'http://localhost:3000/uploadfile', // 本地图片上传的API地址
     data: formData,
-    config: { headers: { "Content-Type": "multipart/form-data" } },
+    config: { headers: { 'Content-Type': 'multipart/form-data' } },
   });
 }
 ```
@@ -971,7 +989,7 @@ async function uploadBase64Image(base64Image, mime) {
 1. creatPortal-基础使用
 
 ```javascript
-import { createPortal } from "react-dom";
+import { createPortal } from 'react-dom';
 
 <div>
   <p>这个子节点被放置在父节点 div 中。</p>
@@ -983,8 +1001,8 @@ import { createPortal } from "react-dom";
 
 ```javascript
 // createPortal(children, domNode, key?)
-import { useState } from "react";
-import { createPortal } from "react-dom";
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 export default function App() {
   const PortalExample = () => {
     const [showModal, setShowModal] = false;
@@ -995,7 +1013,7 @@ export default function App() {
         </button>
         {showModal &&
           createPortal(
-            <div className="modal">
+            <div className='modal'>
               <div>这是一个模态对话框</div>
               <button onClick={setShowModal(false)}>关闭</button>
             </div>,
@@ -1006,7 +1024,7 @@ export default function App() {
   };
   return (
     <>
-      <div className="clipping-container">
+      <div className='clipping-container'>
         <PortalExample />
       </div>
     </>
@@ -1025,9 +1043,9 @@ export default function App() {
 
 ```javascript
 // App.js
-import { useRef, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { createMapWidget, addPopupToMapWidget } from "./map-widget.js";
+import { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { createMapWidget, addPopupToMapWidget } from './map-widget.js';
 
 export default function Map() {
   const containerRef = useRef(null);
@@ -1054,21 +1072,21 @@ export default function Map() {
 
 ```javascript
 // map-widget.js
-import "leaflet/dist/leaflet.css";
-import * as L from "leaflet";
+import 'leaflet/dist/leaflet.css';
+import * as L from 'leaflet';
 
 export function createMapWidget(containerDomNode) {
   const map = L.map(containerDomNode);
   map.setView([0, 0], 0);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: "© OpenStreetMap",
+    attribution: '© OpenStreetMap',
   }).addTo(map);
   return map;
 }
 
 export function addPopupToMapWidget(map) {
-  const popupDiv = document.createElement("div");
+  const popupDiv = document.createElement('div');
   L.popup().setLatLng([0, 0]).setContent(popupDiv).openOn(map);
   return popupDiv;
 }
@@ -1081,20 +1099,20 @@ export function addPopupToMapWidget(map) {
 > 父组件 AppWrapper
 
 ```javascript
-import Cookies from "universal-cookie";
+import Cookies from 'universal-cookie';
 const cookies = new Cookies();
 export const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
   const signUserOut = async () => {
-    cookies.remove("auth-token");
+    cookies.remove('auth-token');
     setIsAuth(false);
     setIsInChat(false);
   };
   return (
-    <div className="App">
-      <div className="app-header">
+    <div className='App'>
+      <div className='app-header'>
         <h1>演示React-slot</h1>
       </div>
-      <div className="app-container">{children}</div>
+      <div className='app-container'>{children}</div>
     </div>
   );
 };
@@ -1103,34 +1121,34 @@ export const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
 > 子组件
 
 ```javascript
-import React, { useState } from "react";
-import { Chat } from "./components/Chat";
-import { Auth } from "./components/Auth";
-import { AppWrapper } from "./components/AppWrapper";
-import { CallRoom } from "./components/CallRoom"; // Import CallRoom as default
-import Cookies from "universal-cookie";
-import "./App.css";
+import React, { useState } from 'react';
+import { Chat } from './components/Chat';
+import { Auth } from './components/Auth';
+import { AppWrapper } from './components/AppWrapper';
+import { CallRoom } from './components/CallRoom'; // Import CallRoom as default
+import Cookies from 'universal-cookie';
+import './App.css';
 const cookies = new Cookies();
 function ChatApp() {
-  const [isAuth, setIsAuth] = useState(cookies.get("auth-token"));
+  const [isAuth, setIsAuth] = useState(cookies.get('auth-token'));
   const [isInChat, setIsInChat] = useState(true);
-  const [room, setRoom] = useState("");
+  const [room, setRoom] = useState('');
   const [isInCall, setIsInCall] = useState(false); // Track if in a call
-  const [callRoomId, setCallRoomId] = useState(""); // Store call room ID
+  const [callRoomId, setCallRoomId] = useState(''); // Store call room ID
   const startCall = (roomId) => {
     setCallRoomId(roomId);
     setIsInCall(true);
   };
   const endCall = () => {
     setIsInCall(false);
-    setCallRoomId("");
+    setCallRoomId('');
   };
   return (
     <AppWrapper isAuth={isAuth} setIsAuth={setIsAuth} setIsInChat={setIsInChat}>
       {isInCall ? (
         <CallRoom roomId={callRoomId} onEndCall={endCall} />
       ) : !isInChat ? (
-        <div className="room">
+        <div className='room'>
           <label>Type Room ID:</label>
           <input onChange={(e) => setRoom(e.target.value)} value={room} />
           <button
@@ -1177,45 +1195,45 @@ export default ChatApp;
     我们需要传递一个插槽函数或者是一个包含插槽函数的对象而非是数组
     插槽函数的返回值同一个正常的渲染函数的返回值一样——并且在子组件中被访问时总是会被转化为一个 vnodes 数组。
 */
-const vnode = h("div", { id: "foo" }, []);
+const vnode = h('div', { id: 'foo' }, []);
 vnode.type; // 'div'
 vnode.props; // { id: 'foo' }
 vnode.children; // []
 vnode.key; // null
 export function confirmComponentService(options = {}) {
   const {
-    title = "",
-    width = "50%",
+    title = '',
+    width = '50%',
     propsValue = {},
     component = {
       render() {
-        return h("div", "组件");
+        return h('div', '组件');
       },
     },
-    dialogClass = "no-padding-top-dialog",
+    dialogClass = 'no-padding-top-dialog',
     dialogProps = {},
     showFooter = true,
     showCancelButton = true,
     showConfirmButton = true,
-    cancelButtonText = "取消",
-    confirmButtonText = "确认",
+    cancelButtonText = '取消',
+    confirmButtonText = '确认',
     footer,
     onCancel = () => ({}),
     onConfirm = () => ({}),
     onClose = () => ({}),
   } = options;
-  const container = document.createElement("div");
+  const container = document.createElement('div');
   const userOnClose = onClose;
-  const lang = localStorage.getItem("lang") || "zh-CN";
+  const lang = localStorage.getItem('lang') || 'zh-CN';
 
   const slots = {
     default: () =>
       h(
         ElConfigProvider,
         {
-          size: "small",
+          size: 'small',
           zIndex: 2000,
-          locale: lang === "zh-CN" ? zhCn : enUs,
+          locale: lang === 'zh-CN' ? zhCn : enUs,
         },
         {
           default: () =>
@@ -1230,26 +1248,26 @@ export function confirmComponentService(options = {}) {
       showFooter
         ? footer
           ? footer(handler)
-          : h("div", { class: "flex justify-content-end" }, [
+          : h('div', { class: 'flex justify-content-end' }, [
               showCancelButton
                 ? h(
                     ElButton,
                     {
-                      size: "small",
+                      size: 'small',
                       onClick: () => {
                         handler();
                         onCancel();
                       },
                     },
-                    () => cancelButtonText || "取消"
+                    () => cancelButtonText || '取消'
                   )
                 : null,
               showConfirmButton
                 ? h(
                     ElButton,
                     {
-                      type: "primary",
-                      size: "small",
+                      type: 'primary',
+                      size: 'small',
                       onClick: debounce(
                         () => {
                           new Promise((resolve, reject) => {
@@ -1263,7 +1281,7 @@ export function confirmComponentService(options = {}) {
                         { leading: true, trailing: false }
                       ),
                     },
-                    () => confirmButtonText || "确定"
+                    () => confirmButtonText || '确定'
                   )
                 : null,
             ])
@@ -1275,7 +1293,7 @@ export function confirmComponentService(options = {}) {
     {
       title: title,
       modelValue: true,
-      width: width || "80%",
+      width: width || '80%',
       class: dialogClass,
       onClose: () => {
         userOnClose();
@@ -1309,10 +1327,10 @@ export function confirmComponentService(options = {}) {
 
 ```javascript
 const vm = confirmComponentService({
-  title: "图片预览",
+  title: '图片预览',
   width: pxToRem(800),
   dialogProps: {
-    top: "2vh",
+    top: '2vh',
   },
   component: () => <ImageView src={src} onRotate={(val) => rotate(val, row)} />,
   showCancelButton: false,
@@ -1351,22 +1369,22 @@ vue 项目中直接用 vue 文件 export 方式创建组件和使用 js 文件�
 */
 const map1 = new Map();
 
-map1.set("a", 1);
-map1.set("b", 2);
-map1.set("c", 3);
+map1.set('a', 1);
+map1.set('b', 2);
+map1.set('c', 3);
 
-console.log(map1.get("a"));
+console.log(map1.get('a'));
 // Expected output: 1
 
-map1.set("a", 97);
+map1.set('a', 97);
 
-console.log(map1.get("a"));
+console.log(map1.get('a'));
 // Expected output: 97
 
 console.log(map1.size);
 // Expected output: 3
 
-map1.delete("b");
+map1.delete('b');
 
 console.log(map1.size);
 // Expected output: 2
@@ -1375,8 +1393,8 @@ console.log(map1.size);
   2、遍历map
 */
 const myMap = new Map();
-myMap.set(0, "zero");
-myMap.set(1, "one");
+myMap.set(0, 'zero');
+myMap.set(1, 'one');
 // 使用 for of 便利map值
 for (const [key, value] of myMap) {
   console.log(`${key} = ${value}`);
@@ -1395,14 +1413,14 @@ myMap.forEach((value, key) => {
   3、map转换为数组
 */
 const kvArray = [
-  ["key1", "value1"],
-  ["key2", "value2"],
+  ['key1', 'value1'],
+  ['key2', 'value2'],
 ];
 
 // 使用常规的 Map 构造函数可以将一个二维的键值对数组转换成一个 Map 对象
 const myMap = new Map(kvArray);
 
-console.log(myMap.get("key1")); // "value1"
+console.log(myMap.get('key1')); // "value1"
 
 // 使用 Array.from 函数可以将一个 Map 对象转换成一个二维的键值对数组
 console.log(Array.from(myMap)); // 输出和 kvArray 相同的数组
@@ -1418,7 +1436,7 @@ console.log(Array.from(myMap)); // 输出和 kvArray 相同的数组
 /* 
   1、封装axios方法，在Utils->request文件路径中(Demo：CRO)
 */
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
 const request = axios.create({
   baseURL: process.env.VUE_APP_URL,
   timeout: 300 * 1000,
@@ -1438,11 +1456,11 @@ export default request;
 /* 
   2、在单文件总是导入封装好的axios使用
 */
-import request from "@/utils/request";
+import request from '@/utils/request';
 export const archivesAll = (params) => {
   return request({
-    url: "/alones/archives/find/all",
-    method: "get",
+    url: '/alones/archives/find/all',
+    method: 'get',
     params,
   });
 };
@@ -1638,9 +1656,9 @@ const [modelValue, modelModifiers] = defineModel({
 
 ```javascript
 export function covertBase64UrlToFile(urlData) {
-  const arr = urlData.split(",");
+  const arr = urlData.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
-  const bytes = window.atob(urlData.split(",")[1]); // 对用base64编码过的字符串进行解码
+  const bytes = window.atob(urlData.split(',')[1]); // 对用base64编码过的字符串进行解码
   const ab = new ArrayBuffer(bytes.length);
   const ia = new Uint8Array(ab);
   for (let i = 0; i < bytes.length; i++) {
@@ -1648,9 +1666,9 @@ export function covertBase64UrlToFile(urlData) {
   }
   return new File(
     [ab],
-    `${new Date().getTime()}.${mime.split("/")?.last || "png"}`,
+    `${new Date().getTime()}.${mime.split('/')?.last || 'png'}`,
     {
-      type: mime || "image/png",
+      type: mime || 'image/png',
       lastModified: new Date(),
     }
   );
@@ -1742,7 +1760,7 @@ shallowArray.value = [
 
 ```javascript
 const shallow = shallowRef({
-  greet: "Hello, world",
+  greet: 'Hello, world',
 });
 
 // 触发该副作用第一次应该会打印 "Hello, world"
@@ -1751,7 +1769,7 @@ watchEffect(() => {
 });
 
 // 这次变更不应触发副作用，因为这个 ref 是浅层的
-shallow.value.greet = "Hello, universe";
+shallow.value.greet = 'Hello, universe';
 
 // 打印 "Hello, universe"
 triggerRef(shallow);
@@ -1776,7 +1794,7 @@ type CustomRefFactory<T> = (
 > 3.2 curstomRef()-应用实例,节流函数
 
 ```javascript
-import { customRef } from "vue";
+import { customRef } from 'vue';
 
 export function useDebouncedRef(value, delay = 200) {
   let timeout;
@@ -1855,13 +1873,13 @@ interface WatchHandle {
 > 4.2 watchEffect() 示例
 
 ```javascript
-import { onWatcherCleanup } from "vue";
+import { onWatcherCleanup } from 'vue';
 /* 
   onCleanup 函数在Vue@3.5 版本之后直接注入vue实例作为组合式函数使用了
 */
 watchEffect(
   {
-    flush: "post",
+    flush: 'post',
     onTrack(e) {
       debugger;
     },
@@ -1934,7 +1952,7 @@ interface WatchHandle {
 > 5.2 watch 示例
 
 ```javascript
-import { onWatcherCleanup } from "vue";
+import { onWatcherCleanup } from 'vue';
 // 侦听多个监听源
 watch(
   [fooRef, barRef],
@@ -1950,7 +1968,7 @@ watch(
   {
     deep: true,
     immediate: true,
-    flush: "pre",
+    flush: 'pre',
     onTrack(e) {
       debugger;
     },
@@ -1983,20 +2001,20 @@ watch(
 - 2、计算属性是只读的，可以用 getter、setter 函数设置 computer 属性
 
 ```javascript
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue';
 
-const firstName = ref("John");
-const lastName = ref("Doe");
+const firstName = ref('John');
+const lastName = ref('Doe');
 
 const fullName = computed({
   // getter
   get() {
-    return firstName.value + " " + lastName.value;
+    return firstName.value + ' ' + lastName.value;
   },
   // setter
   set(newValue) {
     // 注意：我们这里使用的是解构赋值语法
-    [firstName.value, lastName.value] = newValue.split(" ");
+    [firstName.value, lastName.value] = newValue.split(' ');
   },
 });
 ```
@@ -2031,23 +2049,23 @@ Step6: git fetch -p // 更新本地仓库的远程跟踪分支,实测有效，�
 [CKEditor 生成 PDF](https://ckeditor.com/docs/ckeditor5/latest/features/converters/export-pdf.html);
 
 ```javascript
-import { ClassicEditor } from "ckeditor5";
-import { ExportPdf } from "ckeditor5-premium-features";
+import { ClassicEditor } from 'ckeditor5';
+import { ExportPdf } from 'ckeditor5-premium-features';
 
-ClassicEditor.create(document.querySelector("#editor"), {
+ClassicEditor.create(document.querySelector('#editor'), {
   plugins: [ExportPdf /* ... */],
-  toolbar: ["exportPdf", "|" /* ... */],
+  toolbar: ['exportPdf', '|' /* ... */],
   exportPdf: {
-    tokenUrl: "https://example.com/cs-token-endpoint",
-    stylesheets: ["path/to/editor-styles.css", "path/to/my-styles.css"],
-    fileName: "my-file.pdf",
+    tokenUrl: 'https://example.com/cs-token-endpoint',
+    stylesheets: ['path/to/editor-styles.css', 'path/to/my-styles.css'],
+    fileName: 'my-file.pdf',
     converterOptions: {
-      format: "A4",
-      margin_top: "20mm",
-      margin_bottom: "20mm",
-      margin_right: "12mm",
-      margin_left: "12mm",
-      page_orientation: "portrait",
+      format: 'A4',
+      margin_top: '20mm',
+      margin_bottom: '20mm',
+      margin_right: '12mm',
+      margin_left: '12mm',
+      page_orientation: 'portrait',
     },
   },
 })
@@ -2058,23 +2076,23 @@ ClassicEditor.create(document.querySelector("#editor"), {
 [CKEditor 生成 Word](https://ckeditor.com/docs/ckeditor5/latest/features/converters/export-word.html);
 
 ```javascript
-import { ClassicEditor } from "ckeditor5";
-import { ExportWord } from "ckeditor5-premium-features";
+import { ClassicEditor } from 'ckeditor5';
+import { ExportWord } from 'ckeditor5-premium-features';
 
-ClassicEditor.create(document.querySelector("#editor"), {
+ClassicEditor.create(document.querySelector('#editor'), {
   plugins: [ExportWord /* ... */],
-  toolbar: ["exportWord", "|" /* ... */],
+  toolbar: ['exportWord', '|' /* ... */],
   exportWord: {
-    tokenUrl: "https://example.com/cs-token-endpoint",
-    fileName: "my-file.docx",
+    tokenUrl: 'https://example.com/cs-token-endpoint',
+    fileName: 'my-file.docx',
     converterOptions: {
       document: {
-        size: "A4", // Default value, you do not need to specify it explicitly for A4.
+        size: 'A4', // Default value, you do not need to specify it explicitly for A4.
         margin: {
-          top: "20mm",
-          bottom: "20mm",
-          right: "12mm",
-          left: "12mm",
+          top: '20mm',
+          bottom: '20mm',
+          right: '12mm',
+          left: '12mm',
         },
       },
     },
@@ -2218,12 +2236,12 @@ import.meta.env.VITE_NAME;
 </template>
 
 <script script setup name="parentComponent">
-import { ref } from "vue";
-import childrenComponent from "./childrenComponent.vue";
+import { ref } from 'vue';
+import childrenComponent from './childrenComponent.vue';
 const theme = ref({
-  color: "green",
-  background: "yellow",
-  border: "1px solid #000",
+  color: 'green',
+  background: 'yellow',
+  border: '1px solid #000',
 });
 </script>
 
@@ -2233,21 +2251,21 @@ const theme = ref({
   V2：在Dom元素上绑定style样式，在CSS中使用var变量引用
 */
 .parent_div_class {
-  color: v-bind("theme.value.color");
+  color: v-bind('theme.value.color');
 }
 /*
   深度选择器_V3写法
 */
 .parent_div_class {
   :deep(.children_div_class) {
-    background-color: "red";
+    background-color: 'red';
   }
 }
 /*
   深度选择器_V2写法，官方已经不推荐
 */
 .parent_div_class >>> .children_div_class {
-  background-color: "red";
+  background-color: 'red';
 }
 /* 
   插槽选择器_V3写法
@@ -2285,11 +2303,11 @@ Vue 2 没有“app”的概念，我们定义的应用只是通过 new Vue() 创
 
 ```javascript
 // 之前
-Vue.config.ignoredElements = ["my-el", /^ion-/];
+Vue.config.ignoredElements = ['my-el', /^ion-/];
 
 // 之后
 const app = createApp({});
-app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith("ion-");
+app.config.compilerOptions.isCustomElement = (tag) => tag.startsWith('ion-');
 ```
 
 - 3、V2(mixmin) -> V3(extends)[https://cn.vuejs.org/api/options-composition#extends]
@@ -2316,7 +2334,7 @@ const CompB = {
 > 使用到 WatchEffect（组合式 API）、toValue（工具函数）；
 
 ```javascript
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from 'vue';
 // ***************按照惯例，组合式函数名以“use”开头****************
 export function useMouse() {
   // 被组合式函数封装和管理的状态
@@ -2331,8 +2349,8 @@ export function useMouse() {
 
   // 一个组合式函数也可以挂靠在所属组件的生命周期上
   // 来启动和卸载副作用
-  onMounted(() => window.addEventListener("mousemove", update));
-  onUnmounted(() => window.removeEventListener("mousemove", update));
+  onMounted(() => window.addEventListener('mousemove', update));
+  onUnmounted(() => window.removeEventListener('mousemove', update));
 
   // 通过返回值暴露所管理的状态
   return { x, y };
@@ -2366,62 +2384,62 @@ const { x, y } = useMouse()
 
 ```typescript
 // 通过单例模式导出应用实例
-import { createApp } from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
 
 // 创建并导出应用实例
 export const app = createApp(App);
 
-app.use(router).use(store).mount("#app");
+app.use(router).use(store).mount('#app');
 ```
 
 ```typescript
 // 小项目就挂在到window对象上，可以用，不推荐
-import { createApp } from "vue";
-import App from "./App.vue";
+import { createApp } from 'vue';
+import App from './App.vue';
 
 const app = createApp(App);
 
 // 将全局配置挂载到 window 对象
 (window as any).$globalConfig = {
-  theme: "dark",
-  apiEndpoint: "https://api.example.com",
+  theme: 'dark',
+  apiEndpoint: 'https://api.example.com',
 };
 
-app.mount("#app");
+app.mount('#app');
 ```
 
 - 3、顺手记一下，vue3.x 全局事件总线传参、vuex、pinan
 
 ```typescript
 // 使用全局事件总线或依赖注入
-import { createApp } from "vue";
-import App from "./App.vue";
+import { createApp } from 'vue';
+import App from './App.vue';
 
 const app = createApp(App);
 
 // 全局配置项
 const globalConfig = {
-  theme: "dark",
-  apiEndpoint: "https://api.example.com",
+  theme: 'dark',
+  apiEndpoint: 'https://api.example.com',
 };
 
-app.provide("globalConfig", globalConfig);
+app.provide('globalConfig', globalConfig);
 // import { inject } from "vue";
 // const globalConfig = inject('globalConfig'); // 子组件接收
 
-app.mount("#app");
+app.mount('#app');
 
 // 使用vuex
-import { createStore } from "vuex";
+import { createStore } from 'vuex';
 
 export default createStore({
   state: {
     globalConfig: {
-      theme: "dark",
-      apiEndpoint: "https://api.example.com",
+      theme: 'dark',
+      apiEndpoint: 'https://api.example.com',
     },
   },
   getters: {
@@ -2588,7 +2606,7 @@ export default DynamicHeading
 ```vue
 <script>
 const asyncModalWithOptions = defineAsyncComponent({
-  loader: () => import("./Modal.vue"),
+  loader: () => import('./Modal.vue'),
   delay: 200,
   timeout: 3000,
   errorComponent: ErrorComponent,
@@ -2602,7 +2620,7 @@ const asyncModalWithOptions = defineAsyncComponent({
 
 ```vue
 <script>
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent } from 'vue';
 
 const AsyncComp = defineAsyncComponent(() => {
   return new Promise((resolve, reject) => {
@@ -2618,9 +2636,9 @@ const AsyncComp = defineAsyncComponent(() => {
 
 ```vue
 <script>
-import { defineAsyncComponent, hydrateOnIdle } from "vue";
+import { defineAsyncComponent, hydrateOnIdle } from 'vue';
 const AsyncComp = defineAsyncComponent({
-  loader: () => import("./Comp.vue"),
+  loader: () => import('./Comp.vue'),
   // hydrate: hydrateOnIdle(/* 传递可选的最大超时 */),
   // hydrate: hydrateOnVisible(rootMargin: '100px'), // 在可见时激活
   // hydrate: hydrateOnMediaQuery('(max-width:500px)'), // 在媒体查询匹配时激活
@@ -2681,7 +2699,7 @@ export default {
  -->
 <script>
 // eventBus.js
-import emitter from "tiny-emitter/instance";
+import emitter from 'tiny-emitter/instance';
 
 export default {
   $on: (...args) => emitter.on(...args),
@@ -2701,10 +2719,10 @@ export default {
   </ul>
 </template>
 <script>
-import { onMounted, ref, useTemplateRef } from "vue";
+import { onMounted, ref, useTemplateRef } from 'vue';
 let lists: Array<number> = ref([1, 2, 3]);
 let items = ref();
-let itemsRef = useTemplateRef("items");
+let itemsRef = useTemplateRef('items');
 onMounted(() => {
   // 自己写的
   itemsRef.value.forEach((item: any) => {
@@ -2790,7 +2808,7 @@ onMounted(() => {
 
   ```vue
   <script>
-  import { inject } from "vue";
+  import { inject } from 'vue';
   export default {
     props: {
       theme: {
@@ -2798,7 +2816,7 @@ onMounted(() => {
           // `props` 是传递给组件的、
           // 在任何类型/默认强制转换之前的原始值，
           // 也可以使用 `inject` 来访问注入的 property
-          return inject("theme", "default-theme");
+          return inject('theme', 'default-theme');
         },
       },
     },
@@ -2929,10 +2947,10 @@ linux 下：rm -rf node_modules;
     返回指定对象的原始值。
 */
 const mapgather = new Map();
-mapgather.set("name", "zhangsan");
-mapgather.set("age", 18);
-mapgather.get("name");
-mapgather.has("age");
+mapgather.set('name', 'zhangsan');
+mapgather.set('age', 18);
+mapgather.get('name');
+mapgather.has('age');
 ```
 
 - 2、[Set](https://juejin.cn/post/6985033972531068942#heading-0)是被成为集合的数据结构
@@ -2981,21 +2999,28 @@ mapgather.has("age");
 ```
 
 ### 0516
+
 ```html
 <!-- 
   EJS 语法
   在HtmlWebpackPlugin插件中配置metadata、themeHash、commit_id值就能在html文件中使用
  -->
 <title><%= htmlWebpackPlugin.options.title %></title>
-<meta name="version" content="<%= htmlWebpackPlugin.options.commit_id %>">
-<link href="/BlueTheme.<%= htmlWebpackPlugin.options.commit_id %>.css" rel="stylesheet" type="text/css">
+<meta name="version" content="<%= htmlWebpackPlugin.options.commit_id %>" />
+<link
+  href="/BlueTheme.<%= htmlWebpackPlugin.options.commit_id %>.css"
+  rel="stylesheet"
+  type="text/css"
+/>
 ```
-- 系统切换主题Plan1:
-> 1、准备所有主题css样式文件(root、UI样式修改)；
-> 2、在切换主题的时候修改Html文件中的样式引入文件link;
-> 3、在页面样式设置公共样式变量，根据主题切换变量值；
 
-### 0521 
+- 系统切换主题 Plan1:
+  > 1、准备所有主题 css 样式文件(root、UI 样式修改)；
+  > 2、在切换主题的时候修改 Html 文件中的样式引入文件 link;
+  > 3、在页面样式设置公共样式变量，根据主题切换变量值；
+
+### 0521
+
 - 数据的序列化
   ```
   const data = { name: 'zhangsan', age: 18 };
@@ -3006,7 +3031,8 @@ mapgather.has("age");
   const dataStr = '{"name":"zhangsan","age":18}';
   const data = JSON.parse(dataStr);
   ```
-JSON.stringify() \ JSON.parse() 方法可以增加参数，修改数据类型；
+  JSON.stringify() \ JSON.parse() 方法可以增加参数，修改数据类型；
+
 ```
 const jsonWithDate = '{"name":"张三","birthDate":"2000-01-01T00:00:00.000Z"}';
 const objWithDate = JSON.parse(jsonWithDate, (key, value) => {
@@ -3016,13 +3042,16 @@ const objWithDate = JSON.parse(jsonWithDate, (key, value) => {
   return value;
 });
 console.log(objWithDate.birthDate instanceof Date); // 输出：true
-  ```
-> 小数据集（<10KB）：JSON.parse性能足够好;
-> 中等数据集（10KB-1MB）：MessagePack等二进制格式开始显示优势;
-> 大数据集（>1MB）：流式解析或Web Worker方案效果最佳;
+```
 
-### 0523 
-> 切换Node版本工具 nvm
+> 小数据集（<10KB）：JSON.parse 性能足够好;
+> 中等数据集（10KB-1MB）：MessagePack 等二进制格式开始显示优势;
+> 大数据集（>1MB）：流式解析或 Web Worker 方案效果最佳;
+
+### 0523
+
+> 切换 Node 版本工具 nvm
+
 ```javascript
 // 基本常用语法
 nvm install 16.13.1;
@@ -3031,15 +3060,16 @@ nvm ls;
 ```
 
 ### 0603
-> lodash 好用方法 
-chunk 将数组（array）拆分成多个 size 长度的区块，并将这些区块组成一个新数组。 如果array 无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。
-方便处理上限数据，比如后端只接受10条10条这样的参数；
 
+> lodash 好用方法
+> chunk 将数组（array）拆分成多个 size 长度的区块，并将这些区块组成一个新数组。 如果 array 无法被分割成全部等长的区块，那么最后剩余的元素将组成一个区块。
+> 方便处理上限数据，比如后端只接受 10 条 10 条这样的参数；
 
 ### 0609
+
 ```javascript
 // 取模用法(Base)
-i % 2 ; // 奇偶判断 
+i % 2; // 奇偶判断
 i % 10; // 有序分组
 i % 3 == 0; // 3的倍数判断
 // 时间逻辑处理
@@ -3062,91 +3092,102 @@ list.forEach((item, i) => {
 });
 ```
 
-### 0715 
+### 0715
+
 > 名词解释
+
 - CI: Continuous Integration（持续集成）
 - CLI: Command Line Interface（命令行界面）
 
 ### 25-12-17
+
 #### git reset 和 git revert 的区别
 
 - git reset --hard <commitSHA> 重置
 - git reset --mixed <commitSHA>
 - git reset --soft <commitSHA>
-| 模式 (Mode) | HEAD (指针) | 暂存区 (Index) |工作区 (Working Tree) |作用
-| -------- | ---------- | --------------- | ----------- |----------- 
-| --hard | 移到目标提交 | 匹配目标提交 |匹配目标提交 |彻底丢弃目标提交之后的所有修改。最危险。
-| --mixed (默认)| 移到目标提交| 匹配目标提交 |保持不变 |取消暂存。目标提交之后的所有修改变为未暂存状态。
-| --soft | 移到目标提交 | 保持不变 | 保持不变 | 取消提交。目标提交之后的所有修改变为已暂存状态，可以直接 git commit。
+  | 模式 (Mode) | HEAD (指针) | 暂存区 (Index) |工作区 (Working Tree) |作用
+  | -------- | ---------- | --------------- | ----------- |-----------
+  | --hard | 移到目标提交 | 匹配目标提交 |匹配目标提交 |彻底丢弃目标提交之后的所有修改。最危险。
+  | --mixed (默认)| 移到目标提交| 匹配目标提交 |保持不变 |取消暂存。目标提交之后的所有修改变为未暂存状态。
+  | --soft | 移到目标提交 | 保持不变 | 保持不变 | 取消提交。目标提交之后的所有修改变为已暂存状态，可以直接 git commit。
 
-- git revert <commitSHA>  撤销
-假设版本 C 添加了 10 行代码。执行 git revert C 后：
-Git 计算出撤销版本 C 需要做哪些反向操作（即删除那 10 行代码）。
-Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状态。
-结果： 版本 C 仍然存在于历史中，新的提交 D 紧随其后。历史记录是干净、连续的。
-<span style="color: red;">只会撤销这一次hash版本的提交内容，其他提交记录的内容不会改动</span>
-
+- git revert <commitSHA> 撤销
+  假设版本 C 添加了 10 行代码。执行 git revert C 后：
+  Git 计算出撤销版本 C 需要做哪些反向操作（即删除那 10 行代码）。
+  Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状态。
+  结果： 版本 C 仍然存在于历史中，新的提交 D 紧随其后。历史记录是干净、连续的。
+  <span style="color: red;">只会撤销这一次 hash 版本的提交内容，其他提交记录的内容不会改动</span>
 
 ### 25-12-18
+
 #### 主线程大任务拆分方法
+
 - 1、setTimeout(() => {}, 0);
 - 2、[schedule InterFace](https://developer.mozilla.org/en-US/docs/Web/API/Scheduler);
 - 3、[Worker](https://developer.mozilla.org/zh-CN/docs/Web/API/Worker) [simple-web-worker](https://github.com/mdn/simple-web-worker)
 - 3、[yield]
 
 ### 25-12-22
-#### 今天研究了claude API 
-> claude API可以集成在终端中，但是对于网络要求比较高，需要美区节点+全局代理(因为终端的IP访问默认时不通过代理的，所以需要设置终端访问代理，
+
+#### 今天研究了 claude API
+
+> claude API 可以集成在终端中，但是对于网络要求比较高，需要美区节点+全局代理(因为终端的 IP 访问默认时不通过代理的，所以需要设置终端访问代理，
 > PS:set http_proxy=http://127.0.0.1:10808)+允许局域网的链接。
-> 这些网络设置都通过了之后，才能正常通过npm命令安装claude(npm install -g @anthropic-ai/claude-code)
-> 全部准备工作完毕之后，还需要重置API Key($5/月)才能正常使用，因为登录方式只有Claude pro、Claude plus、claude console等方式，
-> 我用的是claude console登陆方式，我的账户(billing)里面没有积分(credits);
-> 不好用，得充钱呢，还是Gemini好用；
+> 这些网络设置都通过了之后，才能正常通过 npm 命令安装 claude(npm install -g @anthropic-ai/claude-code)
+> 全部准备工作完毕之后，还需要重置 API Key($5/月)才能正常使用，因为登录方式只有 Claude pro、Claude plus、claude console 等方式，
+> 我用的是 claude console 登陆方式，我的账户(billing)里面没有积分(credits);
+> 不好用，得充钱呢，还是 Gemini 好用；
 
 ### 25-12-23
+
 #### 大文件切片上传
-- 1、用Upload上传文件，调用worke子线程监听上传进度；
+
+- 1、用 Upload 上传文件，调用 worke 子线程监听上传进度；
   ```js
-    // upload接收到几个文件就创建几个worker线程，防止主线程阻塞
-    const workerUploadService = new WorkerUploadService(file, this.chunkSize, {id: file.uid});
-    workerUploadService.listen(() => {
-      // 在这里处理子线程的上传进度；
-    })
+  // upload接收到几个文件就创建几个worker线程，防止主线程阻塞
+  const workerUploadService = new WorkerUploadService(file, this.chunkSize, {
+    id: file.uid,
+  });
+  workerUploadService.listen(() => {
+    // 在这里处理子线程的上传进度；
+  });
   ```
-- 2、添加Worker子线程(添加file、chunkSize、params)；
+- 2、添加 Worker 子线程(添加 file、chunkSize、params)；
   ```js
-    self.onmessage = (e) => {
-      const {timestamp, file, chunkSize, token, params, orgCode} = e.data;
-      self.chunkSize = chunkSize;
-      self.token = token;
-      self.orgCode = orgCode;
-      self.params = params;
-      self.count = 0;
-      const fileReader = new FileReader();
-      const totalNum = Math.floor(file.size / self.chunkSize) + 1;
-      const md5 = new SparkMD5.ArrayBuffer();
-      console.log(`文件大小：${file.size}`);
-      fileReader.onload = (e) => {
-        md5.append(e.target.result);
-        console.log(`${file.name} start upload`);
-        const totalMd5 = md5.end();
-        uploadChunkKFB(file, 1, totalNum, totalMd5);
-      };
-      fileReader.onerror = () => {
-        self.postMessage({
-          params: self.params,
-          value: 0,
-          status: 'error',
-          name: file.name,
-        });
-        console.log(e);
-        console.log(`${file.name} 解析失败`);
-      };
-      console.log(`传输${file.name}文件时间: ${new Date() - timestamp}ms`);
-      fileReader.readAsArrayBuffer(file.slice(0, 1024 * 1024 * 1024));
+  self.onmessage = (e) => {
+    const { timestamp, file, chunkSize, token, params, orgCode } = e.data;
+    self.chunkSize = chunkSize;
+    self.token = token;
+    self.orgCode = orgCode;
+    self.params = params;
+    self.count = 0;
+    const fileReader = new FileReader();
+    const totalNum = Math.floor(file.size / self.chunkSize) + 1;
+    const md5 = new SparkMD5.ArrayBuffer();
+    console.log(`文件大小：${file.size}`);
+    fileReader.onload = (e) => {
+      md5.append(e.target.result);
+      console.log(`${file.name} start upload`);
+      const totalMd5 = md5.end();
+      uploadChunkKFB(file, 1, totalNum, totalMd5);
     };
+    fileReader.onerror = () => {
+      self.postMessage({
+        params: self.params,
+        value: 0,
+        status: 'error',
+        name: file.name,
+      });
+      console.log(e);
+      console.log(`${file.name} 解析失败`);
+    };
+    console.log(`传输${file.name}文件时间: ${new Date() - timestamp}ms`);
+    fileReader.readAsArrayBuffer(file.slice(0, 1024 * 1024 * 1024));
+  };
   ```
-- 3、通过file.slice()方法将文件进行切片，在上传完切片文件之后判断上传进度，完成之后关闭线程，未完成，继续派发子线程上传剩余文件；
+- 3、通过 file.slice()方法将文件进行切片，在上传完切片文件之后判断上传进度，完成之后关闭线程，未完成，继续派发子线程上传剩余文件；
+
   ```js
   function xmlLargeUpload(fd) {
     return new Promise((res, rej) => {
@@ -3169,11 +3210,11 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
       xhr.onerror = (e) => {
         rej(e);
       };
-      xhr.onreadystatechange = () => {
-      };
+      xhr.onreadystatechange = () => {};
     });
   }
   ```
+
   ```js
   function uploadChunkKFB(blob, num, totalNum, totalMd5) {
     const fileReader = new FileReader();
@@ -3189,9 +3230,9 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
       } else {
         // 使用slice分割文件；
         const chunkSize =
-          num === totalNum ?
-            blob.slice((num - 1) * self.chunkSize) :
-            blob.slice((num - 1) * self.chunkSize, num * self.chunkSize);
+          num === totalNum
+            ? blob.slice((num - 1) * self.chunkSize)
+            : blob.slice((num - 1) * self.chunkSize, num * self.chunkSize);
         fileReader.readAsBinaryString(chunkSize);
       }
     };
@@ -3200,9 +3241,9 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
       const fd = new FormData();
       md5.appendBinary(e.target.result);
       const chunkSize =
-        num === totalNum ?
-          blob.slice((num - 1) * self.chunkSize) :
-          blob.slice((num - 1) * self.chunkSize, num * self.chunkSize);
+        num === totalNum
+          ? blob.slice((num - 1) * self.chunkSize)
+          : blob.slice((num - 1) * self.chunkSize, num * self.chunkSize);
       const currentMd5 = md5.end();
       fd.append('blob', chunkSize);
       fd.append('file_name', blob.name);
@@ -3213,58 +3254,60 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
       Object.keys(self.params).forEach((key) => {
         fd.append(key, self.params[key]);
       });
-      xmlLargeUpload(fd).then((body) => {
-        self.count = 0;
-        if (body.code === 0) {
-          if (num > totalNum) {
+      xmlLargeUpload(fd)
+        .then((body) => {
+          self.count = 0;
+          if (body.code === 0) {
+            if (num > totalNum) {
+              self.postMessage({
+                params: self.params,
+                value: 100,
+                status: 'error',
+                name: blob.name,
+              });
+              console.log(`${blob.name} error upload`);
+            } else if (body.lack?.length > 0) {
+              num = body.lack[0];
+              const process = (body.msg * 100).toFixed(2) / 1;
+              self.postMessage({
+                params: self.params,
+                value: process,
+                status: 'uploading',
+                name: blob.name,
+              });
+              console.log(`${blob.name}上传进度: ${process}%`);
+              // 上传状态都正常，还没全部上传完，循环调用上传函数；
+              largeUpload();
+            }
+          } else if (body.code === 1) {
             self.postMessage({
               params: self.params,
               value: 100,
+              status: 'success',
+              path: body.path,
+              name: blob.name,
+            });
+            console.log(`${blob.name} upload success`);
+          } else {
+            num++;
+            largeUpload();
+          }
+        })
+        .catch(() => {
+          self.count++;
+          // 连续失败5次认为上传失败
+          if (self.count > 5) {
+            self.postMessage({
+              params: self.params,
+              value: 0,
               status: 'error',
               name: blob.name,
             });
-            console.log(`${blob.name} error upload`);
-          } else if (body.lack?.length > 0) {
-            num = body.lack[0];
-            const process = (body.msg * 100).toFixed(2) / 1;
-            self.postMessage({
-              params: self.params,
-              value: process,
-              status: 'uploading',
-              name: blob.name,
-            });
-            console.log(`${blob.name}上传进度: ${process}%`);
-            // 上传状态都正常，还没全部上传完，循环调用上传函数；
+            console.log(`${blob.name} upload error`);
+          } else {
             largeUpload();
           }
-        } else if (body.code === 1) {
-          self.postMessage({
-            params: self.params,
-            value: 100,
-            status: 'success',
-            path: body.path,
-            name: blob.name,
-          });
-          console.log(`${blob.name} upload success`);
-        } else {
-          num++;
-          largeUpload();
-        }
-      }).catch(() => {
-        self.count++;
-        // 连续失败5次认为上传失败
-        if (self.count > 5) {
-          self.postMessage({
-            params: self.params,
-            value: 0,
-            status: 'error',
-            name: blob.name,
-          });
-          console.log(`${blob.name} upload error`);
-        } else {
-          largeUpload();
-        }
-      });
+        });
     };
 
     largeUpload();
@@ -3272,21 +3315,28 @@ Git 创建一个新提交 D，D 的内容就是执行这些反向操作后的状
   ```
 
 ### 25-12-24
-#### sharedWorker待研究；
+
+#### sharedWorker 待研究；
+
 #### gemini 也用不了
-- gemini cli->Gemini Code Assist权限->需要在cloud.google平台中拥有Google Cloud project开源项目->启用之后需要设置IAM给google账
-- 号设置对应访问权限->在Gemini管理中心gemini产品中启用Code Assist->要关联结算账户，用于后续的计费，开始90天会有$300免费赠金
+
+- gemini cli->Gemini Code Assist 权限->需要在 cloud.google 平台中拥有 Google Cloud project 开源项目->启用之后需要设置 IAM 给 google 账
+- 号设置对应访问权限->在 Gemini 管理中心 gemini 产品中启用 Code Assist->要关联结算账户，用于后续的计费，开始 90 天会有$300 免费赠金
 - <span style="color: red;">主要是需要添加付款方式（借记卡、储蓄卡）</span>，俺没有
 
 ### 25-12-25
-#### (gemini内核知乎讲解)[https://zhuanlan.zhihu.com/p/1976305837011116648?utm_source=chatgpt.com]
+
+#### (gemini 内核知乎讲解)[https://zhuanlan.zhihu.com/p/1976305837011116648?utm_source=chatgpt.com]
+
 - 名词解释
-|ReAct | （reason + act）循环，通过 "观察-思考-行动" 闭环实现智能决策与执行的核心流程|
-|core |核心 |
-|cli| 命令行接口 |
+  |ReAct | （reason + act）循环，通过 "观察-思考-行动" 闭环实现智能决策与执行的核心流程|
+  |core |核心 |
+  |cli| 命令行接口 |
 
 ### 25-12-26
-#### git命令行积累
+
+#### git 命令行积累
+
 ```bash
 git branch -d 11.0; // 删除本地分支
 git branch 12.0; // 创建新的分支
@@ -3297,22 +3347,32 @@ git branch -m 12.0 12.1; // 重命名分支
 git push origin --delete 12.0; // 删除远端分支
 git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支到远端仓库
 
-``` 
+```
 
 ### 25-12-31
-#### 常用git命令
+
+#### 常用 git 命令
+
 ```bash
-git checkout -b new_branch;
-git push origin new_branch;
+git checkout -b new_branch; // 创建并切换到新的分支
+git push origin new_branch; // 推送新的分支到远端仓库
 ```
+
 ### 26-01-03
+
 #### MCP
-> 部署应用可以用http协议部署MCP服务器，添加扩展插件可以使用streamable http作为有状态、无状态服务尝试以下
-> 但是MCP不支持streamable http，需要在后续更新中注意；
-- MCP 是model context prompt，分为Tooles、resource、prompt
-- 这个Anthropic官方的讲解视频是不是把Agent和Claude产品结合在一起讲了，而不是单纯的讲解MCP概念；
-- 之前我理解的MCP是服务于client-tooles之间的使用协议，规定大家使用哪种什么方法调用不同的AI模型；
-- 这个Anthropic讲解视频感觉很老的样子，需要自己搭建服务，创建数据库、维护base数据，编写search_fun、extract_fun等工具方法
-- 通过loop_chat询问用户，然后调用claude模型分析用户需求，根据claude模型返回的content.type类型判断是需要调用search_fun、extract_fun等工具方法，还是直接将结果展示给用户
-> 痛点1:没有超长上下文记忆功能；
-> 痛点2:数据来源单一，不能直接根据用户场景实时获取数据信息；
+
+> 部署应用可以用 http 协议部署 MCP 服务器，添加扩展插件可以使用 streamable http 作为有状态、无状态服务尝试以下
+> 但是 MCP 不支持 streamable http，需要在后续更新中注意；
+
+- MCP 是 model context prompt，分为 Tooles、resource、prompt
+- 这个 Anthropic 官方的讲解视频是不是把 Agent 和 Claude 产品结合在一起讲了，而不是单纯的讲解 MCP 概念；
+- 之前我理解的 MCP 是服务于 client-tooles 之间的使用协议，规定大家使用哪种什么方法调用不同的 AI 模型；
+- 这个 Anthropic 讲解视频感觉很老的样子，需要自己搭建服务，创建数据库、维护 base 数据，编写 search_fun、extract_fun 等工具方法
+- 通过 loop_chat 询问用户，然后调用 claude 模型分析用户需求，根据 claude 模型返回的 content.type 类型判断是需要调用 search_fun、extract_fun 等工具方法，还是直接将结果展示给用户
+  > 痛点 1:没有超长上下文记忆功能；
+  > 痛点 2:数据来源单一，不能直接根据用户场景实时获取数据信息；
+
+### 26-01-09
+
+#### 替换 pdfjs 新的 pdf 预览、下载、编辑功能的组件 [embedpdf](https://www.embedpdf.com/)
