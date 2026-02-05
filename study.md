@@ -3347,6 +3347,8 @@ git branch -m 12.0 12.1; // 重命名分支
 git push origin --delete 12.0; // 删除远端分支
 git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支到远端仓库
 
+git fetch --prune // 同步远端分支
+
 ```
 
 ### 25-12-31
