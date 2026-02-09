@@ -3349,6 +3349,12 @@ git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支
 
 git fetch --prune // 同步远端分支
 
+
+git reflog	 // 查看所有git操作历史（包括reset、checkout等）
+git fsck --lost-found	 // 找到所有孤立/悬空的提交
+git show <commit>:<file>	// 查看某个提交中特定文件的内容
+git show <commit> --stat	// 查看某个提交的改动统计
+git reset --hard <commit>	// 硬回退到某个提交，丢弃所有改动
 ```
 
 ### 25-12-31
@@ -3358,6 +3364,28 @@ git fetch --prune // 同步远端分支
 ```bash
 git checkout -b new_branch; // 创建并切换到新的分支
 git push origin new_branch; // 推送新的分支到远端仓库
+
+# 场景1：保存工作进度，临时做别的事
+git stash                          # 保存
+# ... 做其他事 ...
+git stash pop                      # 恢复
+
+# 场景2：保存多个stash
+git stash save "修复登录bug"
+git stash save "优化性能"
+git stash list                     # 查看所有
+# stash@{0}: On shouyi: 优化性能
+# stash@{1}: On shouyi: 修复登录bug
+
+git stash pop stash@{1}            # 恢复第二个
+
+# 场景3：只想看内容，不恢复
+git stash show -p stash@{0}        # 查看改动内容
+git stash apply stash@{0}          # 恢复但保留stash记录
+
+# 场景4：清理无用的stash
+git stash drop stash@{2}           # 删除指定stash
+git stash clear                    # 删除全部
 ```
 
 ### 26-01-03
