@@ -1017,7 +1017,7 @@ export default function App() {
               <div>这是一个模态对话框</div>
               <button onClick={setShowModal(false)}>关闭</button>
             </div>,
-            document.body
+            document.body,
           )}
       </>
     );
@@ -1240,7 +1240,7 @@ export function confirmComponentService(options = {}) {
             h(component, {
               ...propsValue,
             }),
-        }
+        },
       ),
     // 但是，这个footer渲染的slot怎么能是数组呢？不是只要插槽函数 || 包含插槽函数的对象吗？
     // 哦，插槽只能是插槽函数或者包含插槽函数的对象，但是Vnodes节点是可以传递数组渲染多个子节点的
@@ -1259,7 +1259,7 @@ export function confirmComponentService(options = {}) {
                         onCancel();
                       },
                     },
-                    () => cancelButtonText || '取消'
+                    () => cancelButtonText || '取消',
                   )
                 : null,
               showConfirmButton
@@ -1278,10 +1278,10 @@ export function confirmComponentService(options = {}) {
                           });
                         },
                         500,
-                        { leading: true, trailing: false }
+                        { leading: true, trailing: false },
                       ),
                     },
-                    () => confirmButtonText || '确定'
+                    () => confirmButtonText || '确定',
                   )
                 : null,
             ])
@@ -1303,7 +1303,7 @@ export function confirmComponentService(options = {}) {
       },
       ...dialogProps,
     },
-    slots
+    slots,
   );
   // 重置上下文环境为整个app，否则类似$t这种全局的方法调用会报错
   vnode.appContext = window.rcApp._context;
@@ -1443,12 +1443,12 @@ const request = axios.create({
 });
 request.interceptors.request.use(
   (config: AxiosRequestConfig) => {},
-  (err) => {}
+  (err) => {},
 );
 
 request.interceptors.response.use(
   (res: any) => {},
-  (error) => {}
+  (error) => {},
 );
 
 export default request;
@@ -1670,7 +1670,7 @@ export function covertBase64UrlToFile(urlData) {
     {
       type: mime || 'image/png',
       lastModified: new Date(),
-    }
+    },
   );
 }
 ```
@@ -1895,7 +1895,7 @@ watchEffect(
     onCleanup(cancel); // vue@3.5之前
     // onWatcherCleanup(cancel); // vue@3.5之后
     data.value = await response;
-  }
+  },
 );
 ```
 
@@ -1975,7 +1975,7 @@ watch(
     onTrigger(e) {
       debugger;
     },
-  }
+  },
 );
 ```
 
@@ -3355,8 +3355,16 @@ git fsck --lost-found	 // 找到所有孤立/悬空的提交
 git show <commit>:<file>	// 查看某个提交中特定文件的内容
 git show <commit> --stat	// 查看某个提交的改动统计
 git reset --hard <commit>	// 硬回退到某个提交，丢弃所有改动
-```
 
+git fetch // 从远程仓库拉取最新代码在origin/xxx，但不合并到当前分支
+git diff origin/xxx // 查看当前分支与远程分支的差异
+git merge origin/xxx // 可以自己选择需要从远端分支合并的代码内容
+git fetch --prune // 删除本地已经不存在于远程的 origin/xxx 分支
+
+git stash  // 临时保存当前工作
+git stash pop // 恢复工作
+```
+https://pub-161ae4b5ed0644c4a43b5c6412287e03.r2.dev/latest/agent-skills.pdf
 ### 25-12-31
 
 #### 常用 git 命令
