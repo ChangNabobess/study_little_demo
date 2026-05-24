@@ -1,0 +1,160 @@
+// 简历共享内容（去重版）
+module.exports = {
+  name: '畅一凡',
+  title: '高级前端开发工程师',
+  tagline: '6 年前端开发经验  |  Vue 2 / 3 技术栈深度  |  复杂 B 端 & 数据可视化',
+  contact: {
+    location: '杭州',
+    phone: '152-3798-2380',
+    email: '15237982380@163.com',
+  },
+  intent: {
+    position: '高级前端开发工程师 / 前端技术专家',
+    city: '杭州',
+    salary: '面议',
+    arrival: '1 个月内',
+  },
+  intro: '6 年前端开发经验，深耕 Vue 2 / 3 全家桶，主导过医疗病理、实验室数据平台、政采大数据、品牌电商等多类大型 B / C 端项目。具备架构设计、工程化、性能优化全链路能力，在大文件分片上传、SSR、Web Worker / SharedWorker、ECharts 大屏、DICOM 医学影像等方向均有落地经验，能独立承担复杂模块从方案到上线全流程。',
+  skills: [
+    ['核心框架', '精通 Vue 2.x / Vue 3.x（Composition API、Pinia / Vuex、Vue Router），深入理解响应式系统、虚拟 DOM diff 与调度机制；熟悉 React 18 Hooks 生态'],
+    ['语言基础', '熟练掌握 JavaScript（ES6+）、TypeScript；扎实的 HTML5 / CSS3（Flex / Grid / 动画 / Sass / Less / UnoCSS）'],
+    ['工程化', 'Webpack 2 / 3 / 5、Vite 构建优化与从零搭建；Babel、ESLint、Prettier、Husky 工作流；Monorepo（pnpm workspace）'],
+    ['多端开发', 'UNI-APP 跨端开发（微信小程序 / 百度小程序 / H5）、Electron；Vue SSR 同构渲染（vue-server-renderer + Express）'],
+    ['UI / 可视化', 'Element Plus / Ant Design Vue / iView / Vant；ECharts（含地图下钻、Rich Text 标注）、v-charts、AntV、heatmap.js'],
+    ['性能 & 多线程', 'Web Worker / SharedWorker / Service Worker；SparkMD5 分片校验；RxJS 在请求层 / 错误流 / 防重复提交场景的应用；虚拟滚动'],
+    ['网络 & 状态', 'Axios 拦截器深度封装（鉴权、Token 续期、CancelToken 防竞态）；STOMP WebSocket；IndexedDB Promise 化 ORM；多级本地缓存策略'],
+    ['垂直能力', 'Cornerstone.js 系列（core / tools / wado-image-loader）DICOM 医学影像；KFB 数字切片格式；ABP Framework 多租户企业系统集成'],
+    ['协作工具', 'Git / GitLab CI、Jenkins、Docker 基础；Swagger 联调、Postman、Charles 抓包'],
+  ],
+  jobs: [
+    {
+      company: '杭州某医疗科技有限公司',
+      position: '高级前端工程师',
+      period: '2023.03 — 至今',
+      business: '专注医疗病理 / 临床检验行业的信息化 SaaS 解决方案，主要产品为 PIMS 病理信息管理系统、实验室数据管理平台等。',
+      projects: [
+        {
+          name: '项目一：PIMS 病理信息管理系统',
+          tech: '（Vue 3 + Webpack 5 + Element Plus + Vuex 4 + UnoCSS）',
+          background: '面向医院病理科的全流程信息化平台，覆盖登记、取材、制片、诊断、报告、归档、质控等 30+ 业务模块，支持多院区、多角色、多主题；代码规模 1455+ 文件，服务多家三甲医院。',
+          bullets: [
+            '主导前端架构与工程化体系：Webpack 5 splitChunks 按需分包 + UnoCSS 原子化 + git-revision 版本注入，首屏 JS 体积下降约 35%。',
+            '设计四层动态路由权限系统（白名单 / 接口菜单 / 角色差异化 / 业务模块独立），forkJoin 并行初始化 + router.addRoute 运行时注入，覆盖 30+ 模块页面级 + 按钮级双重鉴权。',
+            '引入 SharedWorker 实现多 Tab 登录态同步；自封装 IndexedDB Promise ORM（20+ ObjectStore）实现搜索历史 / 报告草稿 / 棋盘缓存等分层本地缓存。',
+            '在 HTTP 拦截 / 防重提交 / WebSocket 状态流转等场景精准引入 RxJS（Subject + throttleTime 合并错误、Map + setTimeout 幂等锁、distinctUntilChanged）。',
+          ],
+        },
+        {
+          name: '项目二：实验室数据管理平台',
+          tech: '（Vue 2.7 + TypeScript + Vuex + ABP Framework + Webpack）',
+          background: '多租户企业级实验室数据管理平台，对接 ABP Framework 后端，支持域账号 SSO 与平台账号双模式登录，服务多家集团客户。',
+          bullets: [
+            'SSO + 平台账号双模式登录闭环：URL code 换 token + AES 加密密码登录 ABP；localStorage 记录已消费 OAuth code 防幂等问题，流程封装于 Vuex action 链对调用方透明。',
+            '深度集成 ABP Framework：启动时拉取全局配置（权限 / 本地化 / 多租户）深度合并至 abp 对象再挂载 Vue；Axios 自动注入 TenantId / Culture 等 Header，多租户对业务代码无感。',
+            '搭建多环境 + 多业务变体构建体系（7 套 .env + 入口组件级条件替换）；以构建时间戳替代 contenthash 解决 CDN 强缓存场景下发版更新问题，用户自动加载最新版本。',
+            '通过 Webpack ProvidePlugin 封装全局工具库（配套 TS 声明）；针对大数据量场景制定 iView Table / VXE-Table（虚拟滚动）分层选型策略。',
+          ],
+        },
+      ],
+    },
+    {
+      company: '杭州某科技股份有限公司',
+      position: '前端工程师',
+      period: '2020.07 — 2023.02',
+      business: '为 Dell / Alienware 等国际品牌提供电商交易系统整体解决方案，覆盖小程序、H5 及 PC 后台。',
+      projects: [
+        {
+          name: '项目三：Dell / Alienware 品牌电商小程序',
+          tech: '（Vue 2 + UNI-APP + Vuex，微信 / 百度 / H5 三端同构）',
+          background: 'Dell 与 Alienware 双品牌电商小程序，覆盖完整电商交易链路（商品、SKU、购物车、订单、退换货、优惠券、VIP 会员、直播等），100+ API 接口、10+ 业务模块。',
+          bullets: [
+            '搭建"多品牌 × 多平台"一码多发架构：UNI-APP 条件编译实现 2 品牌 × 3 平台 = 6 套产物单仓库输出；封装 build.js 多品牌打包脚本一键完成 AppID 切换 → 编译 → 输出全流程。',
+            '封装统一请求中间件：动态切换 API BaseURL 消除硬编码误发布风险；Token 401 静默重登 + autoLoginLoading 请求锁解决并发过期场景；请求头自动注入 12 个字段。',
+            '治理 4 套埋点 SDK（神策 / EUB / JiNGsocial / SR）登录后集中初始化与身份同步；自研 observeExpOnce 基于 IntersectionObserver 实现商品卡片精准曝光埋点。',
+            '小程序专项能力：VIP 会员体系登录态分层管理；订阅消息二维 tmplId 映射表统一管理近百 ID；Canvas 海报生成（roundRect / drawText / 远程图 base64）；跨小程序导航 + H5 降级适配。',
+          ],
+        },
+        {
+          name: '项目四：Fancy BOS 电商后台管理系统',
+          tech: '（Vue 2 + 手工 Webpack 3 + Element UI + ECharts）',
+          background: '覆盖 PMS（商品）/ OMS（订单）/ SMS（营销）/ CMS（内容）/ UMS（权限）/ 会员 / 直播 / 数据分析等完整电商业务链路，路由表近 2300 行，多模块大型后台。',
+          bullets: [
+            'OSS 客户端直传方案：前端凭后端签发的临时 Policy 直接 POST 至 OSS Bucket 服务器零流量参与；同时支持 MinIO 私有存储模式 useOss 标志位切换两套上传逻辑。',
+            '沉淀全业务通用组件库 10+ 高复用组件：multiUpload / draggableUpload / Tinymce / excelExport（按需加载）/ choose-goods / statisticDate 等，跨模块复用率显著提升。',
+            'Axios 全局请求取消机制：CancelToken 注册到 window._axiosPromiseArr 路由切换统一取消避免跨页面异步竞态；响应识别 octet-stream 自动透传 response 供调用方下载。',
+            '基于 Webpack 3 手工搭建（无 Vue CLI 依赖）维护 dev / test / pre / prod 四套独立构建链路；集成 v-charts + heatmap.js 实现多维数据看板与用户行为热力图。',
+          ],
+        },
+      ],
+    },
+    {
+      company: '杭州某信息技术有限公司',
+      position: '前端工程师',
+      period: '2019.07 — 2020.06',
+      business: '面向政府采购领域的大数据分析与可视化解决方案。',
+      projects: [
+        {
+          name: '项目五：政府采购大数据分析平台（Web + 移动端双端）',
+          tech: '（Vue 2.6 + Vue SSR + Webpack 2 + Express + ECharts）',
+          background: '覆盖政府采购全流程数据的多维度可视化分析平台，支持 Web 大屏与移动端两端，对接多区域多年度政务数据。',
+          bullets: [
+            '参与搭建 Vue 2 SSR 同构渲染：vue-server-renderer + Express 双入口 Webpack 构建，window.__INITIAL_STATE__ 接管服务端 Vuex 实现零白屏 hydration；asyncData + Promise.all 并行预取避免客户端二次请求。',
+            '服务端两级缓存：LRU 组件级（max 1000 / TTL 15 分钟）+ 路由级 Micro-Cache（1 秒粒度）；自研 setup-dev-server.js 实现 SSR 下双编译器同时热更新；三段式 CommonsChunkPlugin 拆包 + [chunkhash] 实现长效缓存。',
+            '深度封装 ECharts 地图组件：extendsMap 方法支持省 → 市 → 区县三级下钻；GeoJSON dynamic import 按需加载；bussType prop 切换多业态 Rich Text 标注，单组件复用于全系统 5+ 大屏页面。',
+            '移动端关键能力：PostCSS pxtorem + 4 断点动态 rem 基准的自适应方案；手动实现 pinch-to-zoom（Math.hypot + requestAnimationFrame）；vuedraggable 仪表盘 + localStorage 布局持久化。',
+          ],
+        },
+      ],
+    },
+  ],
+  highlights: [
+    {
+      title: '基于 Web Worker + SparkMD5 的 GB 级大文件分片上传方案',
+      source: 'PIMS',
+      background: '病理 WSI 影像单文件常达 GB 级别，主线程同步计算 MD5 导致页面长时间卡死，传统上传失败率高。',
+      solution: '独立 Dedicated Worker（upload.worker.js）线程使用 SparkMD5 增量计算文件整体指纹 + 每个分块上传前再做分块 MD5 完整性校验；服务端返回 lack 数组驱动断点续传；连续失败 5 次熔断；上传进度通过 postMessage 推送配合 RxJS Subject 做响应式进度流。',
+      benefit: '上传过程主线程 FPS 全程稳定 60；GB 级文件上传成功率从约 65% 提升至 99% 以上；用户可在上传过程中继续操作其他业务。',
+    },
+    {
+      title: '基于 Vue 3 render 函数的命令式弹窗服务（Headless Dialog）',
+      source: 'PIMS',
+      background: 'B 端系统弹窗调用场景密集，模板声明式写法导致代码碎片化、复用率低、上下文管理困难。',
+      solution: 'hzztDialog 基于 createApp + render 函数实现 JS 命令式调用动态挂载 / 卸载 Vue 组件树；手动注入 vNode.appContext = window.hzztApp._context 使弹窗内可正常使用 $t、全局组件等上下文；关闭时 render(null, container) 主动卸载防内存泄漏；派生 hzztFormDialog / hzztTableDialog / hzztCameraDialog 等高阶弹窗。',
+      benefit: '全项目 200+ 处弹窗统一调用方式，平均每次弹窗开发节省约 30 行模板代码，组件复用率显著提升。',
+    },
+    {
+      title: 'Token 滑动续期 Axios 封装 —— 根治"假登录态突然掉线"假性 bug',
+      source: '实验室数据平台',
+      background: '若不做续期，浏览器会在 Cookie 到期后静默清除 token，下一次请求 header 为空，后端返回 401，用户表现为"还在操作中突然掉线"的难复现假性 bug。',
+      solution: '封装统一 Axios 实例，请求拦截器自动注入 Authorization / Abp.TenantId / .AspNetCore.Culture 屏蔽多租户与认证细节；响应拦截器实现 Token 滑动续期 —— 每次请求成功调用 abp.auth.setRefreshToken() 将 Cookie 有效期延长 24 小时；错误处理统一在拦截器完成：401 弹窗清空状态、403 提示权限不足、网络异常提示重试，组件层零分支判断。',
+      benefit: '"假登录态"类工单完全消除；登录态续期对用户完全无感；业务组件层错误处理代码量下降约 70%。',
+    },
+    {
+      title: 'DICOM 医学影像浏览器端集成（B 端稀缺垂直能力）',
+      source: 'PIMS',
+      background: '病理 / 放射科医生需在 Web 端直接查看 DICOM 标准影像并进行专业操作，业界无现成 Vue 3 方案。',
+      solution: '集成 Cornerstone.js 整套生态（core / math / tools / wado-image-loader）实现浏览器端 DICOM 图像渲染；封装 WADO 协议适配层；对接 KFB 数字切片专有格式查看器；自定义工具栏组件支持窗宽窗位 / 缩放 / 平移 / 标注等多类专业操作；结合 STOMP WebSocket 实现影像状态实时推送。',
+      benefit: '覆盖病理科 90% 以上影像审阅场景，免除医生切换桌面专业软件，单病例审阅效率提升约 50%。',
+    },
+    {
+      title: '线上页面卡顿性能排查 —— 跨层定位至 CI/CD 基础设施根因',
+      source: '实验室数据平台',
+      background: '用户反馈线上页面操作明显卡顿，本地环境却完全无问题，初步怀疑组件渲染或接口耗时。',
+      solution: 'Chrome Performance 面板录制完整操作快照、逐帧分析火焰图，定位 Long Task 集中在 JS 解析与脚本执行阶段而非渲染或网络层；进一步对比本地与线上构建产物，发现线上 JS bundle 语法降级程度异常；最终排查运维侧 Jenkins 流水线，锁定根因为打包所用 Node.js 版本过低导致部分依赖包无法完成现代语法编译优化输出低效 polyfill 拖慢主线程。',
+      benefit: '升级 CI 流水线 Node 版本后页面卡顿问题彻底消除；沉淀"浏览器层 → 产物对比层 → 构建环境层"的分层排查方法论。',
+    },
+  ],
+  education: {
+    school: '洛阳理工学院',
+    major: '计算机科学与技术',
+    degree: '本科',
+    period: '2016.09 — 2020.06',
+  },
+  selfEval: [
+    '对 Vue 2 / 3 响应式系统、虚拟 DOM、调度机制有体系化理解，能在框架层面定位与解决问题；熟悉 Web Worker / SharedWorker / RxJS / IndexedDB 等性能与工程化方案的实际落地场景。',
+    '具备从架构设计、工程化搭建、性能优化到疑难问题排查的全链路能力，曾独立将线上卡顿问题从前端代码层追溯至 CI/CD 基础设施层。',
+    '具备垂直行业（医疗病理、政府采购、品牌电商）项目深度沉淀，能在 DICOM 影像、复杂业务建模、多租户隔离、大屏可视化等场景独立交付完整方案。',
+    '注重 DX（开发体验）与 UX（用户体验）的平衡，习惯把重复劳动沉淀为工具、指令或组件；持续关注 Vue / Vite / TC39 社区动态。',
+    '具备良好的跨团队协作与文档沉淀习惯，能主动推动代码规范、Code Review 与团队技术分享的落地。',
+  ],
+};
