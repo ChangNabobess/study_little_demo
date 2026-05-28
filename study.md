@@ -3336,7 +3336,9 @@ list.forEach((item, i) => {
 ### 25-12-26
 
 #### git 命令行积累
+
 - 分支管理
+
 ```bash
 git branch -d 11.0; // 删除本地分支
 git branch 12.0; // 创建新的分支
@@ -3350,7 +3352,9 @@ git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支
 git fetch --prune // 同步远端分支
 git fetch --prune // 删除本地已经不存在于远程的 origin/xxx 分支
 ```
+
 - 代码合并冲突，问题排查流程
+
 ```bash
 git reflog	 // 查看所有git操作历史（包括reset、checkout等）
 git fsck --lost-found	 // 找到所有孤立/悬空的提交
@@ -3364,7 +3368,9 @@ git diff origin/xxx // 查看当前分支与远程分支的差异
 git merge origin/xxx // 可以自己选择需要从远端分支合并的代码内容
 git fetch --prune // 删除本地已经不存在于远程的 origin/xxx 分支           # 删除全部
 ```
+
 - 多个任务之间同时开发，暂存任务状态
+
 ```bash
 # 不同任务分支之间需要快速切换
 git stash  // 临时保存当前工作
@@ -3384,16 +3390,44 @@ git stash apply stash@{0}          # 恢复但保留stash记录
 
 # 场景4：清理无用的stash
 git stash drop stash@{2}           # 删除指定stash
-git stash clear 
+git stash clear
 ```
-- worktree，AI协同开发，工作区整理；
+
+- worktree，AI 协同开发，工作区整理；
+
 ```bash
-git worktree list	列出所有 worktree
-git worktree add <path> <branch>	手动新建 worktree
-git worktree remove <path>	删除（清代码 + 清元数据）
-git worktree prune	清理孤儿元数据（针对手动 rm 过目录的情况）
-git worktree lock <path>	锁定（防止被误删）
+git worktree list	# 列出所有 worktree
+git worktree add <path> <branch>	 # 手动新建 worktree
+git worktree remove <path>	# 删除（清代码 + 清元数据）
+git worktree prune	# 清理孤儿元数据（针对手动 rm 过目录的情况）
+git worktree lock <path>	# 锁定（防止被误删）
+
+# 正常 worktree 删除步骤
+git worktree remove <path>
+git branch -D <branch>
+
+# UI界面先删除之后git工作区删除
+git worktree prune
+git branch -D <branch>
 ```
+
+- 长生命周期发布分支并行维护
+
+```bash
+# cherry-pick
+git cherry-pick <commit-hash>
+```
+
+<strong>cherry-pick demo</strong>
+
+| 命令                             | 说明                          |
+| -------------------------------- | ----------------------------- |
+| git cherry-pick abc1234          | 摘取单个 commit               |
+| git cherry-pick abc1234 def5678  | 摘取多个 commit               |
+| git cherry-pick abc1234..def5678 | 摘取一个范围（不含起点）      |
+| git cherry-pick -n abc1234       | 只应用改动，不自动创建 commit |
+| git cherry-pick --abort          | 遇到冲突时放弃操作            |
+
 ### [agent-skill](https://pub-161ae4b5ed0644c4a43b5c6412287e03.r2.dev/latest/agent-skills.pdf)
 
 ### 26-01-03
