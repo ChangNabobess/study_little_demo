@@ -86,6 +86,7 @@ parseFloat((0.1 + 0.2).toFixed(10))
 
 // 方案3：用 decimal.js / big.js 库（生产推荐）
 ```
+<span style="color: red;">Java中支持金融相关数据类型是BigDecimal</span>
 
 真实项目中金额计算一律用 `decimal.js`，不手写。
 
@@ -109,6 +110,8 @@ Foo.prototype.constructor === Foo  // true
 Foo.__proto__ === Function.prototype  // true
 Function.prototype.__proto__ === Object.prototype  // true
 ```
+ `prototype`<span style="color: yellow;">（原型对象）</span>
+ `__proto__`<span style="color: yellow;">（隐式原型）</span>
 
 关键点：**函数既是对象（有 `[[Prototype]]` 链向 `Function.prototype`），也有 `prototype` 属性**（供实例继承用）。两条链不要混。
 
