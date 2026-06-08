@@ -1,4 +1,4 @@
-﻿# 前端高级工程师面试题集（含参考答案）
+﻿# 前端高级工程师题集（含参考答案）
 
 > 6 年 Vue 技术栈 + 复杂 B 端经验 · 方向：高级前端工程师 / 前端技术专家
 >
@@ -7,8 +7,8 @@
 > **重点优先级**：🔴 第二部分（简历深挖）> Vue 原理 > JS 进阶 > 工程化
 
 ---
-## 第一部分：通用高级前端必考题
 
+## 第一部分：通用高级前端必考题
 
 ---
 
@@ -24,11 +24,13 @@
 
 ```js
 function getType(x) {
-  if (x !== x) return 'NaN'                    // NaN 唯一不等于自身
-  if (x === null) return 'null'
-  if (typeof x === 'symbol') return 'symbol'
-  return Object.prototype.toString.call(x)     // [object Map] [object Set] 等
-    .slice(8, -1).toLowerCase()
+  if (x !== x) return 'NaN'; // NaN 唯一不等于自身
+  if (x === null) return 'null';
+  if (typeof x === 'symbol') return 'symbol';
+  return Object.prototype.toString
+    .call(x) // [object Map] [object Set] 等
+    .slice(8, -1)
+    .toLowerCase();
 }
 // 或者直接用 toString：
 // [object Number] [object String] [object Map] [object Set] [object Null] 都能搞定
@@ -42,9 +44,11 @@ function getType(x) {
 
 ```js
 class MyClass {
-  get [Symbol.toStringTag]() { return 'MyClass' }
+  get [Symbol.toStringTag]() {
+    return 'MyClass';
+  }
 }
-Object.prototype.toString.call(new MyClass()) // "[object MyClass]"
+Object.prototype.toString.call(new MyClass()); // "[object MyClass]"
 ```
 
 为什么最可靠：它读的是对象内部的 `[[Class]]`/`toStringTag`，不受原型链污染；而 `instanceof` 依赖原型链，跨 iframe 会失效（不同 realm 的 Array 原型不同）。
@@ -52,6 +56,7 @@ Object.prototype.toString.call(new MyClass()) // "[object MyClass]"
 **A1.1.4** `==` 的完整比较算法
 
 核心规则按优先级：
+
 1. 类型相同 → 直接用 `===`（NaN !== NaN）
 2. `null == undefined` → true，其余情况 null/undefined 与任何非 null/undefined 都是 false
 3. **数字 vs 字符串** → 字符串转数字再比
@@ -64,29 +69,36 @@ Object.prototype.toString.call(new MyClass()) // "[object MyClass]"
 {} == "[object Object]"  // {} ToPrimitive → "[object Object]" → true
 ```
 
-面试直接说：**能不用 `==` 就别用**，项目里 ESLint 强制 eqeqeq。
+直接说：**能不用 `==` 就别用**，项目里 ESLint 强制 eqeqeq。
 
 **A1.1.5** `0.1 + 0.2 !== 0.3` 的根因与金融处理
 
 IEEE 754 双精度浮点，用二进制表示小数，`0.1` 和 `0.2` 在二进制里都是无限循环小数，64 位截断后精度丢失，相加结果是 `0.30000000000000004`。
 
 金融场景规避方案：
+
 ```js
 // 方案1：转整数运算（推荐）
 const add = (a, b) => {
-  const factor = Math.pow(10, Math.max(
-    (a.toString().split('.')[1] || '').length,
-    (b.toString().split('.')[1] || '').length
-  ))
-  return (Math.round(a * factor) + Math.round(b * factor)) / factor
-}
+  const factor = Math.pow(
+    10,
+    Math.max(
+      (a.toString().split('.')[1] || '').length,
+      (b.toString().split('.')[1] || '').length,
+    ),
+  );
+  return (Math.round(a * factor) + Math.round(b * factor)) / factor;
+};
 
 // 方案2：用 toFixed + parseFloat（注意 toFixed 也有坑）
-parseFloat((0.1 + 0.2).toFixed(10))
+parseFloat((0.1 + 0.2).toFixed(10));
 
 // 方案3：用 decimal.js / big.js 库（生产推荐）
 ```
-<span style="color: red;">Java中支持金融相关数据类型是BigDecimal</span>
+
+todo
+
+> <span style="color: red;">Java 中支持金融相关数据类型是 BigDecimal</span>
 
 真实项目中金额计算一律用 `decimal.js`，不手写。
 
@@ -110,32 +122,35 @@ Foo.prototype.constructor === Foo  // true
 Foo.__proto__ === Function.prototype  // true
 Function.prototype.__proto__ === Object.prototype  // true
 ```
- `prototype`<span style="color: yellow;">（原型对象）</span>
- `__proto__`<span style="color: yellow;">（隐式原型）</span>
+
+`prototype`<span style="color: green;">（原型对象）</span>
+`__proto__`<span style="color: green;">（隐式原型）</span>
 
 关键点：**函数既是对象（有 `[[Prototype]]` 链向 `Function.prototype`），也有 `prototype` 属性**（供实例继承用）。两条链不要混。
 
 **A1.2.2** ES5 继承方案差异
 
-| 方案 | 原型链 | 构造函数属性 | 实例独立属性 |
-|------|--------|------------|------------|
-| 原型链继承 | ✅ | 子类不调父构造 | 引用属性共享（坑） |
-| 构造函数继承 | ❌无父方法 | ✅ | ✅ |
-| 组合继承 | ✅ | ✅ | ✅但父构造调两次 |
-| 寄生组合继承 | ✅ | ✅ | ✅ 最优 |
+| 方案         | 原型链      | 构造函数属性   | 实例独立属性       |
+| ------------ | ----------- | -------------- | ------------------ |
+| 原型链继承   | ✅          | 子类不调父构造 | 引用属性共享（坑） |
+| 构造函数继承 | ❌ 无父方法 | ✅             | ✅                 |
+| 组合继承     | ✅          | ✅             | ✅ 但父构造调两次  |
+| 寄生组合继承 | ✅          | ✅             | ✅ 最优            |
 
 ```js
 // 寄生组合继承（最优方案）
 function inherit(Child, Parent) {
-  Child.prototype = Object.create(Parent.prototype)
-  Child.prototype.constructor = Child
+  Child.prototype = Object.create(Parent.prototype);
+  Child.prototype.constructor = Child;
 }
-function Parent(name) { this.name = name }
+function Parent(name) {
+  this.name = name;
+}
 function Child(name, age) {
-  Parent.call(this, name)  // 借用构造函数，属性独立
-  this.age = age
+  Parent.call(this, name); // 借用构造函数，属性独立
+  this.age = age;
 }
-inherit(Child, Parent)
+inherit(Child, Parent);
 ```
 
 为什么寄生组合最好：只调一次父构造函数，原型链完整，实例属性独立。class 语法糖底层就是这个。
@@ -143,52 +158,58 @@ inherit(Child, Parent)
 **A1.2.3** `class A extends B` 编译后实现 + super 工作原理
 
 ```js
-// class A extends B 编译后核心逻辑
+// class A extends B 编译后核心逻辑 class A去继承class B的原型链了
 function _inherits(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype, {
-    constructor: { value: subClass }
-  })
-  Object.setPrototypeOf(subClass, superClass)  // 静态方法也继承！
+    constructor: { value: subClass },
+  });
+  Object.setPrototypeOf(subClass, superClass); // 静态方法也继承！
 }
-
+// todo ！！！这是什么？
 function A(x) {
   // super(x) 编译为：
-  var _this = _callSuper(this, A, [x])  // 调 B.call(this, x)
-  _this.ownProp = 'xxx'
-  return _this
+  var _this = _callSuper(this, A, [x]); // 调 B.call(this, x)
+  _this.ownProp = 'xxx';
+  return _this;
 }
 ```
 
 super 两种用途：1) 构造器里 `super()` = 调父类构造函数，**ES6 子类必须先调 super 才能用 this**（因为 this 由父类创建）；2) 方法里 `super.method()` = 沿原型链找父类方法。
+
+// todo 为什么 ES6 子类必须先调 super 才能用 this
 
 **A1.2.4** new 操作符的完整执行步骤
 
 ```js
 function myNew(Ctor, ...args) {
   // 1. 创建新对象，原型指向构造函数的 prototype
-  const obj = Object.create(Ctor.prototype)
+  const obj = Object.create(Ctor.prototype);
   // 2. 执行构造函数，绑定 this
-  const result = Ctor.apply(obj, args)
+  const result = Ctor.apply(obj, args);
   // 3. 如果构造函数返回了对象类型，用那个对象；否则用新创建的 obj
-  return (typeof result === 'object' && result !== null) || typeof result === 'function'
-    ? result : obj
+  return (typeof result === 'object' && result !== null) ||
+    typeof result === 'function'
+    ? result
+    : obj;
 }
 ```
 
 4 步：**创建空对象** → **设置原型** → **执行构造函数** → **返回（优先构造函数返回的对象）**。第 3 步的返回值判断是很多人忘的细节。
 
 **A1.2.5** `Object.create(null)` 的差异和应用
+// todo 这是什么原理？和 vue 有什么关联？
 
 `Object.create(null)` 创建的对象没有任何原型（`__proto__` 为 null），不继承 `toString/hasOwnProperty` 等方法。
 
 应用场景：
+
 - **纯字典/Map** 场景：当 key 可能是 `constructor/toString/hasOwnProperty` 这类字符串时，用普通对象会出 bug
 - **Vue 2/3 源码**大量用来存内部缓存对象，避免原型污染
 - **防原型链攻击**：JSON 解析不可信数据时，用 `Object.create(null)` 接收避免原型投毒
 
 ```js
-const dict = Object.create(null)
-dict['toString'] = 'hello'  // 安全，不会覆盖原型方法
+const dict = Object.create(null);
+dict['toString'] = 'hello'; // 安全，不会覆盖原型方法
 ```
 
 ---
@@ -197,13 +218,13 @@ dict['toString'] = 'hello'  // 安全，不会覆盖原型方法
 
 **A1.3.1** let/const/var 差异
 
-| | var | let | const |
-|---|---|---|---|
-| 变量提升 | 提升+初始化为 undefined | 提升但 TDZ，访问报错 | 同 let |
-| 块级作用域 | ❌ | ✅ | ✅ |
-| 重复声明 | ✅ | ❌ | ❌ |
-| 全局挂载 | 挂到 window | ❌ | ❌ |
-| 重新赋值 | ✅ | ✅ | ❌（绑定不可变，值可变） |
+|            | var                     | let                  | const                    |
+| ---------- | ----------------------- | -------------------- | ------------------------ |
+| 变量提升   | 提升+初始化为 undefined | 提升但 TDZ，访问报错 | 同 let                   |
+| 块级作用域 | ❌                      | ✅                   | ✅                       |
+| 重复声明   | ✅                      | ❌                   | ❌                       |
+| 全局挂载   | 挂到 window             | ❌                   | ❌                       |
+| 重新赋值   | ✅                      | ✅                   | ❌（绑定不可变，值可变） |
 
 TDZ（Temporal Dead Zone）：let/const 声明前的区域，**变量已在作用域登记但不可访问**，访问抛 ReferenceError。这是引擎在编译阶段就扫描到了声明，但运行时在初始化语句之前设置了不可访问标记。
 
@@ -215,18 +236,22 @@ V8 实现：V8 不会保留整个作用域对象，而是在编译阶段分析�
 
 ```js
 function outer() {
-  let x = 1    // 被闭包引用 → 分配到 Context（堆）
-  let y = 2    // 未被引用 → 栈上，outer 返回后回收
-  return function inner() { return x }
+  let x = 1; // 被闭包引用 → 分配到 Context（堆）
+  let y = 2; // 未被引用 → 栈上，outer 返回后回收
+  return function inner() {
+    return x;
+  };
 }
-const fn = outer()  // outer 栈帧销毁，但 Context{x:1} 存活，fn 持有引用
+const fn = outer(); // outer 栈帧销毁，但 Context{x:1} 存活，fn 持有引用
 ```
 
+// todo GC 是什么？浏览器的垃圾回收机制？是怎么运行的？函数执行完吗？还是页面取消挂载？
 这就是为什么闭包变量不会被 GC 回收——只要函数引用存在，Context 就存活。
 
 **A1.3.3** 闭包内存泄漏场景 + 排查
 
 常见场景：
+
 1. **定时器/事件监听忘记清除**：回调闭包了大对象，timer 不清除就一直占内存
 2. **全局变量意外持有**：`window.xxx = function(){ /* 闭包了大数据 */ }`
 3. **Vue 组件 `beforeDestroy` 没清监听**：事件回调闭包了 vm 实例，组件销毁了但回调还在
@@ -234,11 +259,12 @@ const fn = outer()  // outer 栈帧销毁，但 Context{x:1} 存活，fn 持有�
 ```js
 // 泄漏例子
 function createLeak() {
-  const bigData = new Array(1000000).fill('x')
+  const bigData = new Array(1000000).fill('x');
   document.addEventListener('click', function handler() {
-    console.log(bigData[0])  // bigData 永远不释放
-  })
+    console.log(bigData[0]); // bigData 永远不释放
+  });
   // 忘记 removeEventListener
+  // 也有可能是addEventListener和removeEventListener监听的方法不一致，导致removeEventListener失效。
 }
 
 // 排查：Chrome DevTools → Memory → Heap Snapshot
@@ -247,9 +273,10 @@ function createLeak() {
 
 排查工具：Chrome Memory 面板，Heap Snapshot，Allocation Timeline。
 
-**A1.3.4** IIFE 在 ES6 后是否还有意义
+**A1.3.4** IIFE（立即执行函数表达式-Immediately Invoked Function Expression） 在 ES6 后是否还有意义
 
 大部分场景 ES6 模块+块级作用域已经替代了 IIFE，但还有用处：
+
 - **立即执行的逻辑块**：需要 `await` 在顶层模块外用（不过顶层 await 已支持）
 - **库打包**：UMD 格式的包还在用 IIFE 包裹整个模块，避免全局污染
 - **避免污染 polyfill/脚本环境**：`<script>` 标签里没用模块系统的老代码
@@ -275,9 +302,10 @@ ES6 模块天然有自己的作用域，在模块系统里 IIFE 基本无意义�
 **A1.4.1** Promise A+ 规范核心要点
 
 三要素：
-1. **状态机**：pending → fulfilled 或 pending → rejected，状态一旦改变不可逆
+
+1. **状态机**：pending → fulfilled 或 pending → rejected，状态一旦改变不可逆 //todo 这个 pendding 的 resolve 呢？
 2. **then 链**：`then` 返回新 Promise，支持链式调用；回调里 return 的值会被 resolve，throw 会 reject
-3. **值穿透**：`then(null, null)` 时，值/错误穿透到下一个 then；确保 Promise 可以被跳过转发
+3. **值穿透**：`then(null, null)` 时，值/错误穿透到下一个 then；确保 Promise 可以被跳过转发 // todo 这是什么意思？
 
 异步执行保证：then 的回调**必须异步执行**（微任务），即使 Promise 已 resolved，也不能同步调用回调，这保证了行为一致性。
 
@@ -286,101 +314,140 @@ ES6 模块天然有自己的作用域，在模块系统里 IIFE 基本无意义�
 ```js
 class MyPromise {
   constructor(executor) {
-    this.state = 'pending'; this.value = undefined
-    this.callbacks = []  // [{onFulfilled, onRejected, resolve, reject}]
-    const resolve = val => {
-      if (this.state !== 'pending') return
-      this.state = 'fulfilled'; this.value = val
-      queueMicrotask(() => this.callbacks.forEach(cb => this._handle(cb)))
+    this.state = 'pending';
+    this.value = undefined;
+    this.callbacks = []; // [{onFulfilled, onRejected, resolve, reject}]
+    const resolve = (val) => {
+      if (this.state !== 'pending') return;
+      this.state = 'fulfilled';
+      this.value = val;
+      queueMicrotask(() => this.callbacks.forEach((cb) => this._handle(cb)));
+    };
+    const reject = (reason) => {
+      if (this.state !== 'pending') return;
+      this.state = 'rejected';
+      this.value = reason;
+      queueMicrotask(() => this.callbacks.forEach((cb) => this._handle(cb)));
+    };
+    try {
+      executor(resolve, reject);
+    } catch (e) {
+      reject(e);
     }
-    const reject = reason => {
-      if (this.state !== 'pending') return
-      this.state = 'rejected'; this.value = reason
-      queueMicrotask(() => this.callbacks.forEach(cb => this._handle(cb)))
-    }
-    try { executor(resolve, reject) } catch(e) { reject(e) }
   }
   _handle({ onFulfilled, onRejected, resolve, reject }) {
-    const fn = this.state === 'fulfilled' ? onFulfilled : onRejected
+    const fn = this.state === 'fulfilled' ? onFulfilled : onRejected;
     if (typeof fn !== 'function') {
-      return this.state === 'fulfilled' ? resolve(this.value) : reject(this.value)
+      return this.state === 'fulfilled'
+        ? resolve(this.value)
+        : reject(this.value);
     }
-    try { resolve(fn(this.value)) } catch(e) { reject(e) }
+    try {
+      resolve(fn(this.value));
+    } catch (e) {
+      reject(e);
+    }
   }
   then(onFulfilled, onRejected) {
     return new MyPromise((resolve, reject) => {
-      const cb = { onFulfilled, onRejected, resolve, reject }
-      if (this.state === 'pending') this.callbacks.push(cb)
-      else queueMicrotask(() => this._handle(cb))
-    })
+      const cb = { onFulfilled, onRejected, resolve, reject };
+      if (this.state === 'pending') this.callbacks.push(cb);
+      else queueMicrotask(() => this._handle(cb));
+    });
   }
 }
 ```
 
 **A1.4.3** Promise.all/allSettled/race/any 差异
 
-| 方法 | 成功条件 | 失败条件 | 返回值 |
-|------|--------|--------|--------|
-| all | 全部 fulfilled | 任一 rejected | fulfilled 数组 / 第一个 rejection |
-| allSettled | 全部结束（不管结果） | 永不 reject | `[{status, value/reason}]` |
-| race | 第一个结束 | 第一个 reject | 第一个结果 |
-| any | 任一 fulfilled | 全部 rejected | 第一个 fulfilled / AggregateError |
+| 方法       | 成功条件             | 失败条件      | 返回值                            |
+| ---------- | -------------------- | ------------- | --------------------------------- |
+| all        | 全部 fulfilled       | 任一 rejected | fulfilled 数组 / 第一个 rejection |
+| allSettled | 全部结束（不管结果） | 永不 reject   | `[{status, value/reason}]`        |
+| race       | 第一个结束           | 第一个 reject | 第一个结果                        |
+| any        | 任一 fulfilled       | 全部 rejected | 第一个 fulfilled / AggregateError |
 
 项目场景：`allSettled` 做并行请求时不想因一个失败而中断；`any` 做多源容灾（哪个 CDN 先响应用哪个）。
+// todo 这里是不是可以结合请求取消 AbortController、cancelToken 实现一个网络不稳定状态下多次请求，只取其中一个请求成功的测试数据（心跳接口，测试后端接口稳定性）
 
 **A1.4.4** 带并发上限的 Promise.all
 
 ```js
 async function limitConcurrency(tasks, limit = 3) {
-  const results = []
-  const executing = new Set()
+  const results = [];
+  const executing = new Set();
   for (const [i, task] of tasks.entries()) {
-    const p = Promise.resolve().then(() => task()).then(r => {
-      results[i] = r
-      executing.delete(p)
-    })
-    executing.add(p)
-    if (executing.size >= limit) await Promise.race(executing)
+    const p = Promise.resolve()
+      .then(() => task())
+      .then((r) => {
+        results[i] = r;
+        executing.delete(p);
+      });
+    executing.add(p);
+    if (executing.size >= limit) await Promise.race(executing);
   }
-  await Promise.allSettled(executing)
-  return results
+  await Promise.allSettled(executing);
+  return results;
 }
 // 用法：limitConcurrency([() => fetch(url1), () => fetch(url2)...], 3)
 ```
 
 核心思路：维护一个"运行中"的 Set，满了就 `race` 等最快的一个完成，再继续推入。
+// todo 大文件切片上传，不过 race 可以换成 all；有错误的再增加一个错误拦截机制，等所有切片上传完毕之后，重新补发错误数据；
 
 **A1.4.5** async/await 的本质 + 错误冒泡
 
 async/await 是 **generator + 自动执行器（co 库思路）** 的语法糖。babel 把 async 函数编译成 generator，用 `_asyncToGenerator` 包装：每次 `yield` 一个 Promise，等 resolve 后 `gen.next(value)` 继续执行；reject 则 `gen.throw(error)`。
 
+**补充yield 生成器函数，核心思想是协程思想+双向数据通道**
+``` javascript
+// todo 协程思想是什么？没看懂；
+// 生成器函数
+function* standarGenerator(...args){
+  console.log('step 1');
+  yield '第一阶段完成，函数会在这里结束';
+  console.log('step 2');
+  yield '第二阶段完成，函数会在这里结束';
+  return; 
+}
+
+// 生成器函数会有两种状态可以调用
+standarGenerator.next(arg); // 双向数据通道的意思是生成器函数可以把方法内布值传递出来，也可以通过next函数把外部值传递进去；
+standarGenerator.done();
+```
+
 错误冒泡：`await` 的 Promise reject 会在当前 async 函数里抛出异常，没有 try/catch 则冒泡给调用方的 Promise 链。实际项目中：
+
 ```js
 // 推荐：统一错误处理
 async function safeCall(promise) {
-  try { return [await promise, null] }
-  catch(e) { return [null, e] }
+  try {
+    return [await promise, null];
+  } catch (e) {
+    return [null, e];
+  }
 }
-const [data, err] = await safeCall(fetchUser())
+const [data, err] = await safeCall(fetchUser());
 ```
 
 **A1.4.6** 可取消的 Promise（AbortController）
 
 ```js
 function cancellableRequest(url) {
-  const controller = new AbortController()
-  const promise = fetch(url, { signal: controller.signal })
-    .then(r => r.json())
+  const controller = new AbortController();
+  const promise = fetch(url, { signal: controller.signal }).then((r) =>
+    r.json(),
+  );
   return {
     promise,
-    cancel: () => controller.abort()
-  }
+    cancel: () => controller.abort(),
+  };
 }
 
 // 使用
-const { promise, cancel } = cancellableRequest('/api/data')
+const { promise, cancel } = cancellableRequest('/api/data');
 // 路由跳转时取消
-onBeforeUnmount(() => cancel())
+onBeforeUnmount(() => cancel());
 ```
 
 AbortController 是原生取消机制，fetch/XHR/EventListener 都支持 signal。自定义 Promise 无法真正"停止"，但可通过 signal 约定取消行为（如不 resolve/reject）。
@@ -394,6 +461,7 @@ AbortController 是原生取消机制，fetch/XHR/EventListener 都支持 signal
 **浏览器**：宏任务队列 + 微任务队列，每个宏任务执行完清空所有微任务，然后考虑渲染，再取下一个宏任务。
 
 **Node.js** 有 6 个阶段（libuv 驱动）：
+
 1. **timers**：执行 setTimeout/setInterval
 2. **pending callbacks**：系统回调（TCP 错误等）
 3. **idle/prepare**：内部使用
@@ -422,16 +490,16 @@ Node.js 微任务（nextTick + Promise）在**每个阶段切换时**清空，`p
 **A1.5.4** 混合代码的执行顺序
 
 ```js
-console.log('1')                           // 同步
-setTimeout(() => console.log('2'), 0)      // 宏任务
-Promise.resolve().then(() => console.log('3'))  // 微任务
+console.log('1'); // 同步
+setTimeout(() => console.log('2'), 0); // 宏任务
+Promise.resolve().then(() => console.log('3')); // 微任务
 async function fn() {
-  console.log('4')
-  await Promise.resolve()
-  console.log('5')  // await 后 = then 回调 = 微任务
+  console.log('4');
+  await Promise.resolve();
+  console.log('5'); // await 后 = then 回调 = 微任务
 }
-fn()
-console.log('6')
+fn();
+console.log('6');
 // 输出顺序：1 → 4 → 6 → 3 → 5 → 2
 ```
 
@@ -459,20 +527,20 @@ console.log('6')
 ```js
 const TYPE = {
   ADD: Symbol('add'),
-  DELETE: Symbol('delete')
-}
+  DELETE: Symbol('delete'),
+};
 // 不会和其他模块的 'add' 字符串冲突
 ```
 
 **A1.6.2** Proxy + Reflect 比 Object.defineProperty 的优势
 
-| 能力 | defineProperty | Proxy |
-|------|---------------|-------|
-| 数组索引/length 变化 | ❌ | ✅ |
-| 属性新增/删除 | ❌ | ✅（has/deleteProperty） |
-| 拦截类型 | 只有 get/set | 13 种 trap |
-| 懒初始化嵌套 | 需递归遍历所有属性 | 访问时才创建子 Proxy |
-| 非对象类型 | 无法拦截 | Map/Set/数组都支持 |
+| 能力                 | defineProperty     | Proxy                    |
+| -------------------- | ------------------ | ------------------------ |
+| 数组索引/length 变化 | ❌                 | ✅                       |
+| 属性新增/删除        | ❌                 | ✅（has/deleteProperty） |
+| 拦截类型             | 只有 get/set       | 13 种 trap               |
+| 懒初始化嵌套         | 需递归遍历所有属性 | 访问时才创建子 Proxy     |
+| 非对象类型           | 无法拦截           | Map/Set/数组都支持       |
 
 Reflect 配合 Proxy 的意义：保证拦截后**默认行为语义正确**（Reflect.get 正确处理原型链），同时把"是否操作成功"通过返回值传达，而不是抛异常。
 
@@ -484,10 +552,10 @@ Iterator 协议：对象有 `[Symbol.iterator]()` 方法，返回有 `next()` �
 
 ```js
 function* range(start, end) {
-  for (let i = start; i < end; i++) yield i
+  for (let i = start; i < end; i++) yield i;
 }
 // 可用 for...of / 解构 / spread 消费
-[...range(0, 5)]  // [0, 1, 2, 3, 4]
+[...range(0, 5)]; // [0, 1, 2, 3, 4]
 ```
 
 **A1.6.4** WeakMap/WeakSet 应用场景
@@ -495,6 +563,7 @@ function* range(start, end) {
 弱引用：key（WeakMap）或 value（WeakSet）不阻止 GC 回收，对象被回收后自动从集合移除。
 
 应用场景：
+
 - **DOM 节点关联数据**：`weakMap.set(domEl, metadata)`，DOM 删除后数据自动释放
 - **实现私有属性**：类构造器里 `weakMap.set(this, privateData)`，外部无法访问
 - **缓存/记忆化**：以对象为 key 缓存计算结果，对象 GC 后缓存自动清除，不用手动管理
@@ -507,6 +576,7 @@ function* range(start, end) {
 原理：使用顶层 await 的模块，相当于把整个模块包在一个 async 函数里，依赖这个模块的其他模块会等它 resolve 后才执行。
 
 打包工具处理：
+
 - **Vite**：原生支持（基于 ESM），开发环境直接用，生产环境配置 target 为支持顶层 await 的环境
 - **Webpack 5**：设置 `experiments.topLevelAwait: true`，编译为 async 模块
 - 注意：如果 target 是老环境，打包工具会把它转为 IIFE async 包裹，有兼容性问题
@@ -533,6 +603,7 @@ data.x = y  (set) → Dep.notify() → watcher.update() → queue → nextTick �
 **A2.1.2** Vue 2 无法监听数组/新增属性的原因
 
 `Object.defineProperty` 只能拦截**已知属性**的 get/set。
+
 - **数组 push/pop/splice**：这些操作不经过属性 setter（length 变了但 defineProperty 拦截不到 length），Vue 2 选择 hack——重写了数组的 7 个变异方法（push/pop/shift/unshift/splice/sort/reverse）
 - **索引赋值 `arr[0] = x`**：直接索引赋值绕过了 Vue 的 setter，必须用 `Vue.set(arr, 0, x)`
 - **新增属性 `obj.newKey = x`**：defineProperty 时属性不存在，getter/setter 没有被定义，必须用 `Vue.set(obj, 'newKey', x)`
@@ -550,17 +621,17 @@ data.x = y  (set) → Dep.notify() → watcher.update() → queue → nextTick �
 // Vue 3 reactive 核心逻辑（简化）
 const handler = {
   get(target, key, receiver) {
-    track(target, key)  // 依赖收集
-    const res = Reflect.get(target, key, receiver)
-    if (isObject(res)) return reactive(res)  // 懒递归
-    return res
+    track(target, key); // 依赖收集
+    const res = Reflect.get(target, key, receiver);
+    if (isObject(res)) return reactive(res); // 懒递归
+    return res;
   },
   set(target, key, value, receiver) {
-    const result = Reflect.set(target, key, value, receiver)
-    trigger(target, key)  // 触发更新
-    return result
-  }
-}
+    const result = Reflect.set(target, key, value, receiver);
+    trigger(target, key); // 触发更新
+    return result;
+  },
+};
 ```
 
 **A2.1.4** Vue 3 reactive/ref/shallowRef/toRef/toRefs 差异
@@ -572,8 +643,8 @@ const handler = {
 - **toRefs**：把整个 reactive 对象每个属性都转成 ref，解构后不丢失响应性
 
 ```js
-const state = reactive({ x: 1, y: 2 })
-const { x, y } = toRefs(state)  // x.value === state.x，修改同步
+const state = reactive({ x: 1, y: 2 });
+const { x, y } = toRefs(state); // x.value === state.x，修改同步
 ```
 
 **A2.1.5** effect/track/trigger 内部数据结构
@@ -597,13 +668,13 @@ targetMap: WeakMap<target, Map<key, Set<ReactiveEffect>>>
 // 伪代码
 function queueFlush() {
   if (!isFlushing) {
-    isFlushing = true
-    Promise.resolve().then(flushJobs)  // 微任务批量执行
+    isFlushing = true;
+    Promise.resolve().then(flushJobs); // 微任务批量执行
   }
 }
 // nextTick 就是在这个 Promise 后面挂一个 then
 function nextTick(fn) {
-  return fn ? currentFlushPromise.then(fn) : currentFlushPromise
+  return fn ? currentFlushPromise.then(fn) : currentFlushPromise;
 }
 ```
 
@@ -612,6 +683,7 @@ function nextTick(fn) {
 **A2.1.7** computed 懒求值 + 脏检查
 
 computed 基于 `ReactiveEffect` 实现，有一个 `dirty` 标志（初始 true）。
+
 - 首次访问或依赖变化后：`dirty = true`，下次 `.value` 时重新计算
 - 依赖没变：`dirty = false`，直接返回缓存值，不重新计算
 - 依赖变化时：通过 scheduler 把 `dirty` 设回 true，并通知依赖 computed 的 effect
@@ -625,6 +697,7 @@ computed 基于 `ReactiveEffect` 实现，有一个 `dirty` 标志（初始 true
 **A2.2.1** Vue 2 双端 Diff 算法流程
 
 新旧两个 children 各取头尾 4 个指针（oldStart/oldEnd/newStart/newEnd），每轮比较：
+
 1. 新头 vs 旧头 → 相同则两头指针同时右移
 2. 新尾 vs 旧尾 → 相同则两尾指针同时左移
 3. 旧头 vs 新尾 → 相同则把旧头节点移到旧尾之后，指针内移
@@ -636,6 +709,7 @@ computed 基于 `ReactiveEffect` 实现，有一个 `dirty` 标志（初始 true
 **A2.2.2** Vue 3 快速 Diff 相比 Vue 2 的提升
 
 Vue 3 的快速 Diff 核心改进：
+
 1. **预处理**：先从头从尾分别处理相同的前缀/后缀，跳过不需要 diff 的部分
 2. **最长递增子序列（LIS）**：对中间乱序部分，找出不需要移动的节点（LIS），**只移动不在 LIS 里的节点**，最小化 DOM 移动次数
 
@@ -675,6 +749,7 @@ Vue 2：`v-for` 优先级高于 `v-if`，两者同在一个元素上时**先循�
 Vue 3：`v-if` 优先级高于 `v-for`，`v-if` 里访问不到 `v-for` 的迭代变量，容易出 undefined 错误。
 
 推荐做法：用 `<template>` 包裹分开写，或者提前用 computed 过滤数组：
+
 ```html
 <!-- 推荐 -->
 <ul>
@@ -691,6 +766,7 @@ Vue 3：`v-if` 优先级高于 `v-for`，`v-if` 里访问不到 `v-for` 的迭�
 **A2.3.1** SFC 的编译过程
 
 Vue SFC（.vue 文件）编译分两阶段：
+
 1. **@vue/compiler-sfc 解析**：把 `<template>/<script>/<style>` 拆分，各自处理
 2. **template 编译**：`compiler-dom` 把模板 AST → 转换优化（静态提升/PatchFlag）→ 生成 render 函数代码字符串
 3. **script 处理**：`<script setup>` 由 `compileScript` 做宏处理（defineProps/defineEmits/defineExpose 等转换）
@@ -710,22 +786,23 @@ Vite 里 `@vitejs/plugin-vue` 负责这个流程，把 .vue 文件转成 JS 模�
 ```vue
 <!-- 源码 -->
 <script setup>
-import { ref } from 'vue'
-const props = defineProps({ msg: String })
-const count = ref(0)
+import { ref } from 'vue';
+const props = defineProps({ msg: String });
+const count = ref(0);
 </script>
 ```
 
 编译产物核心：
+
 ```js
 export default {
   setup(__props, { expose }) {
-    const props = __props  // defineProps 转为访问 __props
-    const count = ref(0)
-    expose({})  // 默认不暴露任何内容（隔离性更好）
-    return { count }  // 模板用到的变量自动 return
-  }
-}
+    const props = __props; // defineProps 转为访问 __props
+    const count = ref(0);
+    expose({}); // 默认不暴露任何内容（隔离性更好）
+    return { count }; // 模板用到的变量自动 return
+  },
+};
 ```
 
 差异：`<script setup>` 里顶层变量**自动暴露给模板**，不需要手动 return；默认 `expose({})` 隐藏内部实现，父组件 ref 拿到的是空对象（需要 defineExpose 明确暴露）。
@@ -736,11 +813,11 @@ provide 传入的值**本身不会自动变成响应式**，需要主动传 reac
 
 ```js
 // 正确做法：provide reactive/ref
-const theme = ref('dark')
-provide('theme', theme)  // 传 ref，inject 收到的是 ref，.value 有响应性
+const theme = ref('dark');
+provide('theme', theme); // 传 ref，inject 收到的是 ref，.value 有响应性
 
 // 如果要防止子组件修改，用 readonly 包装
-provide('theme', readonly(theme))
+provide('theme', readonly(theme));
 ```
 
 inject 没有接收到值时用默认值：`inject('theme', 'light')`。Vue 3 推荐用 Symbol 作 key 避免命名冲突。
@@ -749,14 +826,14 @@ inject 没有接收到值时用默认值：`inject('theme', 'light')`。Vue 3 �
 
 ```js
 const myDirective = {
-  created(el, binding, vnode, prevVnode) {},       // 元素创建，属性绑定前
-  beforeMount(el, binding, vnode, prevVnode) {},   // 插入 DOM 前
-  mounted(el, binding, vnode, prevVnode) {},       // 插入 DOM 后
-  beforeUpdate(el, binding, vnode, prevVnode) {},  // 组件更新前
-  updated(el, binding, vnode, prevVnode) {},       // 组件更新后
+  created(el, binding, vnode, prevVnode) {}, // 元素创建，属性绑定前
+  beforeMount(el, binding, vnode, prevVnode) {}, // 插入 DOM 前
+  mounted(el, binding, vnode, prevVnode) {}, // 插入 DOM 后
+  beforeUpdate(el, binding, vnode, prevVnode) {}, // 组件更新前
+  updated(el, binding, vnode, prevVnode) {}, // 组件更新后
   beforeUnmount(el, binding, vnode, prevVnode) {}, // 卸载前
-  unmounted(el, binding, vnode, prevVnode) {}      // 卸载后
-}
+  unmounted(el, binding, vnode, prevVnode) {}, // 卸载后
+};
 ```
 
 `binding` 包含：`value`（指令值）、`arg`（指令参数如 `v-dir:arg`）、`modifiers`（修饰符对象）。
@@ -773,19 +850,21 @@ KeepAlive 内部用 `Map` 存缓存（key → vnode），用 `Set` 记录 key �
 
 ```js
 // 伪代码
-const cache = new Map()  // key → vnode
-const keys = new Set()   // 按访问顺序记录 key
+const cache = new Map(); // key → vnode
+const keys = new Set(); // 按访问顺序记录 key
 
 // 访问时
 if (cache.has(key)) {
-  keys.delete(key); keys.add(key)  // 移到最近
-  return cache.get(key)
+  keys.delete(key);
+  keys.add(key); // 移到最近
+  return cache.get(key);
 } else {
-  cache.set(key, vnode); keys.add(key)
+  cache.set(key, vnode);
+  keys.add(key);
   if (keys.size > max) {
     // 删除最久未使用的（Set 第一个元素）
-    const oldestKey = keys.values().next().value
-    pruneCacheEntry(oldestKey)
+    const oldestKey = keys.values().next().value;
+    pruneCacheEntry(oldestKey);
   }
 }
 ```
@@ -803,8 +882,8 @@ if (cache.has(key)) {
 
 ```js
 // history 模式核心
-history.pushState({ path }, '', url)  // 改 URL 不刷新
-window.addEventListener('popstate', handlePop)  // 监听前进/后退
+history.pushState({ path }, '', url); // 改 URL 不刷新
+window.addEventListener('popstate', handlePop); // 监听前进/后退
 ```
 
 **A2.4.2** router.beforeEach 执行流程 + next 的陷阱
@@ -812,45 +891,49 @@ window.addEventListener('popstate', handlePop)  // 监听前进/后退
 守卫执行顺序：`全局beforeEach → 路由独享beforeEnter → 组件内beforeRouteEnter → 全局beforeResolve → 导航确认 → 全局afterEach`
 
 next 的陷阱（Vue Router 3）：
+
 - 必须调 `next()`，忘了调会导致导航永久挂起
 - `next(false)` 取消，`next('/path')` 跳转，`next(error)` 抛错
 
 Vue Router 4 已改进：可以直接 return，`return false` 取消，`return '/path'` 跳转，不用 next，更符合直觉：
+
 ```js
 router.beforeEach((to, from) => {
-  if (!isAuthenticated()) return '/login'  // 不用 next
-})
+  if (!isAuthenticated()) return '/login'; // 不用 next
+});
 ```
 
 **A2.4.3** 动态路由 + 权限路由最佳实践
 
 推荐方案：
+
 1. 登录后获取用户权限，根据权限**过滤路由表**
 2. 用 `router.addRoute()` 动态添加路由
 3. 权限路由信息存 store，**同时持久化到 localStorage/sessionStorage**
 
 刷新路由丢失的原因：`addRoute` 是运行时操作，刷新后重新初始化路由表只有静态路由。解决方案：
+
 ```js
 // 路由守卫里检查
 router.beforeEach(async (to) => {
   if (!store.routesAdded && isLoggedIn()) {
-    await store.loadPermissions()
-    store.dynamicRoutes.forEach(r => router.addRoute(r))
-    return to.fullPath  // 重定向到当前路径，使动态路由生效
+    await store.loadPermissions();
+    store.dynamicRoutes.forEach((r) => router.addRoute(r));
+    return to.fullPath; // 重定向到当前路径，使动态路由生效
   }
-})
+});
 ```
 
 **A2.4.4** Pinia vs Vuex 设计差异
 
-| | Vuex | Pinia |
-|---|---|---|
-| 模块化 | namespaced modules，繁琐 | 每个 store 独立，天然模块化 |
-| mutation | 必须通过 mutation 修改 | 直接修改 state，去掉 mutation |
-| TypeScript | 类型推断很弱 | 完美 TS 支持，自动推断 |
-| Devtools | ✅ | ✅（更好的时间旅行） |
-| 体积 | 较大 | 约 1KB，tree-shakable |
-| API 风格 | 选项式 | 支持选项式和组合式两种 |
+|            | Vuex                     | Pinia                         |
+| ---------- | ------------------------ | ----------------------------- |
+| 模块化     | namespaced modules，繁琐 | 每个 store 独立，天然模块化   |
+| mutation   | 必须通过 mutation 修改   | 直接修改 state，去掉 mutation |
+| TypeScript | 类型推断很弱             | 完美 TS 支持，自动推断        |
+| Devtools   | ✅                       | ✅（更好的时间旅行）          |
+| 体积       | 较大                     | 约 1KB，tree-shakable         |
+| API 风格   | 选项式                   | 支持选项式和组合式两种        |
 
 Pinia 去掉 mutation 是因为 mutation 的唯一价值是"追踪状态变更"，Devtools 已经可以通过 Proxy 追踪了，mutation 成了纯样板代码。
 
@@ -862,13 +945,13 @@ Pinia 的 store 底层基于 `reactive()`（选项式 store）或直接使用组
 // 选项式 store 底层简化
 function defineStore(id, options) {
   return function useStore() {
-    const state = reactive(options.state())  // state 用 reactive 包装
-    const getters = {}
+    const state = reactive(options.state()); // state 用 reactive 包装
+    const getters = {};
     for (const key in options.getters) {
-      getters[key] = computed(() => options.getters[key].call(state, state))
+      getters[key] = computed(() => options.getters[key].call(state, state));
     }
-    return markRaw({ ...state, ...getters, ...options.actions })
-  }
+    return markRaw({ ...state, ...getters, ...options.actions });
+  };
 }
 ```
 
@@ -882,15 +965,20 @@ function defineStore(id, options) {
 
 ```ts
 // interface: 描述对象"形状"，可声明合并（augmentation）
-interface User { name: string }
-interface User { age: number }  // 合并！User 同时有 name 和 age
+interface User {
+  name: string;
+}
+interface User {
+  age: number;
+} // 合并！User 同时有 name 和 age
 
 // type: 类型别名，可以是任意类型，不能合并
-type ID = string | number  // union，interface 做不到
-type Tuple = [string, number]  // 元组
+type ID = string | number; // union，interface 做不到
+type Tuple = [string, number]; // 元组
 ```
 
 核心区别：
+
 - interface **可以被 implements**（类实现），type 可以但不推荐
 - interface **支持声明合并**，适合给第三方库扩展类型
 - type 可以表达 **union/intersection/tuple/mapped types** 等复杂类型
@@ -901,18 +989,18 @@ type Tuple = [string, number]  // 元组
 ```ts
 // 泛型约束
 function getKey<T extends object, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key]
+  return obj[key];
 }
 
 // 条件类型
-type IsArray<T> = T extends any[] ? true : false
+type IsArray<T> = T extends any[] ? true : false;
 
 // infer：在条件类型中推断类型
-type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never
-type UnpackPromise<T> = T extends Promise<infer U> ? U : T
+type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+type UnpackPromise<T> = T extends Promise<infer U> ? U : T;
 
 // 分布式条件类型：T 是 union 时会被分发
-type ToArray<T> = T extends any ? T[] : never
+type ToArray<T> = T extends any ? T[] : never;
 // ToArray<string | number> => string[] | number[]
 ```
 
@@ -921,33 +1009,36 @@ infer 的核心作用：在"匹配模式"里挖出你想要的类型片段，像
 **A3.3** 工具类型手写
 
 ```ts
-type MyPartial<T> = { [K in keyof T]?: T[K] }
-type MyRequired<T> = { [K in keyof T]-?: T[K] }  // -? 去掉可选
-type MyPick<T, K extends keyof T> = { [P in K]: T[P] }
-type MyOmit<T, K extends keyof T> = MyPick<T, Exclude<keyof T, K>>
-type MyRecord<K extends keyof any, V> = { [P in K]: V }
-type MyReadonly<T> = { readonly [K in keyof T]: T[K] }
+type MyPartial<T> = { [K in keyof T]?: T[K] };
+type MyRequired<T> = { [K in keyof T]-?: T[K] }; // -? 去掉可选
+type MyPick<T, K extends keyof T> = { [P in K]: T[P] };
+type MyOmit<T, K extends keyof T> = MyPick<T, Exclude<keyof T, K>>;
+type MyRecord<K extends keyof any, V> = { [P in K]: V };
+type MyReadonly<T> = { readonly [K in keyof T]: T[K] };
 
 // Exclude/Extract 基于分布式条件类型
-type MyExclude<T, U> = T extends U ? never : T
-type MyExtract<T, U> = T extends U ? T : never
+type MyExclude<T, U> = T extends U ? never : T;
+type MyExtract<T, U> = T extends U ? T : never;
 ```
 
 **A3.4** keyof/typeof/in 组合应用
 
 ```ts
-const config = { host: 'localhost', port: 3000 }
+const config = { host: 'localhost', port: 3000 };
 
-type Config = typeof config           // { host: string; port: number }
-type ConfigKey = keyof Config         // "host" | "port"
+type Config = typeof config; // { host: string; port: number }
+type ConfigKey = keyof Config; // "host" | "port"
 
 // 映射类型用 in 遍历 union
-type Stringify<T> = { [K in keyof T]: string }
+type Stringify<T> = { [K in keyof T]: string };
 
 // 实际应用：类型安全的事件系统
-type EventMap = { click: MouseEvent; keydown: KeyboardEvent }
-function on<K extends keyof EventMap>(event: K, handler: (e: EventMap[K]) => void) {}
-on('click', e => e.clientX)  // e 自动推断为 MouseEvent
+type EventMap = { click: MouseEvent; keydown: KeyboardEvent };
+function on<K extends keyof EventMap>(
+  event: K,
+  handler: (e: EventMap[K]) => void,
+) {}
+on('click', (e) => e.clientX); // e 自动推断为 MouseEvent
 ```
 
 **A3.5** unknown/never/any 差异
@@ -959,15 +1050,15 @@ on('click', e => e.clientX)  // e 自动推断为 MouseEvent
 ```ts
 // unknown 收窄
 function process(val: unknown) {
-  if (typeof val === 'string') val.toUpperCase()  // 收窄后才能操作
+  if (typeof val === 'string') val.toUpperCase(); // 收窄后才能操作
 }
 
 // never 穷举检查
-type Shape = 'circle' | 'square'
+type Shape = 'circle' | 'square';
 function draw(shape: Shape) {
-  if (shape === 'circle') return
-  if (shape === 'square') return
-  const _exhausted: never = shape  // 如果 Shape 新增类型，这里编译报错
+  if (shape === 'circle') return;
+  if (shape === 'square') return;
+  const _exhausted: never = shape; // 如果 Shape 新增类型，这里编译报错
 }
 ```
 
@@ -977,18 +1068,18 @@ function draw(shape: Shape) {
 逆变（Contravariant）：父类型可以赋给子类型 → **函数参数类型是逆变的**
 
 ```ts
-type Animal = { name: string }
-type Dog = { name: string; bark(): void }  // Dog extends Animal
+type Animal = { name: string };
+type Dog = { name: string; bark(): void }; // Dog extends Animal
 
 // 函数返回值：协变（可以返回更具体的类型）
-type GetAnimal = () => Animal
-type GetDog = () => Dog
-const f: GetAnimal = (() => ({ name: 'dog', bark(){} })) as GetDog  // ✅ 安全
+type GetAnimal = () => Animal;
+type GetDog = () => Dog;
+const f: GetAnimal = (() => ({ name: 'dog', bark() {} })) as GetDog; // ✅ 安全
 
 // 函数参数：逆变（接受更宽泛的参数才安全）
-type HandleDog = (d: Dog) => void
-type HandleAnimal = (a: Animal) => void
-const h: HandleDog = ((a: Animal) => {}) as HandleAnimal  // ✅ 安全，反之不安全
+type HandleDog = (d: Dog) => void;
+type HandleAnimal = (a: Animal) => void;
+const h: HandleDog = ((a: Animal) => {}) as HandleAnimal; // ✅ 安全，反之不安全
 ```
 
 TS 默认对方法参数是双向协变（`strictFunctionTypes` 关闭），开启严格模式后函数参数才是逆变的。
@@ -1000,17 +1091,19 @@ TS 默认对方法参数是双向协变（`strictFunctionTypes` 关闭），开�
 ```ts
 // 方法装饰器示例
 function log(target: any, key: string, descriptor: PropertyDescriptor) {
-  const original = descriptor.value
-  descriptor.value = function(...args: any[]) {
-    console.log(`calling ${key} with`, args)
-    return original.apply(this, args)
-  }
-  return descriptor
+  const original = descriptor.value;
+  descriptor.value = function (...args: any[]) {
+    console.log(`calling ${key} with`, args);
+    return original.apply(this, args);
+  };
+  return descriptor;
 }
 
 class Service {
   @log
-  getData(id: number) { /* ... */ }
+  getData(id: number) {
+    /* ... */
+  }
 }
 ```
 
@@ -1021,13 +1114,17 @@ class Service {
 ```ts
 // 给 window 扩展属性
 declare global {
-  interface Window { __APP_CONFIG__: Record<string, string> }
+  interface Window {
+    __APP_CONFIG__: Record<string, string>;
+  }
 }
 
 // 给第三方模块补类型
 declare module 'some-untyped-lib' {
-  export function doSomething(x: string): number
-  export default class MyLib { constructor(opts: object) }
+  export function doSomething(x: string): number;
+  export default class MyLib {
+    constructor(opts: object);
+  }
 }
 
 // .d.ts 文件放哪：tsconfig 的 typeRoots 或 types 字段，
@@ -1040,19 +1137,19 @@ declare module 'some-untyped-lib' {
 
 ```ts
 // as const：推断为最窄的字面量类型，且 readonly
-const config = { env: 'production', port: 3000 } as const
+const config = { env: 'production', port: 3000 } as const;
 // 推断为 { readonly env: "production"; readonly port: 3000 }
 
 // 字面量类型
-type Direction = 'left' | 'right' | 'up' | 'down'
+type Direction = 'left' | 'right' | 'up' | 'down';
 
 // 模板字面量类型（TS 4.1+）
-type EventName = 'click' | 'focus'
-type Handler = `on${Capitalize<EventName>}`  // "onClick" | "onFocus"
+type EventName = 'click' | 'focus';
+type Handler = `on${Capitalize<EventName>}`; // "onClick" | "onFocus"
 
 // 实际应用：生成类型安全的 CSS 变量名
-type CSSVar<T extends string> = `--${T}`
-type Colors = CSSVar<'primary' | 'secondary'>  // "--primary" | "--secondary"
+type CSSVar<T extends string> = `--${T}`;
+type Colors = CSSVar<'primary' | 'secondary'>; // "--primary" | "--secondary"
 ```
 
 **A3.10** tsconfig 关键配置
@@ -1060,16 +1157,16 @@ type Colors = CSSVar<'primary' | 'secondary'>  // "--primary" | "--secondary"
 ```json
 {
   "compilerOptions": {
-    "target": "ES2020",           // 编译产物语法版本
-    "module": "ESNext",           // 模块系统
-    "moduleResolution": "bundler",// 模块解析策略，Vite/Webpack 用 bundler
-    "strict": true,               // 开启所有严格检查（必须）
+    "target": "ES2020", // 编译产物语法版本
+    "module": "ESNext", // 模块系统
+    "moduleResolution": "bundler", // 模块解析策略，Vite/Webpack 用 bundler
+    "strict": true, // 开启所有严格检查（必须）
     "noUncheckedIndexedAccess": true, // 索引访问包含 undefined
-    "paths": { "@/*": ["src/*"] },// 路径别名
+    "paths": { "@/*": ["src/*"] }, // 路径别名
     "baseUrl": ".",
-    "types": ["vite/client"],     // 手动指定 @types 包
-    "isolatedModules": true,      // 每文件独立编译（Vite/esbuild 需要）
-    "skipLibCheck": true          // 跳过 .d.ts 类型检查，提速
+    "types": ["vite/client"], // 手动指定 @types 包
+    "isolatedModules": true, // 每文件独立编译（Vite/esbuild 需要）
+    "skipLibCheck": true // 跳过 .d.ts 类型检查，提速
   }
 }
 ```
@@ -1087,6 +1184,7 @@ BFC（Block Formatting Context，块级格式化上下文）是一个独立的�
 触发条件：`overflow` 非 visible、`float` 非 none、`position: absolute/fixed`、`display: flex/grid/inline-block`、`contain: layout`
 
 解决的问题：
+
 - **清除浮动**：BFC 内的 float 不会溢出到父元素外（父元素高度塌陷问题）
 - **阻止 margin 合并**：BFC 和外部元素的 margin 不会合并
 - **阻止被 float 遮盖**：BFC 区域不与 float 元素重叠，实现自适应两栏布局
@@ -1094,6 +1192,7 @@ BFC（Block Formatting Context，块级格式化上下文）是一个独立的�
 **A4.2** flex: 1 的完整含义
 
 `flex: 1` 是简写，完整是 `flex: 1 1 0`，即：
+
 - `flex-grow: 1`：有剩余空间时等比扩展
 - `flex-shrink: 1`：空间不足时等比收缩
 - `flex-basis: 0`：基础尺寸为 0（从 0 开始分配，而非从内容尺寸开始）
@@ -1111,7 +1210,7 @@ Grid 是**二维布局**（行+列同时控制），适合整体页面布局、�
   display: grid;
   grid-template-columns: 200px 1fr;
   grid-template-rows: 60px 1fr 40px;
-  grid-template-areas: "header header" "sidebar main" "footer footer";
+  grid-template-areas: 'header header' 'sidebar main' 'footer footer';
 }
 ```
 
@@ -1126,6 +1225,7 @@ Grid 是**二维布局**（行+列同时控制），适合整体页面布局、�
 - `sticky`：滚动到阈值前是 relative，超过后是 fixed（相对最近滚动容器）
 
 sticky 失效的常见原因：
+
 - 父元素有 `overflow: hidden/auto/scroll`（破坏粘性上下文）
 - 没有设置 `top/left/bottom/right` 阈值
 - 父元素高度不够（sticky 元素没有滚动空间）
@@ -1135,6 +1235,7 @@ sticky 失效的常见原因：
 优先级从高到低：`!important > inline style > ID > class/伪类/属性 > 元素/伪元素 > * > 继承`
 
 权重（a, b, c, d）：
+
 - a: `!important`
 - b: inline style（1000）
 - c: ID 选择器（100）
@@ -1143,8 +1244,10 @@ sticky 失效的常见原因：
 - 通配符 `*`（0）
 
 ```css
-#nav .item:hover { }  /* 100 + 10 + 10 = 120 */
-.container .item { }  /* 10 + 10 = 20 */
+#nav .item:hover {
+} /* 100 + 10 + 10 = 120 */
+.container .item {
+} /* 10 + 10 = 20 */
 ```
 
 同权重按**出现顺序**，后面覆盖前面。
@@ -1153,18 +1256,47 @@ sticky 失效的常见原因：
 
 ```css
 /* 方案1：Flex（推荐） */
-.container { display: flex; }
-.left { width: 200px; flex-shrink: 0; }
-.right { width: 200px; flex-shrink: 0; }
-.main { flex: 1; }
+.container {
+  display: flex;
+}
+.left {
+  width: 200px;
+  flex-shrink: 0;
+}
+.right {
+  width: 200px;
+  flex-shrink: 0;
+}
+.main {
+  flex: 1;
+}
 
 /* 方案2：Grid */
-.container { display: grid; grid-template-columns: 200px 1fr 200px; }
+.container {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+}
 
 /* 方案3：圣杯（float + margin 负值） */
-.main { float: left; width: 100%; padding: 0 200px; }
-.left { float: left; width: 200px; margin-left: -100%; position: relative; right: 200px; }
-.right { float: left; width: 200px; margin-left: -200px; position: relative; left: 200px; }
+.main {
+  float: left;
+  width: 100%;
+  padding: 0 200px;
+}
+.left {
+  float: left;
+  width: 200px;
+  margin-left: -100%;
+  position: relative;
+  right: 200px;
+}
+.right {
+  float: left;
+  width: 200px;
+  margin-left: -200px;
+  position: relative;
+  left: 200px;
+}
 ```
 
 实际工作用 Flex 或 Grid，圣杯/双飞翼了解原理即可，现在不会真的用。
@@ -1174,6 +1306,7 @@ sticky 失效的常见原因：
 原因：Retina 屏 dpr=2，CSS 1px 对应物理 2px，视觉上偏粗。
 
 解决方案：
+
 ```css
 /* 方案1：transform 缩放（推荐） */
 .border::after {
@@ -1183,23 +1316,26 @@ sticky 失效的常见原因：
   border: 1px solid #ccc;
   transform: scale(0.5);
   transform-origin: 0 0;
-  width: 200%; height: 200%;
+  width: 200%;
+  height: 200%;
 }
 
 /* 方案2：viewport meta 设置 initial-scale=0.5（影响全局） */
 /* 方案3：border-image 用 1px 图片 */
 /* 方案4：box-shadow 模拟 */
-.item { box-shadow: 0 0 0 0.5px #ccc; }
+.item {
+  box-shadow: 0 0 0 0.5px #ccc;
+}
 ```
 
 **A4.8** CSS 变量 vs Sass 变量
 
-| | CSS 变量（自定义属性） | Sass 变量 |
-|---|---|---|
-| 运行时 | ✅ 可 JS 动态修改 | ❌ 编译时确定 |
-| 作用域 | DOM 树继承（`:root` 全局） | 文件作用域 |
-| 响应媒体查询 | ✅ 可在 @media 里覆盖 | ❌ |
-| 浏览器支持 | IE 不支持 | 编译为普通 CSS，全支持 |
+|              | CSS 变量（自定义属性）     | Sass 变量              |
+| ------------ | -------------------------- | ---------------------- |
+| 运行时       | ✅ 可 JS 动态修改          | ❌ 编译时确定          |
+| 作用域       | DOM 树继承（`:root` 全局） | 文件作用域             |
+| 响应媒体查询 | ✅ 可在 @media 里覆盖      | ❌                     |
+| 浏览器支持   | IE 不支持                  | 编译为普通 CSS，全支持 |
 
 CSS 变量实现主题切换：`document.documentElement.style.setProperty('--primary', '#f00')` 一行搞定，Sass 变量做不到运行时切换。
 
@@ -1209,10 +1345,11 @@ CSS 变量实现主题切换：`document.documentElement.style.setProperty('--pr
 - **重绘（Repaint）**：外观变化但不影响布局（color/background/visibility...），只重新绘制，代价中
 
 优化：
+
 ```js
 // 批量读写，避免强制同步布局
-const width = el.offsetWidth  // 读（触发 flush layout）
-el.style.width = width + 10 + 'px'  // 写
+const width = el.offsetWidth; // 读（触发 flush layout）
+el.style.width = width + 10 + 'px'; // 写
 
 // 用 class 批量修改样式（不是一条条 style）
 // 用 documentFragment 批量 DOM 操作
@@ -1263,6 +1400,7 @@ DOM → CSSOM → Render Tree → Layout → Paint → Composite → 屏幕
 **A5.1.3** 合成层触发条件 + GPU 加速
 
 触发合成层（独立 Layer）：
+
 - `will-change: transform/opacity`
 - `transform: translateZ(0)` 或 `translate3d`（hack 方法）
 - `opacity` 动画、`filter` 动画
@@ -1276,34 +1414,36 @@ GPU 加速原理：合成层的渲染由 GPU 线程负责，不占用主线程�
 生命周期：`install（安装，缓存静态资源）→ waiting（等待旧 SW 失效）→ activate（激活，清理旧缓存）→ fetch（拦截请求）`
 
 ```js
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open('v1').then(c => c.addAll(['/index.html', '/app.js'])))
-})
-self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)))
-})
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open('v1').then((c) => c.addAll(['/index.html', '/app.js'])),
+  );
+});
+self.addEventListener('fetch', (e) => {
+  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
+});
 ```
 
 应用场景：PWA 离线缓存、资源预加载、后台同步、推送通知。注意：只能在 HTTPS 下工作，同一页面只有一个 SW 生效。
 
 **A5.1.5** Web Worker/Shared Worker/Service Worker 差异
 
-| | Web Worker | Shared Worker | Service Worker |
-|---|---|---|---|
-| 作用域 | 单个页面 | 多个页面共享 | 代理网络请求 |
-| 生命周期 | 随页面 | 随最后一个连接页面 | 独立，可后台运行 |
-| 通信 | postMessage | port.postMessage | postMessage/客户端 |
-| 访问 DOM | ❌ | ❌ | ❌ |
-| 主要用途 | CPU 密集计算 | 多 tab 共享状态 | 缓存/推送/离线 |
+|          | Web Worker   | Shared Worker      | Service Worker     |
+| -------- | ------------ | ------------------ | ------------------ |
+| 作用域   | 单个页面     | 多个页面共享       | 代理网络请求       |
+| 生命周期 | 随页面       | 随最后一个连接页面 | 独立，可后台运行   |
+| 通信     | postMessage  | port.postMessage   | postMessage/客户端 |
+| 访问 DOM | ❌           | ❌                 | ❌                 |
+| 主要用途 | CPU 密集计算 | 多 tab 共享状态    | 缓存/推送/离线     |
 
 **A5.1.6** 浏览器存储对比
 
-| | cookie | localStorage | sessionStorage | IndexedDB | Cache API |
-|---|---|---|---|---|---|
-| 大小 | 4KB | 5MB | 5MB | 数百MB | 动态 |
-| 过期 | 可设置 | 永久 | 标签关闭 | 永久 | 手动管理 |
-| 随请求 | ✅（HttpOnly/Secure） | ❌ | ❌ | ❌ | ❌ |
-| 主要用途 | 会话/认证 | 用户设置 | 临时状态 | 大量结构化数据 | SW 缓存资源 |
+|          | cookie                | localStorage | sessionStorage | IndexedDB      | Cache API   |
+| -------- | --------------------- | ------------ | -------------- | -------------- | ----------- |
+| 大小     | 4KB                   | 5MB          | 5MB            | 数百 MB        | 动态        |
+| 过期     | 可设置                | 永久         | 标签关闭       | 永久           | 手动管理    |
+| 随请求   | ✅（HttpOnly/Secure） | ❌           | ❌             | ❌             | ❌          |
+| 主要用途 | 会话/认证             | 用户设置     | 临时状态       | 大量结构化数据 | SW 缓存资源 |
 
 ---
 
@@ -1320,12 +1460,14 @@ self.addEventListener('fetch', e => {
 **A5.2.2** HTTPS 握手（TLS 1.2 vs 1.3）
 
 TLS 1.2（2-RTT）：
+
 1. Client Hello（支持的算法列表）
 2. Server Hello + 证书 + Server Key Exchange
 3. Client Key Exchange（协商密钥）
 4. 双方 Finished → 开始加密通信
 
 TLS 1.3（1-RTT，0-RTT 复用）：
+
 - 合并了多个消息，ClientHello 直接带密钥交换参数
 - 只支持 ECDHE 等前向保密算法，废弃了 RSA 密钥交换
 - 0-RTT 复用：已建立过连接的客户端可以在 ClientHello 里带加密数据（但有重放攻击风险，GET 只读请求才用）
@@ -1367,6 +1509,7 @@ Access-Control-Max-Age: 86400  // 缓存预检结果
 同源：**协议 + 域名 + 端口**三者相同。限制：JS 读跨域请求的响应内容、操作跨域的 DOM（iframe）、读取跨域 Cookie。
 
 **不受同源限制**（可跨域加载）：
+
 - `<script src>` - CDN JS
 - `<link href>` - CDN CSS
 - `<img src>` - 图片
@@ -1376,13 +1519,13 @@ Access-Control-Max-Age: 86400  // 缓存预检结果
 
 **A5.2.6** WebSocket vs SSE vs 长轮询
 
-| | 长轮询 | SSE | WebSocket |
-|---|---|---|---|
-| 全双工 | ❌ | ❌（单向：服务器推客户端） | ✅ |
-| 协议 | HTTP | HTTP（text/event-stream） | ws:// 升级协议 |
-| 断线重连 | 手动 | 浏览器原生支持 | 手动 |
-| 二进制 | 可以 | ❌（纯文本） | ✅ |
-| 适用 | 简单通知 | 数据推送（日志/AI流式） | 实时聊天/协同 |
+|          | 长轮询   | SSE                        | WebSocket      |
+| -------- | -------- | -------------------------- | -------------- |
+| 全双工   | ❌       | ❌（单向：服务器推客户端） | ✅             |
+| 协议     | HTTP     | HTTP（text/event-stream）  | ws:// 升级协议 |
+| 断线重连 | 手动     | 浏览器原生支持             | 手动           |
+| 二进制   | 可以     | ❌（纯文本）               | ✅             |
+| 适用     | 简单通知 | 数据推送（日志/AI 流式）   | 实时聊天/协同  |
 
 SSE 用在 AI 对话的流式输出是近几年很常见的场景，简单够用。
 
@@ -1404,9 +1547,7 @@ X-Frame-Options: SAMEORIGIN
 Set-Cookie: sessionId=xxx; HttpOnly; Secure; SameSite=Strict
 ```
 
-
 ---
-
 
 # 第一部分：工程化
 
@@ -1417,10 +1558,11 @@ Set-Cookie: sessionId=xxx; HttpOnly; Secure; SameSite=Strict
 **A1（Webpack 整体构建流程）**
 
 整体分五个阶段：初始化 → 构建 → 优化 → 输出。
+
 1. **Compiler** 是全局单例，读取 webpack.config.js 生成配置对象，挂载所有 Plugin（plugin.apply(compiler)）
 2. **Compilation** 由 compiler.compile() 创建，每次构建/HMR 都生成新的 compilation 实例，负责本次构建上下文
 3. **Module**：从 entry 出发，用 loader 链处理文件（loader-runner），递归解析依赖，生成 module graph
-4. **Chunk**：将 module graph 按照 entry/splitChunks/动态import 分组，形成 chunk
+4. **Chunk**：将 module graph 按照 entry/splitChunks/动态 import 分组，形成 chunk
 5. **Asset**：对 chunk 进行代码生成（seal → emit），输出 bundle 文件
 
 关键钩子：`make → buildModule → seal → emit`，plugin 通过 tapable 钩子在各阶段介入。
@@ -1434,17 +1576,17 @@ Set-Cookie: sessionId=xxx; HttpOnly; Secure; SameSite=Strict
 
 ```js
 // Loader 本质
-module.exports = function(source) {
-  return source.replace('foo', 'bar')
-}
+module.exports = function (source) {
+  return source.replace('foo', 'bar');
+};
 
 // Plugin 本质
 class MyPlugin {
   apply(compiler) {
     compiler.hooks.emit.tapAsync('MyPlugin', (compilation, cb) => {
       // 操作 compilation.assets
-      cb()
-    })
+      cb();
+    });
   }
 }
 ```
@@ -1497,22 +1639,22 @@ splitChunks: {
 
 ```js
 // 简单 Loader：给每个 JS 文件头部追加注释
-module.exports = function(source) {
-  const comment = `/* built at ${Date.now()} */\n`
-  return comment + source
-}
+module.exports = function (source) {
+  const comment = `/* built at ${Date.now()} */\n`;
+  return comment + source;
+};
 
 // 简单 Plugin：构建完成后打印资源大小
 class AssetLogPlugin {
   apply(compiler) {
     compiler.hooks.emit.tap('AssetLogPlugin', (compilation) => {
       for (const [name, asset] of Object.entries(compilation.assets)) {
-        console.log(`${name}: ${asset.size()} bytes`)
+        console.log(`${name}: ${asset.size()} bytes`);
       }
-    })
+    });
   }
 }
-module.exports = AssetLogPlugin
+module.exports = AssetLogPlugin;
 ```
 
 Loader 需要注意：异步 loader 用 `this.async()`；传递 sourceMap 用第二个参数；`this.cacheable()` 开启缓存。
@@ -1532,14 +1674,14 @@ Loader 需要注意：异步 loader 用 `this.async()`；传递 sourceMap 用第
 new ModuleFederationPlugin({
   name: 'remoteApp',
   exposes: { './Button': './src/Button.vue' },
-  shared: ['vue']
-})
+  shared: ['vue'],
+});
 
 // webpack.config.js (host)
 new ModuleFederationPlugin({
   remotes: { remoteApp: 'remoteApp@http://cdn.com/remoteEntry.js' },
-  shared: ['vue']
-})
+  shared: ['vue'],
+});
 ```
 
 ---
@@ -1547,6 +1689,7 @@ new ModuleFederationPlugin({
 **A7（HMR 实现原理）**
 
 HMR 全流程：
+
 1. webpack-dev-server 启动时，在 bundle 中注入 HMR runtime，并与浏览器建立 **WebSocket** 连接
 2. 文件变更时，webpack 重新编译受影响的模块，生成新的 **hash** 和 **patch（.hot-update.json/.js）**
 3. dev-server 通过 WebSocket 推送 `{ type: 'update', hash }` 消息
@@ -1557,9 +1700,9 @@ HMR 全流程：
 // vue-loader 会自动注入，手动写法：
 if (module.hot) {
   module.hot.accept('./foo.js', () => {
-    const newFoo = require('./foo.js')
+    const newFoo = require('./foo.js');
     // 用新模块做局部更新
-  })
+  });
 }
 ```
 
@@ -1570,6 +1713,7 @@ if (module.hot) {
 **A8（Webpack 优化清单）**
 
 **构建速度：**
+
 - `cache: { type: 'filesystem' }` 开启持久化缓存（webpack5）
 - `thread-loader` 多线程处理 babel-loader
 - `resolve.alias` 减少模块解析路径；`resolve.extensions` 精简后缀
@@ -1577,6 +1721,7 @@ if (module.hot) {
 - DLL（webpack4）/ 持久化缓存（webpack5 更优）
 
 **体积：**
+
 - `TerserPlugin` 压缩 JS；`CssMinimizerPlugin` 压缩 CSS
 - `splitChunks` 分包提高缓存命中
 - Tree Shaking + sideEffects
@@ -1604,6 +1749,7 @@ if (module.hot) {
 **A2（Vite 生产用 Rollup 而非 esbuild）**
 
 esbuild 打包能力有局限：
+
 1. **代码分割**支持不完善，动态 import 的 chunk 策略不如 Rollup 灵活
 2. **CSS 处理**和 **plugin 生态**不如 Rollup 成熟
 3. esbuild 的 **Tree Shaking** 在某些复杂场景（重导出/side-effect 标记）不够精准
@@ -1622,10 +1768,16 @@ Vite 插件基于 **Rollup 插件接口**扩展，兼容大部分 Rollup 插件�
 export default function myPlugin() {
   return {
     name: 'my-plugin',
-    transform(code, id) { /* 转换代码 */ },
-    load(id) { /* 自定义模块加载 */ },
-    configureServer(server) { /* 操作 dev server */ }, // Vite 专有
-  }
+    transform(code, id) {
+      /* 转换代码 */
+    },
+    load(id) {
+      /* 自定义模块加载 */
+    },
+    configureServer(server) {
+      /* 操作 dev server */
+    }, // Vite 专有
+  };
 }
 ```
 
@@ -1638,6 +1790,7 @@ Vite 优势：插件写法简单、Rollup 生态可复用；劣势：dev 和 pro
 **A4（Vite 依赖预构建）**
 
 解决两个问题：
+
 1. **CommonJS/UMD 转 ESM**：浏览器只能用 ESM，第三方包很多还是 CJS 格式（如 lodash）
 2. **减少请求数**：lodash-es 有几百个小文件，每个都走 HTTP 请求会触发几百次，预构建把它合成一个文件
 
@@ -1658,11 +1811,15 @@ Vite 优势：插件写法简单、Rollup 生态可复用；劣势：dev 和 pro
 3. **Generate**：修改后的 AST → 目标代码字符串，同时生成 sourceMap，用 `@babel/generator`
 
 ```js
-const babel = require('@babel/core')
+const babel = require('@babel/core');
 // 底层等价于：
-const ast = babel.parse(code)
-babel.traverse(ast, { ArrowFunctionExpression(path) { /* 改 AST */ } })
-const { code: output } = babel.generate(ast)
+const ast = babel.parse(code);
+babel.traverse(ast, {
+  ArrowFunctionExpression(path) {
+    /* 改 AST */
+  },
+});
+const { code: output } = babel.generate(ast);
 ```
 
 ---
@@ -1688,14 +1845,18 @@ not dead
 **A3（@babel/plugin-transform-runtime）**
 
 解决两个问题：
+
 1. **辅助函数重复注入**：Babel 转译每个文件时会在文件头注入 `_classCallCheck`、`_extends` 等 helper，100 个文件就有 100 份重复代码。`transform-runtime` 改为从 `@babel/runtime` 统一 import，节省体积
 2. **污染全局作用域**：直接引入 `core-js` polyfill 会修改 `Array.prototype` 等全局对象，库开发时不应该这样做。`transform-runtime` 用沙箱方式（局部替换）避免污染
 
 ```json
-["@babel/plugin-transform-runtime", {
-  "corejs": 3,
-  "helpers": true
-}]
+[
+  "@babel/plugin-transform-runtime",
+  {
+    "corejs": 3,
+    "helpers": true
+  }
+]
 ```
 
 注意：`transform-runtime` 适合**库开发**；应用开发用 `useBuiltIns: usage` 更方便。
@@ -1704,11 +1865,11 @@ not dead
 
 **A4（polyfill 引入方式差异）**
 
-| 方式 | 说明 | 适用 |
-|------|------|------|
+| 方式                   | 说明                                                                             | 适用       |
+| ---------------------- | -------------------------------------------------------------------------------- | ---------- |
 | `useBuiltIns: 'entry'` | 在入口文件 import 'core-js'，根据 browserslist 替换成该浏览器缺少的所有 polyfill | 想全量保底 |
-| `useBuiltIns: 'usage'` | 自动检测代码中实际用到的 API，按需注入 polyfill | 体积最优 |
-| 不配置 | 自行手动 import，灵活但繁琐 | 特殊场景 |
+| `useBuiltIns: 'usage'` | 自动检测代码中实际用到的 API，按需注入 polyfill                                  | 体积最优   |
+| 不配置                 | 自行手动 import，灵活但繁琐                                                      | 特殊场景   |
 
 `usage` 是推荐方式，体积更小；`entry` 更保险，适合兜底。都会污染全局，库开发应用 `transform-runtime + corejs: 3`。
 
@@ -1731,11 +1892,13 @@ not dead
 **A2（首屏优化完整清单）**
 
 **资源层：**
+
 - JS/CSS 压缩（Terser/CssMinimizer）、Tree Shaking、代码分割
 - 图片：WebP/AVIF 格式、压缩、懒加载、响应式（srcset）
 - 字体：仅加载用到的字重、`font-display: swap`
 
 **网络层：**
+
 - CDN 分发静态资源
 - HTTP/2 多路复用
 - `preload` 关键资源，`prefetch` 非关键资源
@@ -1743,12 +1906,14 @@ not dead
 - 减少重定向，合并 DNS 查询
 
 **渲染层：**
+
 - SSR / SSG 减少白屏时间
 - 关键 CSS 内联（critical CSS）
 - 避免 render-blocking 资源（async/defer）
 - 骨架屏提升感知速度
 
 **缓存层：**
+
 - 强缓存（Cache-Control: max-age）配合 contenthash 文件名
 - Service Worker 离线缓存
 - 接口数据缓存（SWR 策略）
@@ -1760,6 +1925,7 @@ not dead
 核心思路：只渲染**可视区域**内的 DOM，其余用占位撑高度。
 
 **定高虚拟滚动：**
+
 ```js
 // 可见条目：visibleStart = Math.floor(scrollTop / itemHeight)
 // 渲染范围：[visibleStart - buffer, visibleStart + visibleCount + buffer]
@@ -1767,6 +1933,7 @@ not dead
 ```
 
 **不定高度方案（难点）：**
+
 1. **预估高度**：初始用预估值占位，渲染后用 ResizeObserver 测量真实高度，更新 positions 数组
 2. **二分查找**：维护前缀和数组，用二分查找定位 scrollTop 对应的起始条目（O(logN)）
 3. **缓冲区**：上下各预渲染 3-5 条防止快速滚动白屏
@@ -1787,9 +1954,9 @@ not dead
 
 ```html
 <picture>
-  <source srcset="hero.avif" type="image/avif">
-  <source srcset="hero.webp" type="image/webp">
-  <img src="hero.jpg" loading="lazy" width="800" height="600">
+  <source srcset="hero.avif" type="image/avif" />
+  <source srcset="hero.webp" type="image/webp" />
+  <img src="hero.jpg" loading="lazy" width="800" height="600" />
 </picture>
 ```
 
@@ -1803,20 +1970,23 @@ not dead
 ```js
 // debounce
 function debounce(fn, delay) {
-  let timer
+  let timer;
   return (...args) => {
-    clearTimeout(timer)
-    timer = setTimeout(() => fn(...args), delay)
-  }
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
 }
 
 // throttle（时间戳版）
 function throttle(fn, interval) {
-  let last = 0
+  let last = 0;
   return (...args) => {
-    const now = Date.now()
-    if (now - last >= interval) { last = now; fn(...args) }
-  }
+    const now = Date.now();
+    if (now - last >= interval) {
+      last = now;
+      fn(...args);
+    }
+  };
 }
 ```
 
@@ -1833,14 +2003,14 @@ function processInChunks(tasks) {
   function runChunk(deadline) {
     // deadline.timeRemaining() 返回当前帧剩余空闲时间（ms）
     while (tasks.length > 0 && deadline.timeRemaining() > 1) {
-      const task = tasks.shift()
-      task() // 执行一个小任务
+      const task = tasks.shift();
+      task(); // 执行一个小任务
     }
     if (tasks.length > 0) {
-      requestIdleCallback(runChunk) // 还有任务，下一帧继续
+      requestIdleCallback(runChunk); // 还有任务，下一帧继续
     }
   }
-  requestIdleCallback(runChunk)
+  requestIdleCallback(runChunk);
 }
 ```
 
@@ -1859,10 +2029,12 @@ React Fiber 的 Scheduler 也是类似思路（用 MessageChannel 模拟，因�
 ```js
 // Vue 中正确清理
 onMounted(() => {
-  const handler = () => { /* 使用了 vm 实例 */ }
-  window.addEventListener('resize', handler)
-  onUnmounted(() => window.removeEventListener('resize', handler))
-})
+  const handler = () => {
+    /* 使用了 vm 实例 */
+  };
+  window.addEventListener('resize', handler);
+  onUnmounted(() => window.removeEventListener('resize', handler));
+});
 ```
 
 排查工具：Chrome DevTools Memory 面板，对比两次 Heap Snapshot，找 Detached DOM nodes 和不断增长的对象。
@@ -1873,22 +2045,22 @@ onMounted(() => {
 
 ```js
 // Navigation Timing：页面加载各阶段耗时
-const [nav] = performance.getEntriesByType('navigation')
-const ttfb = nav.responseStart - nav.requestStart     // TTFB
-const domReady = nav.domContentLoadedEventEnd - nav.startTime
+const [nav] = performance.getEntriesByType('navigation');
+const ttfb = nav.responseStart - nav.requestStart; // TTFB
+const domReady = nav.domContentLoadedEventEnd - nav.startTime;
 
 // Resource Timing：各资源加载耗时
-performance.getEntriesByType('resource').forEach(r => {
-  console.log(r.name, r.duration, r.transferSize)
-})
+performance.getEntriesByType('resource').forEach((r) => {
+  console.log(r.name, r.duration, r.transferSize);
+});
 
 // Long Tasks API：监控主线程长任务（> 50ms）
-const observer = new PerformanceObserver(list => {
-  list.getEntries().forEach(entry => {
-    console.log('Long task:', entry.duration, entry.startTime)
-  })
-})
-observer.observe({ type: 'longtask', buffered: true })
+const observer = new PerformanceObserver((list) => {
+  list.getEntries().forEach((entry) => {
+    console.log('Long task:', entry.duration, entry.startTime);
+  });
+});
+observer.observe({ type: 'longtask', buffered: true });
 ```
 
 工程上结合 `web-vitals` 库采集 LCP/CLS/INP，通过 `navigator.sendBeacon` 上报到后端，做性能监控大盘。
@@ -1940,13 +2112,16 @@ observer.observe({ type: 'longtask', buffered: true })
 
 ```js
 // 柯里化
-const add = a => b => a + b
-const add5 = add(5)
-add5(3) // 8
+const add = (a) => (b) => a + b;
+const add5 = add(5);
+add5(3); // 8
 
 // compose：从右到左组合函数
-const compose = (...fns) => x => fns.reduceRight((v, f) => f(v), x)
-const process = compose(format, validate, parse)
+const compose =
+  (...fns) =>
+  (x) =>
+    fns.reduceRight((v, f) => f(v), x);
+const process = compose(format, validate, parse);
 ```
 
 在 Vue 中的应用：`computed` 本质是纯函数；Pinia actions 尽量写纯函数；管道式数据处理（`array.filter().map().reduce()`）。
@@ -1961,14 +2136,16 @@ const process = compose(format, validate, parse)
 - **Scheduler**：控制执行时机（同步/异步/animationFrame），一般不需要手动指定
 
 ```js
-import { fromEvent } from 'rxjs'
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators'
+import { fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
-fromEvent(input, 'input').pipe(
-  debounceTime(300),
-  distinctUntilChanged(),
-  switchMap(e => searchApi(e.target.value)) // 取消前一次未完成的请求
-).subscribe(results => render(results))
+fromEvent(input, 'input')
+  .pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    switchMap((e) => searchApi(e.target.value)), // 取消前一次未完成的请求
+  )
+  .subscribe((results) => render(results));
 ```
 
 适合复杂异步场景（取消请求、多流合并、实时搜索），Vue 项目中不常用，但理解其思想对复杂状态管理有帮助。
@@ -1979,16 +2156,18 @@ fromEvent(input, 'input').pipe(
 
 ## 答题框架
 
-**场景1：微前端架构方案评估**
+**场景 1：微前端架构方案评估**
 
 答题维度框架：
-1. **隔离性**：JS 沙箱（快照沙箱/Proxy沙箱）、CSS 隔离（shadow DOM/scoped）
+
+1. **隔离性**：JS 沙箱（快照沙箱/Proxy 沙箱）、CSS 隔离（shadow DOM/scoped）
 2. **通信机制**：全局状态共享、CustomEvent、URL 参数
 3. **性能开销**：iframe 最重（独立上下文）；qiankun/wujie 次之；Module Federation 最轻（shared 依赖）
 4. **接入成本**：iframe 改造最小但体验差；qiankun 需要子应用改造 lifecycle；MF 需要 webpack5
 5. **部署复杂度**：是否需要主应用统一调度，还是各自独立部署
 
 评估点：
+
 - qiankun：生产验证充分，JS 沙箱成熟，但 CSS 隔离有坑（动态样式）
 - wujie：基于 iframe + Web Component，隔离彻底，通信便捷，新项目推荐
 - Module Federation：不是严格意义微前端，适合同技术栈模块共享，运行时集成
@@ -1996,11 +2175,12 @@ fromEvent(input, 'input').pipe(
 
 ---
 
-**场景2：SPA 版本更新提示**
+**场景 2：SPA 版本更新提示**
 
 问题分析：旧版 bundle 文件被缓存，新版接口可能 breaking change，路由 hash 不匹配导致 404 动态资源。
 
 解决方案框架：
+
 1. **轮询检测**：前端定期（5min）请求 `/version.json`，对比构建时写入的版本号，不一致则提示用户刷新
 2. **WebSocket 推送**：服务端发布后主动通知，实时性更好
 3. **路由守卫检测**：每次路由跳转时检测（`router.beforeEach`），减少轮询
@@ -2009,49 +2189,55 @@ fromEvent(input, 'input').pipe(
 ```js
 // 方案1：轮询版本号
 async function checkVersion() {
-  const { version } = await fetch('/version.json').then(r => r.json())
+  const { version } = await fetch('/version.json').then((r) => r.json());
   if (version !== window.__APP_VERSION__) {
-    showUpdateBanner() // 提示用户，不强制刷新
+    showUpdateBanner(); // 提示用户，不强制刷新
   }
 }
-setInterval(checkVersion, 5 * 60 * 1000)
+setInterval(checkVersion, 5 * 60 * 1000);
 ```
 
 提示用户要优雅，建议 banner 提示而非强制刷新，避免用户丢失未保存的表单数据。
 
 ---
 
-**场景3：前端埋点 SDK 设计**
+**场景 3：前端埋点 SDK 设计**
 
 技术选型框架：
 
 **自动埋点：**
+
 - 利用事件冒泡，在 `document` 上统一监听 `click/submit`，通过 `data-track-*` 属性标记元素
 - MutationObserver 监听 DOM 变化，自动收集曝光事件（PV）
 - 路由变化监听（`popstate` / Vue Router afterEach）
 
 **手动埋点：**
+
 - 暴露简洁 API：`track.event(name, props)`、`track.page(name)`、`track.setUser(id)`
 
 **性能监控：**
+
 - `PerformanceObserver` 采集 LCP/CLS/INP、Long Tasks
 - `Navigation Timing` 采集 TTFB/DOMReady/Load
 
 **错误监控：**
+
 - `window.onerror` + `unhandledrejection` 兜底
 - Vue 的 `app.config.errorHandler`
 - SourceMap 还原（sentry-cli 上传）
 
 **上报策略：**
+
 - `navigator.sendBeacon`（页面卸载安全上报）
 - 批量上报（LocalStorage 暂存 + 合并上报）
 - 采样率控制（千分之 N 上报，降低后端压力）
 
 ---
 
-**场景4：B端低代码平台前端架构**
+**场景 4：B 端低代码平台前端架构**
 
 分层设计框架：
+
 1. **元数据层**：Schema 定义（JSON Schema 描述组件配置）；物料库（原子组件 + 业务组件）
 2. **设计器层**：拖拽引擎（拖放 API / interactjs）；属性面板（动态表单，根据 Schema 渲染）；画布（组件树渲染 + 选中高亮 + 辅助线）
 3. **渲染引擎层**：Schema → 真实 Vue 组件树（`resolveComponent` + 动态渲染）；表达式引擎（`new Function` / expr-eval）；数据绑定（变量系统 + 接口配置）
@@ -2061,11 +2247,12 @@ setInterval(checkVersion, 5 * 60 * 1000)
 
 ---
 
-**场景5：大表单（100+字段）性能优化**
+**场景 5：大表单（100+字段）性能优化**
 
 瓶颈分析：Vue 为每个表单字段建立响应式依赖，字段多时每次输入触发大量 watcher 重新计算。
 
 优化思路：
+
 1. **分步/分标签页渲染**：只渲染当前激活的字段组，v-if 销毁非活跃组件
 2. **按需响应**：不需要实时联动的字段用 `v-model.lazy`（失焦才更新）
 3. **冻结静态数据**：下拉选项等静态数据用 `Object.freeze()` 阻止响应式代理
@@ -2075,15 +2262,17 @@ setInterval(checkVersion, 5 * 60 * 1000)
 
 ---
 
-**场景6：代码体积 10MB+ 首屏过慢的定位和优化**
+**场景 6：代码体积 10MB+ 首屏过慢的定位和优化**
 
 **定位流程：**
+
 1. `webpack-bundle-analyzer` 可视化 bundle，找最大的包
 2. Chrome DevTools Coverage 面板，看首屏实际执行的 JS 比例
 3. Network 面板看请求瀑布图，定位 blocking 资源
 4. Lighthouse 跑一遍，看具体建议
 
 **常见大包原因和处理：**
+
 - `moment.js`（500KB）→ 换 `dayjs`（2KB）
 - 组件库全量引入 → 按需引入（`unplugin-vue-components`）
 - 没有动态 import → 路由懒加载（`() => import('./Page.vue')`）
@@ -2091,50 +2280,58 @@ setInterval(checkVersion, 5 * 60 * 1000)
 - 首屏不需要的大图/字体 → 懒加载
 
 **网络层：**
+
 - CDN 加速、HTTP/2、开启 gzip/brotli
 - 将 vendor chunk 设置长期缓存（contenthash + max-age 365d）
 
 ---
 
-**场景7：推动代码规范和 Code Review**
+**场景 7：推动代码规范和 Code Review**
 
 不是靠说教，是靠工具 + 流程固化：
 
 **工具层：**
+
 - ESLint + Prettier + husky pre-commit 钩子（提交时自动格式化，不过关不让提交）
 - commitlint 规范提交信息（feat/fix/chore/...）
 - CI 流水线中跑 lint，不通过不让合并
 
 **流程层：**
+
 - 制定团队 Code Review Checklist（可读性/安全/性能/测试几个维度）
 - 小 PR 原则：每个 PR 不超过 300 行，降低 review 成本
 - 每周技术分享：复盘 review 中发现的典型问题
 - 结对编程：新人和老人配对，传帮带
 
 **推动方式：**
+
 - 先在自己的 PR 上展示规范效果，用结果说话
 - 和 TL 对齐价值（减少 bug、降低维护成本），争取支持
 - 渐进式推行，不要一次全改，先从 lint 开始
 
 ---
 
-**场景8：设计组件库**
+**场景 8：设计组件库**
 
 **架构层：**
+
 - Monorepo（pnpm workspace）：核心组件包 + 主题包 + 文档包 + 工具包分离
 - CSS 变量 + Design Token 系统，支持主题定制
 - 按需引入：每个组件独立 package，或用 `unplugin-vue-components` 自动导入
 
 **文档层：**
+
 - VitePress / Storybook 构建组件文档，每个组件有 Props 表格、代码示例、Playground
 - Changelog 自动生成（conventional-changelog）
 
 **版本管理：**
+
 - Semver（主版本 breaking change，次版本新特性，补丁版本 bug fix）
 - Changesets 管理多包版本发布
 - 发版前跑全量测试 + 视觉回归测试
 
 **测试层：**
+
 - Vitest 单元测试（组件逻辑）
 - Vue Testing Library 集成测试（用户行为）
 - Playwright 视觉回归测试（截图对比）
@@ -2142,68 +2339,71 @@ setInterval(checkVersion, 5 * 60 * 1000)
 
 ---
 
-**场景9：并发 100 个接口 token 失效的 Axios 拦截器问题**
+**场景 9：并发 100 个接口 token 失效的 Axios 拦截器问题**
 
 问题：100 个请求同时 401，拦截器会触发 100 次刷新 token 的逻辑，发 100 次刷新请求。
 
 解决方案：**请求队列 + 标志位**
 
 ```js
-let isRefreshing = false
-let pendingQueue = []
+let isRefreshing = false;
+let pendingQueue = [];
 
 axios.interceptors.response.use(null, async (error) => {
-  if (error.response?.status !== 401) return Promise.reject(error)
+  if (error.response?.status !== 401) return Promise.reject(error);
 
-  const originalRequest = error.config
-  if (originalRequest._retry) return Promise.reject(error) // 刷新后仍 401，登出
+  const originalRequest = error.config;
+  if (originalRequest._retry) return Promise.reject(error); // 刷新后仍 401，登出
 
   if (isRefreshing) {
     // 刷新中：把请求加入等待队列
     return new Promise((resolve, reject) => {
-      pendingQueue.push({ resolve, reject })
-    }).then(token => {
-      originalRequest.headers.Authorization = `Bearer ${token}`
-      return axios(originalRequest)
-    })
+      pendingQueue.push({ resolve, reject });
+    }).then((token) => {
+      originalRequest.headers.Authorization = `Bearer ${token}`;
+      return axios(originalRequest);
+    });
   }
 
-  isRefreshing = true
-  originalRequest._retry = true
+  isRefreshing = true;
+  originalRequest._retry = true;
   try {
-    const { token } = await refreshTokenApi()
-    setToken(token)
-    pendingQueue.forEach(p => p.resolve(token))
-    pendingQueue = []
-    originalRequest.headers.Authorization = `Bearer ${token}`
-    return axios(originalRequest)
+    const { token } = await refreshTokenApi();
+    setToken(token);
+    pendingQueue.forEach((p) => p.resolve(token));
+    pendingQueue = [];
+    originalRequest.headers.Authorization = `Bearer ${token}`;
+    return axios(originalRequest);
   } catch (e) {
-    pendingQueue.forEach(p => p.reject(e))
-    logout()
+    pendingQueue.forEach((p) => p.reject(e));
+    logout();
   } finally {
-    isRefreshing = false
+    isRefreshing = false;
   }
-})
+});
 ```
 
 ---
 
-**场景10：减少团队前端开发人力 30%**
+**场景 10：减少团队前端开发人力 30%**
 
 框架维度（技术 + 管理结合）：
 
 **提效工具：**
+
 - 脚手架/项目模板（CLI 一键创建规范项目）
 - 业务组件库（复用率高的业务场景沉淀为组件，避免重复开发）
 - 接口代码生成（OpenAPI → TypeScript 类型 + 请求函数，减少手写 service 层）
 - 低代码平台承接标准化页面（CRUD/表单/报表）
 
 **流程提效：**
+
 - 设计稿还原：Figma D2C（Design to Code）工具辅助生成基础代码
 - AI 辅助编码（GitHub Copilot）：减少样板代码编写时间
 - 测试自动化：减少手动回归测试人力
 
 **架构层：**
+
 - BFF（Backend for Frontend）让前端不用等后端接口聚合
 - 微前端让团队并行开发，减少协同等待
 
@@ -2235,6 +2435,7 @@ axios.interceptors.response.use(null, async (error) => {
 **建议讲：CI/CD 流水线卡顿排查**
 
 答题框架：
+
 - **现象**：描述具体症状（某次上线 CI 时间从 5min 变成 45min）
 - **排查过程**：
   1. 查 CI 日志，定位到 webpack 构建阶段
@@ -2251,6 +2452,7 @@ axios.interceptors.response.use(null, async (error) => {
 **Q3：与产品/后端/设计的冲突处理**
 
 答题框架（不要说没有冲突）：
+
 - 举具体例子：产品临时加需求、后端接口 breaking change、设计稿不合理
 - 处理方式：**理解对方诉求 → 量化影响 → 提方案 → 寻求共识**
 - 重点体现：专业度（用数据/工期说话）+ 协作姿态（不是对立，是一起解决问题）
@@ -2262,11 +2464,13 @@ axios.interceptors.response.use(null, async (error) => {
 **Q4：离职原因 + 选择新公司**
 
 离职原因（正向包装，避免负面）：
+
 - "当前项目阶段性完成，个人在技术深度和广度上遇到了瓶颈，希望到更有挑战性的平台继续成长"
 - "团队技术栈比较固定，想接触更丰富的技术场景"
 - 避免说：老板/团队问题、薪资（可以是原因之一但别直说）
 
 选择新公司（结合岗位真实思考）：
+
 - 技术氛围（团队用什么技术栈、有没有技术分享）
 - 产品方向是否有成长空间
 - 团队规模和协作方式（偏好 15-30 人的前端团队）
@@ -2274,27 +2478,29 @@ axios.interceptors.response.use(null, async (error) => {
 
 ---
 
-**Q5：5年职业规划**
+**Q5：5 年职业规划**
 
 不要太具体也不要太空洞，结合当前阶段：
 
-- **短期（1-2年）**：在当前方向做深，达到"某个垂直领域（比如可视化/低代码/性能优化）的团队内专家"水平；同时补齐全栈能力（Node/云服务）
-- **中期（3-5年）**：技术专家方向，负责某个技术域的规划和落地；或技术 TL，带 5-8 人小组，培养新人
+- **短期（1-2 年）**：在当前方向做深，达到"某个垂直领域（比如可视化/低代码/性能优化）的团队内专家"水平；同时补齐全栈能力（Node/云服务）
+- **中期（3-5 年）**：技术专家方向，负责某个技术域的规划和落地；或技术 TL，带 5-8 人小组，培养新人
 - 坦诚说：目前更倾向技术专家路线，喜欢深入解决难题；如果机会合适也不排斥带人
 
-关键：展示方向性思考，不是死背答案，面试官更想看你对自己的认知。
+关键：展示方向性思考，不是死背答案官更想看你对自己的认知。
 
 ---
 
 **Q6：优势和短板**
 
 优势（结合简历）：
+
 - Vue 生态深度：从响应式原理到工程化全栈掌握
 - 有跨领域经验（医疗影像、IndexedDB ORM 等复杂场景）
 - 有工程化意识（CI/CD 优化、Web Worker、性能监控）
 - 喜欢把复杂问题系统化（构建工具/框架原理理解深）
 
 短板（真实但可控，展示改进中）：
+
 - "英文技术文档阅读够用，但技术写作（英文文章/开源贡献）还不够"→ 在改进：开始写博客/参与开源
 - "在纯管理（项目进度管理、跨团队协调）方面经验不足"→ 正在通过带实习生逐步积累
 
@@ -2326,14 +2532,14 @@ axios.interceptors.response.use(null, async (error) => {
 
 答题框架（不要直接报数字，要有依据）：
 
-1. **了解市场行情**：6年Vue前端在当地市场大致区间（先调研 Boss直聘/拉勾数据）
-2. **锚定当前薪资 + 合理涨幅**：一般期望涨幅 20-30%，可以说"我现在是 X，期望在 X * 1.2-1.3 左右，具体可以根据岗位 JD 和 package 细聊"
+1. **了解市场行情**：6 年 Vue 前端在当地市场大致区间（先调研 Boss 直聘/拉勾数据）
+2. **锚定当前薪资 + 合理涨幅**：一般期望涨幅 20-30%，可以说"我现在是 X，期望在 X \* 1.2-1.3 左右，具体可以根据岗位 JD 和 package 细聊"
 3. **转移焦点**：先了解岗位职责和发展空间，如果匹配度高，薪资上有一定弹性
 4. **不要过早报数**：如果 HR 第一轮问，可以说"我更想先了解岗位的具体情况和技术方向，再来谈这个"
 
 ---
 
-**Q10：反问环节（3-5个高质量问题）**
+**Q10：反问环节（3-5 个高质量问题）**
 
 1. **技术栈和架构**："目前团队前端主要用什么技术栈？有没有在推进的技术升级方向（比如 Vue2 → Vue3）？"
 2. **团队现状**："前端团队现在多少人？分工怎么划分（业务线 or 平台/基础设施）？"
@@ -2343,13 +2549,11 @@ axios.interceptors.response.use(null, async (error) => {
 
 避免问：待遇（HR 面再谈）、公司有没有加班（换个方式问项目节奏）、能不能远程（除非是硬需求）。
 
-
 ---
 
 ## 第二部分：针对简历亮点的深挖题（必答）
 
-> 🔴 最重要！面试官一定会深挖，结合 STAR 法答。
-
+> 🔴 最重要官一定会深挖，结合 STAR 法答。
 
 ## A. Web Worker + SparkMD5 大文件分片上传
 
@@ -2432,9 +2636,13 @@ self.onconnect = (e) => {
   port.onmessage = ({ data }) => {
     if (data.type === 'LOGOUT') {
       // 广播给所有其他 Tab
-      ports.forEach(p => p !== port && p.postMessage({ type: 'FORCE_LOGOUT' }));
+      ports.forEach(
+        (p) => p !== port && p.postMessage({ type: 'FORCE_LOGOUT' }),
+      );
     }
-    if (data.type === 'REFRESH_TOKEN') { /* 统一刷新逻辑 */ }
+    if (data.type === 'REFRESH_TOKEN') {
+      /* 统一刷新逻辑 */
+    }
   };
   port.onclose = () => ports.delete(port); // Chrome 支持，Safari 不触发
   port.start();
@@ -2481,12 +2689,16 @@ request.onupgradeneeded = (e) => {
   const db = e.target.result;
   const oldVersion = e.oldVersion;
   // 顺序执行每个版本的迁移步骤
-  if (oldVersion < 2) { db.createObjectStore('reports', { keyPath: 'id' }); }
+  if (oldVersion < 2) {
+    db.createObjectStore('reports', { keyPath: 'id' });
+  }
   if (oldVersion < 3) {
     const store = e.target.transaction.objectStore('reports');
     store.createIndex('byDate', 'reportDate');
   }
-  if (oldVersion < 4) { db.deleteObjectStore('legacyCache'); }
+  if (oldVersion < 4) {
+    db.deleteObjectStore('legacyCache');
+  }
 };
 ```
 
@@ -2498,14 +2710,14 @@ request.onupgradeneeded = (e) => {
 
 **C6** IDB vs localStorage 对比
 
-| 维度 | localStorage | IndexedDB |
-|------|-------------|-----------|
-| 容量 | 5-10MB | 几百MB~GB（按磁盘比例） |
-| API | 同步字符串 KV | 异步事务式，支持结构化数据 |
-| 数据类型 | 只能字符串 | 二进制、对象、Blob |
-| 索引 | 无 | 支持多索引、范围查询 |
-| 事务 | 无 | 支持 ACID 事务 |
-| 性能 | 同步阻塞主线程 | 异步非阻塞 |
+| 维度     | localStorage   | IndexedDB                  |
+| -------- | -------------- | -------------------------- |
+| 容量     | 5-10MB         | 几百 MB~GB（按磁盘比例）   |
+| API      | 同步字符串 KV  | 异步事务式，支持结构化数据 |
+| 数据类型 | 只能字符串     | 二进制、对象、Blob         |
+| 索引     | 无             | 支持多索引、范围查询       |
+| 事务     | 无             | 支持 ACID 事务             |
+| 性能     | 同步阻塞主线程 | 异步非阻塞                 |
 
 localStorage 适合简单配置（<50KB）；IDB 适合结构化数据、离线缓存、大文件元数据。
 
@@ -2555,7 +2767,7 @@ export function hzztDialog(options) {
 
 **D3** 弹窗内的 i18n / 全局组件 / pinia store 如何拿到？
 
-三种方式：① 注入整个 `appContext`（`app._context = mainApp._context`）是最彻底的方式，全局注册的组件、插件、provide 全部继承；② 手动 `app.use(i18n).use(pinia)` 逐个安装，安全但冗余；③ 在 `DialogComponent` 的 props 中传入需要的 store/方法，最解耦但使用繁琐。PIMS 采用方案①，在应用启动时把 `mainApp` 实例挂到全局变量，命令式弹窗初始化时直接复用其 `_context`。
+三种方式：① 注入整个 `appContext`（`app._context = mainApp._context`）是最彻底的方式，全局注册的组件、插件、provide 全部继承；② 手动 `app.use(i18n).use(pinia)` 逐个安装，安全但冗余；③ 在 `DialogComponent` 的 props 中传入需要的 store/方法，最解耦但使用繁琐。PIMS 采用方案 ①，在应用启动时把 `mainApp` 实例挂到全局变量，命令式弹窗初始化时直接复用其 `_context`。
 
 **D4** `render(null, container)` 的内部机制？为什么能防内存泄漏？
 
@@ -2575,12 +2787,12 @@ z-index 用全局计数器：每次弹窗打开取 `zIndexManager.next()`（从 
 
 **E1** Subject/BehaviorSubject/ReplaySubject/AsyncSubject 差异？
 
-| 类型 | 初始值 | 新订阅者收到 | 完成后订阅 |
-|------|--------|------------|-----------|
-| Subject | 无 | 只收订阅后的值 | 空 |
-| BehaviorSubject | 必须有 | 当前值 + 后续值 | 最后一个值 |
-| ReplaySubject(n) | 无 | 最近 n 个值 + 后续值 | 最近 n 个值 |
-| AsyncSubject | 无 | 只有 complete 时的最后一个值 | 最后一个值 |
+| 类型             | 初始值 | 新订阅者收到                 | 完成后订阅  |
+| ---------------- | ------ | ---------------------------- | ----------- |
+| Subject          | 无     | 只收订阅后的值               | 空          |
+| BehaviorSubject  | 必须有 | 当前值 + 后续值              | 最后一个值  |
+| ReplaySubject(n) | 无     | 最近 n 个值 + 后续值         | 最近 n 个值 |
+| AsyncSubject     | 无     | 只有 complete 时的最后一个值 | 最后一个值  |
 
 PIMS 用 `BehaviorSubject` 持有登录状态（初始为 null），任何组件订阅后立即得到当前状态；用 `Subject` 作为错误 toast 的事件总线；用 `ReplaySubject(1)` 缓存最新 WebSocket 心跳状态，给延迟初始化的组件。
 
@@ -2626,9 +2838,9 @@ async function submitWithLock(key: string, fn: () => Promise<any>) {
 WebSocket 连接状态（connecting/connected/disconnected）可能频繁重复推送相同状态，导致 UI 重复刷新或重复触发重连逻辑。`distinctUntilChanged` 过滤掉连续相同的值：
 
 ```js
-wsStatus$.pipe(
-  distinctUntilChanged((prev, curr) => prev.code === curr.code)
-).subscribe(status => updateConnectionUI(status));
+wsStatus$
+  .pipe(distinctUntilChanged((prev, curr) => prev.code === curr.code))
+  .subscribe((status) => updateConnectionUI(status));
 ```
 
 比较函数自定义，只比较 `code` 字段，忽略 `timestamp` 等噪声字段的变化。没有这个操作符，每次 WebSocket 心跳都会重新渲染连接状态 badge，肉眼可见闪烁。
@@ -2644,12 +2856,8 @@ wsStatus$.pipe(
 const subscription = new Subscription();
 
 onMounted(() => {
-  subscription.add(
-    wsStatus$.pipe(distinctUntilChanged()).subscribe(updateUI)
-  );
-  subscription.add(
-    errorSubject.pipe(throttleTime(100)).subscribe(showToast)
-  );
+  subscription.add(wsStatus$.pipe(distinctUntilChanged()).subscribe(updateUI));
+  subscription.add(errorSubject.pipe(throttleTime(100)).subscribe(showToast));
 });
 
 onUnmounted(() => subscription.unsubscribe()); // 一次性清理所有
@@ -2667,15 +2875,19 @@ onUnmounted(() => subscription.unsubscribe()); // 一次性清理所有
 const modules = import.meta.glob('../views/**/*.vue');
 
 function buildRoutes(menuTree, parent = null) {
-  return menuTree.map(menu => ({
-    path: menu.path,
-    name: menu.name,
-    component: menu.component
-      ? modules[`../views/${menu.component}.vue`]
-      : () => import('../layout/RouterView.vue'),
-    meta: { title: menu.title, icon: menu.icon, permission: menu.permission },
-    children: menu.children?.length ? buildRoutes(menu.children, menu) : undefined,
-  })).filter(Boolean);
+  return menuTree
+    .map((menu) => ({
+      path: menu.path,
+      name: menu.name,
+      component: menu.component
+        ? modules[`../views/${menu.component}.vue`]
+        : () => import('../layout/RouterView.vue'),
+      meta: { title: menu.title, icon: menu.icon, permission: menu.permission },
+      children: menu.children?.length
+        ? buildRoutes(menu.children, menu)
+        : undefined,
+    }))
+    .filter(Boolean);
 }
 // 调用：router.addRoute(buildRoutes(menuTree)[0])
 ```
@@ -2688,11 +2900,11 @@ function buildRoutes(menuTree, parent = null) {
 
 **F3** 按钮级权限的 3 种实现方案对比
 
-| 方案 | 实现 | 优点 | 缺点 |
-|------|------|------|------|
-| `v-if` + 工具函数 | `v-if="hasPermission('btn:delete')"` | 最直接 | 逻辑散落各处 |
-| 自定义指令 `v-permission` | `el.remove()` 或 `el.style.display` | 集中，DSL 友好 | 指令销毁时机需注意 |
-| 函数式封装 | `renderIfPermission(perm, <Button/>)` | TSX 类型安全 | 可读性稍差 |
+| 方案                      | 实现                                  | 优点           | 缺点               |
+| ------------------------- | ------------------------------------- | -------------- | ------------------ |
+| `v-if` + 工具函数         | `v-if="hasPermission('btn:delete')"`  | 最直接         | 逻辑散落各处       |
+| 自定义指令 `v-permission` | `el.remove()` 或 `el.style.display`   | 集中，DSL 友好 | 指令销毁时机需注意 |
+| 函数式封装                | `renderIfPermission(perm, <Button/>)` | TSX 类型安全   | 可读性稍差         |
 
 PIMS 用自定义指令：`v-permission="['btn:delete', 'btn:edit']"` 支持数组，指令内 `Array.isArray` 判断；无权限时移除 DOM 节点而非隐藏（防止用户用 DevTools 改 display 绕过）。
 
@@ -2716,7 +2928,7 @@ Vue Router 4 没有 `removeRoutes`（全量），只有 `removeRoute(name)` 单�
 
 每次请求续期（滑动窗口）：用户活跃时永不过期，最佳 UX；服务端压力最大，每次请求都要更新 token 过期时间，并发高时有竞态。定时续期（固定间隔 refresh）：实现简单，但可能在用户不活跃时无谓续期，刷新请求本身也消耗服务端资源。临近过期才续期（提前 5min 检测）：后端压力最小；缺点是需要前端解析 token 过期时间（JWT），或额外维护过期时间戳，且 Tab 不活跃时无法触发。PIMS 采用**每次请求成功响应头带新 token**（服务端签发）+ 前端无条件替换的滑动续期，实现最简单，服务端做了 token 版本控制防重放。
 
-**G3** 401 静默刷新 + 并发请求队列的伪代码⭐⭐⭐⭐
+**G3** 401 静默刷新 + 并发请求队列的伪代码 ⭐⭐⭐⭐
 
 ```js
 let isRefreshing = false;
@@ -2729,7 +2941,7 @@ axios.interceptors.response.use(null, async (error) => {
   }
   if (isRefreshing) {
     // 并发请求排队等待新 token
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       waitQueue.push((newToken) => {
         originalReq.headers['Authorization'] = `Bearer ${newToken}`;
         resolve(axios(originalReq)); // replay
@@ -2742,7 +2954,7 @@ axios.interceptors.response.use(null, async (error) => {
     const { data } = await refreshTokenApi();
     const newToken = data.access_token;
     store.setToken(newToken);
-    waitQueue.forEach(cb => cb(newToken)); // 统一 replay
+    waitQueue.forEach((cb) => cb(newToken)); // 统一 replay
     waitQueue = [];
     originalReq.headers['Authorization'] = `Bearer ${newToken}`;
     return axios(originalReq);
@@ -2785,7 +2997,7 @@ DICOM 影像灰度值通常是 12-16 bit（0-4095 或更大范围），直接显
 ```js
 // 初始化
 cornerstone.enable(element);
-cornerstone.loadAndCacheImage(wadoUrl).then(image => {
+cornerstone.loadAndCacheImage(wadoUrl).then((image) => {
   cornerstone.displayImage(element, image);
 });
 
@@ -2841,7 +3053,7 @@ serverRenderer.renderToString(context, (err, html) => {
 
 不能缓存的组件：① 含用户个性化数据（用户名、余额、权限）；② 含实时数据（股票价格、报警状态）；③ 含 CSRF token；④ 含随机数/时间戳。PIMS 只缓存纯展示型的公共组件（医院公告、科室列表），缓存 key 不含用户 ID，TTL 60s。用户信息相关页面绕过缓存，每次服务端渲染。
 
-**I5** SSR 内存泄漏的常见场景⭐⭐⭐⭐
+**I5** SSR 内存泄漏的常见场景 ⭐⭐⭐⭐
 
 ① 单例污染：在模块顶层创建单例（store、router），多个请求共享同一实例，A 请求的数据泄漏给 B 请求。解决：每次请求创建新的 store/router 实例（工厂函数模式）。② 全局事件监听器：在 `created` 里 `EventBus.$on`，SSR 不执行 `destroyed`，监听器积累不释放。③ 闭包持有 req/res：中间件闭包意外持有请求对象，请求完成后 GC 无法回收。④ 定时器：`setInterval` 在请求处理函数里注册，请求结束后 timer 仍运行，持有闭包。PIMS 排查泄漏工具：`--expose-gc` + `global.gc()` + heapdump，对比两次快照的对象增量。
 
@@ -2890,11 +3102,11 @@ onUnmounted(() => window.removeEventListener('resize', handleResize));
 
 **J4** 大屏适配方案对比：rem/vw/scale transform
 
-| 方案 | 原理 | 优点 | 缺点 |
-|------|------|------|------|
-| rem | root font-size 按屏宽动态设置 | 字体缩放友好 | 需要 px→rem 转换，设计稿换算麻烦 |
-| vw/vh | 相对视口百分比 | 原生 CSS，无 JS | 不支持固定宽高比；多媒体查询复杂 |
-| scale transform | 固定设计稿尺寸，整体缩放 | 实现最简单，与设计稿 1:1 | 字体模糊（位图缩放），点击事件坐标需修正 |
+| 方案            | 原理                          | 优点                     | 缺点                                     |
+| --------------- | ----------------------------- | ------------------------ | ---------------------------------------- |
+| rem             | root font-size 按屏宽动态设置 | 字体缩放友好             | 需要 px→rem 转换，设计稿换算麻烦         |
+| vw/vh           | 相对视口百分比                | 原生 CSS，无 JS          | 不支持固定宽高比；多媒体查询复杂         |
+| scale transform | 固定设计稿尺寸，整体缩放      | 实现最简单，与设计稿 1:1 | 字体模糊（位图缩放），点击事件坐标需修正 |
 
 PIMS 大屏固定设计尺寸 1920×1080，用 `transform: scale(ratio)` + `transform-origin: 0 0` 整体缩放，ratio = `Math.min(window.innerWidth/1920, window.innerHeight/1080)`。ECharts 在 scale 后也需要 `chart.resize({ width: 1920, height: 1080 })` 保持内部坐标系正确。
 
@@ -2919,9 +3131,10 @@ Long Task 定义：主线程上执行超过 **50ms** 的任务（W3C Long Tasks 
 
 ```js
 const observer = new PerformanceObserver((list) => {
-  list.getEntries().forEach(entry => {
+  list.getEntries().forEach((entry) => {
     // entry.duration 是任务耗时（ms）
-    if (entry.duration > 100) { // 只上报严重 Long Task
+    if (entry.duration > 100) {
+      // 只上报严重 Long Task
       analytics.track('long_task', {
         duration: entry.duration,
         startTime: entry.startTime,
@@ -2945,7 +3158,7 @@ observer.observe({ entryTypes: ['longtask'] });
 
 **K5** 从 0 到 1 建立线上性能监控告警？
 
-① **采集层**：在页面入口注入 Performance SDK，采集 FCP/LCP/FID/CLS（Web Vitals）+ Long Task + 资源加载耗时 + JS 错误，用 `navigator.sendBeacon` 批量上报（离开页面不丢数据）。② **存储层**：日志写入 ClickHouse（高吞吐列存），按 `(url, device, date)` 分区。③ **计算层**：定时任务每 5 分钟聚合计算 P50/P75/P95/P99，写入告警指标表。④ **告警层**：规则引擎监控指标，LCP P75 > 2500ms 或 Long Task 频率 > 5次/分 触发钉钉/邮件告警，附上 Session Replay 链接。⑤ **归因层**：结合 source-map 把错误堆栈还原到源码行，关联 Git commit 定位引入时间点。
+① **采集层**：在页面入口注入 Performance SDK，采集 FCP/LCP/FID/CLS（Web Vitals）+ Long Task + 资源加载耗时 + JS 错误，用 `navigator.sendBeacon` 批量上报（离开页面不丢数据）。② **存储层**：日志写入 ClickHouse（高吞吐列存），按 `(url, device, date)` 分区。③ **计算层**：定时任务每 5 分钟聚合计算 P50/P75/P95/P99，写入告警指标表。④ **告警层**：规则引擎监控指标，LCP P75 > 2500ms 或 Long Task 频率 > 5 次/分 触发钉钉/邮件告警，附上 Session Replay 链接。⑤ **归因层**：结合 source-map 把错误堆栈还原到源码行，关联 Git commit 定位引入时间点。
 
 ---
 
@@ -2963,7 +3176,7 @@ const policy = {
   expiration: new Date(Date.now() + 5 * 60 * 1000).toISOString(), // 5分钟有效
   conditions: [
     ['content-length-range', 0, 50 * 1024 * 1024], // 限制 50MB
-    ['starts-with', '$key', `uploads/${userId}/`],   // 限制上传路径
+    ['starts-with', '$key', `uploads/${userId}/`], // 限制上传路径
     { bucket: 'pims-uploads' },
   ],
 };
@@ -2997,20 +3210,19 @@ import { xxx } from 'h5-only-lib'; // 非 App 端才引入
 
 痛点：① 文件数量多，新增环境变量要改 7 个文件，容易漏改；② 不同环境的差异分散在各文件，难以一眼看出 staging 和 prod 的差异；③ `.env.*` 文件可能被意外提交（含密钥），`.gitignore` 配置容易出错；④ 类型不安全，`import.meta.env.VITE_API_URL` 是 `string | undefined`。改进方案：① `dotenv-flow`：只维护 `.env`（共用）+ `.env.[environment]`（差量），减少重复；② `envalid`：在启动时 validate 所有 env 变量（类型检查、必填校验），缺少变量立即报错而非运行时 undefined；③ 配置中心（Consul/Apollo）：敏感配置不放文件，通过 CI 注入或运行时拉取，彻底解决密钥提交风险；④ 生成 TypeScript 类型定义文件（`vite-plugin-env-compatible`），env 变量有自动补全和类型检查。
 
-
 ---
 
 ## 准备建议
 
 ### 重点准备清单（按优先级）
 
-| 优先级 | 内容 | 时间分配 |
-|---|---|---|
-| 🔴 必准备 | 第二部分（简历亮点深挖 A-L）| 60% |
-| 🔴 必准备 | Vue 2/3 响应式 + Diff 原理 | 15% |
-| 🟡 强化 | JS 基础进阶（闭包 / 原型 / Promise / EventLoop）| 10% |
-| 🟡 强化 | 工程化 + 性能优化 | 10% |
-| 🟢 加分 | TypeScript 高级类型 / 设计模式 | 5% |
+| 优先级    | 内容                                             | 时间分配 |
+| --------- | ------------------------------------------------ | -------- |
+| 🔴 必准备 | 第二部分（简历亮点深挖 A-L）                     | 60%      |
+| 🔴 必准备 | Vue 2/3 响应式 + Diff 原理                       | 15%      |
+| 🟡 强化   | JS 基础进阶（闭包 / 原型 / Promise / EventLoop） | 10%      |
+| 🟡 强化   | 工程化 + 性能优化                                | 10%      |
+| 🟢 加分   | TypeScript 高级类型 / 设计模式                   | 5%       |
 
 ### 常见踩坑
 
