@@ -378,7 +378,7 @@ async function limitConcurrency(tasks, limit = 3) {
   const executing = new Set();
   for (const [i, task] of tasks.entries()) {
     const p = Promise.resolve()
-      .then(() => task())
+      .then(() => task(io))
       .then((r) => {
         results[i] = r;
         executing.delete(p);

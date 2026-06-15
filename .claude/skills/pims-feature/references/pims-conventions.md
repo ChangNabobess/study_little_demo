@@ -37,6 +37,13 @@ skill 阶段 ②（定位+方案）、③（编码）、④（自测）的依据
 - **单页面 → Jest 单测**（`npm test`）：测试范围只在单个页面内部——组件渲染、页内交互、composable/工具函数逻辑。
 - **跨页面流程 → pytest + Playwright 端到端**：涉及页面跳转、多页面间数据传递/调用的业务流程，验证整条链路真的跑通。
 
+**Jest 环境已配好，写测试时直接按此写、无需再去探查配置/依赖：**
+- 配置：`jest.config.js` —— `testEnvironment: jsdom`；`testMatch: ['**/*.spec.js']`（只认 `.spec.js`）；`@` 别名已映射；`.vue` 用 `@vue/vue3-jest` 编译；忽略 `/src/page/base/`。
+- 依赖已装：`@vue/test-utils@2`、`element-plus`、`jest@29`、`@vue/vue3-jest`。
+- 约定：测试文件 `xxx.spec.js` 放在**被测组件同目录**；用到 Element Plus 组件时挂载传 `global: { plugins: [ElementPlus] }`。
+- 跑单个：`npx jest <相对路径>`；跑全部：`npm test`。
+- 局限：深耦合页面（如 `diagnosis/common/common.vue`，几十个 import/store/路由）无法在 jsdom 单独挂载——要测其内嵌逻辑须先抽成独立 composable/纯函数，否则该部分只做代码核对。
+
 E2E 脚手架已就绪：用例在 `tests/e2e/`，配置在根目录 `pytest.ini`，依赖见 `requirements-e2e.txt`，详细说明见 `tests/e2e/README.md`。
 
 首次准备（装一次）：
