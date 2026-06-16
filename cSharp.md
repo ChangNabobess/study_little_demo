@@ -400,9 +400,13 @@ public async Task<AuthenticateResultModel> Authenticate([FromBody] AuthenticateM
 ### ABP 框架中的 DI（Dependency Injection）容器自动注入构造函数需要的对象；
 
 ```c#
-/* 
+/*
   这个_logInManager是由 ABP + ASP.NET Core 的依赖注入（DI）容器自动创建并传进来的。
   Controller = Web 后端里“接收请求、协调处理、返回结果”的入口层
+  base() = super() = 父类构造函数
+  :base(repository) 表示「把 repository 往上传给父类的构造函数」，相当于 JS 的 super(repository)。
+
+  override = 重写父类方法。父类 AsyncCrudAppService 本来有个默认的 GetAllAsync，这里用自己的实现（Dapper 手写 SQL + 递归建树）覆盖它。
  */
 namespace RBAC.Controllers
 {
@@ -410,10 +414,68 @@ namespace RBAC.Controllers
     public class TokenAuthController : RBACControllerBase
   {
     private readonly LogInManager _logInManager;
-    public TokenAuthController(LogInManager logInManager)
+    public TokenAuthController(LogInManager logInManager) :base(repository)
     {
         _logInManager = logInManager;
+    }
+    public async override Task<PagedResultDto<Sys_MenuDto>> GetAllAsync(...)
+    {
+      var list = await dbConnection.QueryAsync<Sys_MenuDto>(sql);
+      ...
     }
   }
 }
 ```
+
+### 26-06-16
+
+#### 名词解释
+
+1. 装饰器
+2. 构造函数（依赖注入）
+3. 子类继承父类，<泛型定义>
+4. DTO
+   > DTO = Data Transfer Object(数据传输对象)。它的职责是在「后端 ↔ 前端」之间传数据。≈ 你接口文档里的 request/response TypeScript interface。
+5. 实体类
+   > Entity(实体类) = 数据库表的映射。它的职责是在「后端 ↔ 数据库」之间传数据。
+
+<span style="color:yellow; font-weight:600;">Entity = 数据库长什么样;DTO = 给前端看什么样。两者职责不同,中间用 AutoMapper 转换。</span>
+
+#### EF Core + Dapper 定义解释
+
+> 它们都叫 ORM(Object-Relational Mapping,对象关系映射)——作用是让你用 C# 对象的方式读写数据库,而不是手动处理一行行的数据库记录。
+
+<span style="color:yellow; font-weight:600;">EF Core / Dapper = 帮你把 C# 对象和数据库互转的工具(ORM),一个全自动一个手写 SQL。</span>
+
+#### EF Core + Dapper 使用范围
+
+> |          | EF Core(全功能 ORM)                       | Dapper(微型 ORM)                                       |
+> | -------- | ----------------------------------------- | ------------------------------------------------------ |
+> | 你写什么 | 写 C# 表达式,它自动生成 SQL               | 你自己写 SQL 字符串,它只帮你把结果映射成对象           |
+> | 类比     | Prisma / TypeORM(全自动)                  | 一个「fetch + 自动 JSON.parse 成带类型的对象」的小工具 |
+> | 优点     | 不用写 SQL、自动迁移建表、自动追踪变更    | 快、SQL 完全可控、复杂查询灵活                         |
+> | 缺点     | 复杂查询时生成的 SQL 可能低效、有「魔法」 | 要手写 SQL、容易写出注入漏洞(上节说的拼接)             |
+
+它俩都是 **.NET 生态专属**的,只能在 .NET 平台上跑——也就是 **C# / F# / VB.NET** 这几门「跑在 .NET 运行时上的语言」。Java、PHP **用不了**它们。
+
+原因和前端是一样的:库是绑定**语言运行时**的。就像 `axios` 是 npm 包,只能在 JS/TS 里用,你没法在 Python 里 `import axios`——你得用 Python 自己的 `requests`。EF Core / Dapper 是 NuGet 包(.NET 的 npm),自然只在 .NET 里用。
+
+不过**「ORM」这个概念是通用的**,每门后端语言都有自己的同类工具。横向对照一下,你一看就懂:
+
+| 语言/平台     | 全功能 ORM(≈EF Core)        | 轻量/手写 SQL(≈Dapper) |
+| ------------- | --------------------------- | ---------------------- |
+| **.NET (C#)** | EF Core                     | Dapper                 |
+| **Java**      | Hibernate / JPA             | MyBatis                |
+| **PHP**       | Doctrine、Eloquent(Laravel) | PDO(更偏原生)          |
+| **Node.js**   | Prisma、TypeORM             | Knex.js                |
+| **Python**    | SQLAlchemy、Django ORM      | —                      |
+| **Go**        | GORM                        | sqlx                   |
+
+> 所以你换语言时,**思路能直接迁移,只是换个包名**。比如你哪天写 Java,「EF Core ≈ Hibernate,Dapper ≈ MyBatis」,心智模型不用重学。
+
+一个容易混的点顺便点一下:
+
+- **EF Core / Dapper** = 库(工具),绑语言。
+- **SQL** = 语言(标准),跟编程语言无关。不管你用 EF Core、Hibernate 还是 Prisma,它们最终生成/执行的都是 SQL,而 SQL 由**数据库**(SQL Server、MySQL...)来解析。
+
+换句话说:**ORM 工具换一门语言就得换;但底下的 SQL 和数据库是共通的。** 这也是为什么后端常说「SQL 是值得一辈子投资的技能」,而 ORM 工具只是各语言的「方言封装」。
