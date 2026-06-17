@@ -3531,3 +3531,15 @@ sfc /scannow
 - 避免异常关机、谨慎使用激进的清理/优化类软件（易误删 AppX 仓库文件）。
 - 安装时若非必需 Cowork 功能，可选 "install without Cowork" 降级安装，减少冲突源。
 - 遇到 App 莫名故障，先看安装日志 %TEMP%\ClaudeSetup.log，按 HRESULT 错误码定位，比盲目重装高效。
+
+### 26-06-16
+
+- JSDom 接口注释
+  ```ts
+  /**
+   * @param {string} html - HTML 片段
+   * @param {object} options - 选项
+   * @param {string} [options.baseUrl] - 基础 URL
+   * @returns {Promise<Document>} - 解析后的 DOM 文档
+   * /
+  ```
