@@ -423,14 +423,16 @@ perf(table): 优化大数据量渲染性能;
 
 # scope（作用范围）推荐写法
 
-|---(view)---|---页面---|
-|---(component)---|---组件---|
-|---(api) | 接口|
-|---(store)---|---状态管理---|
-|---(router)---|--- 路由---|
-|---(table)---|---表格---|
-|---(form)---|---表单---|
-|---(build)---|---构建---|
+| key         | 类型     |
+| ----------- | -------- |
+| (view)      | 页面     |
+| (component) | 组件     |
+| (api)       | 接口     |
+| (store)     | 状态管理 |
+| (router)    | 路由     |
+| (table)     | 表格     |
+| (form)      | 表单     |
+| (build)     | 构建     |
 
 # subject（一句话规则）
 
@@ -3340,41 +3342,62 @@ list.forEach((item, i) => {
 - 分支管理
 
 ```bash
-git branch -d 11.0; // 删除本地分支
-git branch 12.0; // 创建新的分支
-git checkout 12.0; // 切换到新创建的分支
-git push --set-upstream origin 12.0; // 推送本地分支到远端仓库
+ # 删除本地分支
+ git branch -d 11.0;
+# 创建新的分支
+git branch 12.0;
+ # 切换到新创建的分支
+ git checkout 12.0;
+ # 推送本地分支到远端仓库
+ git push --set-upstream origin 12.0;
 
-git branch -m 12.0 12.1; // 重命名分支
-git push origin --delete 12.0; // 删除远端分支
-git push --set-upstream origin 12.1; || git push -u origin 12.1; // 推送分支到远端仓库
+ # 重命名分支
+ git branch -m 12.0 12.1;
+ # 删除远端分支
+ git push origin --delete 12.0;
+ # 推送分支到远端仓库
+ git push --set-upstream origin 12.1; || git push -u origin 12.1;
 
-git fetch --prune // 同步远端分支
-git fetch --prune // 删除本地已经不存在于远程的 origin/xxx 分支
+# 同步远端分支
+git fetch
+ # 删除本地已经不存在于远程的 origin/xxx 分支
+ git fetch --prune
+# 远程新增了分支,只要 git fetch 就能看到 origin/新分支,再 git switch 新分支 就能一键建本地分支。
+git switch 新分支
+
 ```
 
 - 代码合并冲突，问题排查流程
 
 ```bash
-git reflog	 // 查看所有git操作历史（包括reset、checkout等）
-git fsck --lost-found	 // 找到所有孤立/悬空的提交
-git show <commit>:<file>	// 查看某个提交中特定文件的内容
-git show <commit> --stat	// 查看某个提交的改动统计
-git reset --hard <commit>	// 硬回退到某个提交，丢弃所有改动
+# 查看所有git操作历史（包括reset、checkout等）
+git reflog
+# 找到所有孤立/悬空的提交
+git fsck --lost-found
+# 查看某个提交中特定文件的内容
+git show <commit>:<file>
+# 查看某个提交的改动统计
+git show <commit> --stat
+# 硬回退到某个提交，丢弃所有改动
+git reset --hard <commit>
 
 # 不同任务分支之间需要快速切换
-git fetch // 从远程仓库拉取最新代码在origin/xxx，但不合并到当前分支
-git diff origin/xxx // 查看当前分支与远程分支的差异
-git merge origin/xxx // 可以自己选择需要从远端分支合并的代码内容
-git fetch --prune // 删除本地已经不存在于远程的 origin/xxx 分支           # 删除全部
+# 从远程仓库拉取最新代码在origin/xxx，但不合并到当前分支
+git fetch
+# 查看当前分支与远程分支的差异
+git diff origin/xxx
+# 可以自己选择需要从远端分支合并的代码内容
+git merge origin/xxx
+# 删除本地已经不存在于远程的 origin/xxx 分支
+git fetch --prune
 ```
 
 - 多个任务之间同时开发，暂存任务状态
 
 ```bash
 # 不同任务分支之间需要快速切换
-git stash  // 临时保存当前工作
-git stash pop // 恢复工作
+git stash  # 临时保存当前工作
+git stash pop # 恢复工作
 # 场景2：保存多个stash
 git stash save "修复登录bug"
 git stash save "优化性能"
@@ -3460,9 +3483,11 @@ git cherry-pick <commit-hash>
 ### 26-06-15 Claude Desktop 启动死循环问题复盘
 
 #### 一、问题现象
+
 打开 Claude Desktop 后陷入「验证不是机器人 → 验证失败 → 再次验证」的死循环，无法正常使用。
 
 #### 二、根本原因
+
 ┌────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ 层面 │ 说明 │
 ├────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
@@ -3476,24 +3501,32 @@ git cherry-pick <commit-hash>
 └────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 #### 三、修复步骤（管理员 PowerShell）
+
 1. 卸载残留的 Claude 包
+
 ```powershell
 Get-AppxPackage _Claude_ | Remove-AppxPackage
 Get-AppxPackage -AllUsers _Claude_ | Remove-AppxPackage -AllUsers
 ```
+
 2. 清理残留目录
+
 ```powershell
 Remove-Item -Recurse -Force "$env:LOCALAPPDATA\AnthropicClaude" -ErrorAction SilentlyContinue
 ```
+
 3. 修复 Windows 系统/仓库（关键）
+
 ```powershell
 wsreset.exe
 DISM /Online /Cleanup-Image /RestoreHealth
 sfc /scannow
 ```
+
 4. 重新下载最新安装包重装
 
 #### 四、以后如何避免
+
 - Windows 更新后偶尔跑一次 **sfc /scannow** 给系统文件做「体检」，及早发现潜伏损坏。
 - 避免异常关机、谨慎使用激进的清理/优化类软件（易误删 AppX 仓库文件）。
 - 安装时若非必需 Cowork 功能，可选 "install without Cowork" 降级安装，减少冲突源。
