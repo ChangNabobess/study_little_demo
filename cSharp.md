@@ -479,3 +479,156 @@ namespace RBAC.Controllers
 - **SQL** = 语言(标准),跟编程语言无关。不管你用 EF Core、Hibernate 还是 Prisma,它们最终生成/执行的都是 SQL,而 SQL 由**数据库**(SQL Server、MySQL...)来解析。
 
 换句话说:**ORM 工具换一门语言就得换;但底下的 SQL 和数据库是共通的。** 这也是为什么后端常说「SQL 是值得一辈子投资的技能」,而 ORM 工具只是各语言的「方言封装」。
+
+### 26-06-23
+
+#### ASP.NET Core 请求生命周期与框架运行机制
+
+```markdown
+# 🚀 全栈进阶笔记：ASP.NET Core 请求生命周期与框架运行机制
+
+作为前端开发者转型全栈，可以将后端框架理解为一个**“将 HTTP 请求（Request）安全、高效地加工成响应（Response）的流水线”**。
+
+在 C# (ASP.NET Core) 的世界里，一个请求从发出到返回，会经历以下标准的核心关卡：
+
+---
+
+## 一、 ASP.NET Core 请求处理流水线 (The Request Pipeline)
+```
+
+[前端 HTTP 请求]
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 1. Kestrel Web 服务器 (二进制字节流解析、分配线程池线程) │
+└───────────────────────┬────────────────────────────────┘
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 2. 中间件管道 (Middleware Pipeline) │
+│ - 跨域处理 (CORS) │
+│ - 身份验证与授权 (Auth) │
+└───────────────────────┬────────────────────────────────┘
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 3. 端点路由分拣 (Endpoint Routing) │
+│ - 匹配 URL 路由表，决定分发给哪个 Controller │
+└───────────────────────┬────────────────────────────────┘
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 4. 控制器上下文 (Controller Action Invocation) │
+│ - 模型绑定与验证 (Model Binding & Validation) │
+│ - 过滤器 (Action Filters) │
+└───────────────────────┬────────────────────────────────┘
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 5. 业务核心层 (Service & Repository) │
+│ - 执行核心业务逻辑 │
+│ - 【事务介入】操作数据库 (Unit of Work / EF Core) │
+└───────────────────────┬────────────────────────────────┘
+│
+▼
+┌────────────────────────────────────────────────────────┐
+│ 6. 响应序列化与原路返回 (Response Serialization) │
+│ - 对象转为 JSON 字符串，反向穿过中间件返回给前端 │
+└────────────────────────────────────────────────────────┘
+
+````
+
+### 🧱 核心关卡详解
+
+#### 1. Kestrel Web 服务器 —— 【大楼传达室】
+* **底层动作**：Kestrel 是 .NET 极高性能的底层 Web 服务器。请求到达时，它负责把网络上的原始**二进制字节流**解析成 C# 认识的 `HttpContext` 对象（包含 `Request` 和 `Response`）。
+* **线程介入**：此时，Kestrel 会立刻从系统的**线程池（Thread Pool）**中抓取一个处于待命状态的工作线程，将这个请求全权绑定给它。
+
+#### 2. 中间件管道 (Middleware) —— 【机场安检】
+* **底层动作**：ASP.NET Core 采用经典的 **管道模式（Pipeline）**。请求像流水一样顺次穿过一个个中间件（Middleware）。
+* **常见职责**：
+  * **CORS 中间件**：检查前端域名是否允许跨域。
+  * **Authentication/Authorization 中间件**：检查请求头里带的 JWT Token 是否合法？如果没有登录，直接在这一步“熔断”，当场返回 `401 Unauthorized`，请求根本不会到达你的业务代码。
+* **前端类比**：非常类似于 Axios 的请求拦截器，或者前端路由守卫（`router.beforeEach`）。
+
+#### 3. 端点路由 (Endpoint Routing) —— 【分拣员】
+* **底层动作**：路由中间件会解析请求的 URL 和 HTTP Method（例如 `GET /api/v1/goods/5`），对比你在代码里写的路由特性（如 `[HttpGet("{id}")]`），精准计算出这个请求应该由哪一个 `Controller` 中的哪一个方法（Action）来执行。
+
+#### 4. 模型绑定与校验 (Model Binding & Validation) —— 【翻译官与质检员】
+* **底层动作**：
+  * **模型绑定**：前端传过来的是一段 JSON 字符串，框架会自动运用反序列化技术，将这段 JSON **翻译并映射** 为 C# 的强类型对象（Class/DTO）。
+  * **模型校验**：利用 C# 的特性（Attributes），如果你在实体类的字段上加了 `[Required]` 或 `[Range(18, 100)]`，框架会自动校验。一旦不合法，主线程直接卡死报错，返回 `400 Bad Request`，无需你在代码里写一堆 `if`。
+
+#### 5. 控制器与业务核心层 —— 【主厨炒菜与数据库事务】
+* **底层动作**：请求终于来到了你写的 `Controller` 和 `Service`。
+* **事务介入**：当业务涉及“扣减余额 $\rightarrow$ 生成订单”等需要保证**原子性**的操作时，代码会通过 **Entity Framework Core (EF Core)** 开启数据库事务。
+  ```csharp
+  // C# 显式控制事务伪代码
+  using var transaction = await _context.Database.BeginTransactionAsync();
+  try {
+      // 1. 扣减余额
+      // 2. 生成订单
+      await _context.SaveChangesAsync();
+      await transaction.CommitAsync(); // 👈 成功则提交事务，数据落盘
+  } catch (Exception) {
+      await transaction.RollbackAsync(); // 👈 失败则全部回滚，保证数据安全
+  }
+
+````
+
+#### 6. 响应序列化与原路返回 —— 【打包出货】
+
+- **底层动作**：业务执行完后，你的方法通常会返回一个 C# 的对象或 List。框架的最后一环（`System.Text.Json`）负责把这个对象**序列化**为 JSON 字符串，将其写入 `HttpResponse.Body`，然后原路**反向**穿过所有中间件，最后由 Kestrel 服务器通过 Socket 写回给前端。
+
+---
+
+## 二、 C# 框架的底层灵魂：IoC（控制反转）与 DI（依赖注入）
+
+在看 C# Demo 时，你会发现你基本**不需要自己去 `new` 一个类**。这是因为 ASP.NET Core 内置了强大的 **IoC 容器**。
+
+### 1. 传统开发（无 DI） vs 现代开发（有 DI）
+
+- **传统思维**：如果 `UserController` 需要调用 `UserService`，必须在构造函数里写 `_userService = new UserService();`。这导致类与类之间高度耦合，一旦 `UserService` 的构造函数多了一个参数，所有 new 它的地方全部报错。
+- **DI 思想**：把创建对象的控制权，上交给框架（控制反转）。
+
+### 2. ASP.NET Core 的具体实现
+
+在 C# 项目的启动文件（通常是 `Program.cs`）中，你会看到很多 `builder.Services.AddScoped...` 的代码，这就是在**向大仓库（IoC 容器）注册服务**：
+
+```csharp
+// Program.cs
+// 告诉框架：以后谁要使用 IUserService 接口，你就自动 new 一个 UserService 给它
+builder.Services.AddScoped<IUserService, UserService>();
+
+```
+
+当请求进来，框架在实例化 `UserController` 时，发现它的构造函数需要 `IUserService`：
+
+```csharp
+public class UserController : ControllerBase
+{
+    private readonly IUserService _userService;
+
+    // 👈 构造函数注入：你不用管谁 new 的，框架在运行时会自动从大仓库里拿出来塞给这个参数
+    public UserController(IUserService userService)
+    {
+        _userService = userService;
+    }
+}
+
+```
+
+### 🌟 前端视角类比
+
+你可以把 .NET Core 的 **IoC 容器** 理解为一个超大型的、由框架自动管理的 **全局状态机（类似于组件层面的全局 Pinia / Redux Store）**。只不过前端 Store 里面存的是**数据**，而后端 IoC 容器里面存的是**一个个活的、可以调用方法的对象实例**。
+
+```
+
+***
+
+**💡 给你一个看 Demo 时的调试小建议：**
+你可以在 C# 的 Controller 方法里、以及自定义的 Middleware 处各自打一个**断点（Breakpoint）**，然后用 Postman 发个请求。你会肉眼可见地看到调试光标**先停在中间件、再停在模型验证、最后才进到你的业务方法**。
+
+既然你正在看 C# 的 Demo，有没有看到 `Task`、`async` 和 `await` 相关的异步代码？C# 的异步基于 **TAP（基于任务的异步模式）**，其底层调度跟 Node.js 的单线程事件循环有非常大的区别（C# 的 `await` 之后可能会换到另一个线程执行）。如果看到了这块，不理解的话随时可以发出来我们继续拆解！
+
+```
