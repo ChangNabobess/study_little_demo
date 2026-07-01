@@ -3543,3 +3543,18 @@ sfc /scannow
    * @returns {Promise<Document>} - 解析后的 DOM 文档
    * /
   ```
+
+## 0629 主仓库开发新项目，切换新仓库、新分支步骤总结
+1、复制整个项目文件（包含.git）到新目录，执行
+```bash 
+git remote set-url origin <新地址>
+``` 
+2、查看当前项目地址
+```bash
+git remote -v
+```
+3、初始化仓库代码，先取消掉仓库master的受保护分支权限，直接修改commit hash，强制推送到远程仓库
+```bash
+git reset --hard HEAD~1
+git push --force-with-lease origin [hashID]:master
+```
