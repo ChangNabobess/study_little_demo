@@ -3451,6 +3451,29 @@ git cherry-pick <commit-hash>
 | git cherry-pick -n abc1234       | 只应用改动，不自动创建 commit |
 | git cherry-pick --abort          | 遇到冲突时放弃操作            |
 
+### 三个关键点
+
+| 要点 | 说明 |
+|------|------|
+| **人站哪** | 站在**目标分支**（fix_master）操作，改动写进当前分支 |
+| **hash 填谁** | 填**来源分支**（uat）那个 commit 的 hash；commit id 全局唯一，不属于某分支 |
+| **来源安全** | uat 只被读取，一个字节都不会变；不会污染来源分支 |
+
+cherry-pick 执行后有两种结果：
+
+**✅ 顺利** —— 直接在当前分支生成新 commit。
+
+**⚠️ 有冲突** —— git 停下，需手动解决：
+
+```bash
+# 编辑冲突文件解决后
+git add .
+git cherry-pick --continue
+
+# 中途放弃，恢复原样（回退的是当前分支，来源分支不受影响）
+git cherry-pick --abort
+```
+
 ### [agent-skill](https://pub-161ae4b5ed0644c4a43b5c6412287e03.r2.dev/latest/agent-skills.pdf)
 
 ### 26-01-03
