@@ -26,3 +26,32 @@ SQL 语句由子句（order By）构成，有些子句是必需的，有些则�
 ```sql
 select * from table_name order by id;
 ```
+
+## 0806
+
+**SqlServer 更新语句**
+
+```sql
+-- 1、简单多行覆盖
+update table_name set colunm_name = value, colunm_name2 = value2 where id= 1;
+
+-- 2、基于关联表（JOIN）更新数据
+-- SQL Server 支持在 UPDATE 中使用 FROM 关联其他表进行条件更新。
+-- 例如：将销售部 (Sales) 所有员工的提金比例 (Bonus) 增加 10%：
+UPDATE e
+SET e.Bonus = e.Bonus * 1.10
+FROM Employees e
+INNER JOIN Departments d ON e.DeptID = d.DeptID
+WHERE d.DeptName = 'Sales';
+
+--3、在生产环境使用事务（Transaction）预防误操作：
+BEGIN TRANSACTION;
+
+UPDATE Employees
+SET Salary = 10000
+WHERE EmpID = 101;
+
+-- 确认无误后再提交，如果改错了可以 ROLLBACK 撤销
+-- COMMIT;
+-- ROLLBACK;
+```
