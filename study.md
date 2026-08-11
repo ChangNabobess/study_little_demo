@@ -3404,6 +3404,7 @@ element ←→ listener   // 互相引用，各自计数都 > 0
 
 - 名词解释
   |ReAct | （reason + act）循环，通过 "观察-思考-行动" 闭环实现智能决策与执行的核心流程|
+  |--|--|
   |core |核心 |
   |cli| 命令行接口 |
 
@@ -3414,21 +3415,23 @@ element ←→ listener   // 互相引用，各自计数都 > 0
 - 分支管理
 
 ```bash
- # 删除本地分支
- git branch -d 11.0;
+# 删除本地分支
+git branch -d 11.0;
 # 创建新的分支
 git branch 12.0;
- # 切换到新创建的分支
- git checkout 12.0;
- # 推送本地分支到远端仓库
- git push --set-upstream origin 12.0;
+# 切换到新创建的分支
+git checkout 12.0;
+# 推送本地分支到远端仓库
+git push --set-upstream origin 12.0;
+# 推送本地分支到远端仓库 -u 是 --set-upstream(设置上游远程分支关联) 缩写
+git puh -u origin 12.0;
 
- # 重命名分支
- git branch -m 12.0 12.1;
- # 删除远端分支
- git push origin --delete 12.0;
- # 推送分支到远端仓库
- git push --set-upstream origin 12.1; || git push -u origin 12.1;
+# 重命名分支
+git branch -m 12.0 12.1;
+# 删除远端分支
+git push origin --delete 12.0;
+# 推送分支到远端仓库
+git push --set-upstream origin 12.1; || git push -u origin 12.1;
 
 # 同步远端分支
 git fetch
@@ -3545,6 +3548,66 @@ git cherry-pick --continue
 # 中途放弃，恢复原样（回退的是当前分支，来源分支不受影响）
 git cherry-pick --abort
 ```
+
+- Git 命令里这个-是什么？
+  在 Unix/Linux 命令行规范（即 POSIX 规范）中，前面的连字符 `-` 是用来区分“选项/参数标志（Option/Flag）”和“普通数据（Argument）”的。
+
+### 1. 告诉 Git：这是一个功能开关(控制命令行为的功能指令（Flag）)，而不是名称
+
+### 2. 短选项（`-`）与长选项（`--`）的命名规则
+
+在命令行工具中，标志参数通常有两种写法：
+
+- **单连字符 `-`（短选项 / Short Option）**：
+  后面接单个字母的缩写，方便快速输入。
+- `-u` 就是 `--set-upstream` 的短缩写。
+- `-f` 就是 `--force`（强制推送）的短缩写。
+
+- **双连字符 `--`（长选项 / Long Option）**：
+  后面接完整的单词，含义更直观、不易混淆。
+- `--set-upstream`
+- `--force`
+
+以下两条命令在 Git 中是**完全等价**的：
+
+```bash
+git push origin -u branch_name
+git push origin --set-upstream branch_name
+
+```
+
+- Git 本身**并不是一门编程语言**，而是一个用 **C 语言** 编写的**命令行工具（Command-Line Interface, CLI）**。
+
+如果你问的是“Git 命令的形式和语法属于什么体系”，可以从以下两个层面来理解：
+
+---
+
+### 1. 语法风格体系：POSIX CLI 命令行规范
+
+Git 命令（如 `git push origin -u main`）遵循的是标准的 **Unix / POSIX 命令行语法体系**。这类命令行的通用结构为：
+
+$$\text{主命令 (Command)} + \text{子命令 (Subcommand)} + \text{选项/标志 (Options/Flags)} + \text{参数 (Arguments)}$$
+
+**POSIX（Portable Operating System Interface，可移植操作系统接口）**是由 IEEE（电气电子工程师学会）制定的一套计算机标准。核心目的：让软件在不同的操作系统（如 Linux、macOS、BSD 等）之间可以无缝迁移和运行。
+
+- **主命令**：`git`
+- **子命令**：`push`、`commit`、`checkout` 等（指定具体要执行的操作）。
+- **选项/标志（Flags）**：
+- **短选项**：以单连字符 `-` 开头加单个字母，如 `-u`、`-m`、`-f`。
+- **长选项**：以双连字符 `--` 开头加完整单词，如 `--set-upstream`、`--message`、`--force`。
+
+- **位置参数**：不带 `-` 的实体名称，如远程仓库名 `origin`、分支名 `main` 或文件名。
+
+这种 `-` / `--` 的参数规范普遍存在于 Linux/Unix 世界的各类工具中（如 `curl`、`docker`、`npm`、`pip` 等）。
+
+---
+
+### 2. 底层实现语言：主要是 C 语言
+
+Git 的软件本身是用以下语言开发出来的：
+
+- **核心底层（约 80%+）**：**C 语言**。由于 Git 最初由 Linus Torvalds（Linux 之父）为了管理 Linux 内核源码而设计，因此追求极其苛刻的性能和运行速度，底层的数据结构（对象库、索引、Tree/Commit 节点）全部由 C 编写。
+- **脚本辅助与外壳（少量）**：**Shell 脚本** 和 **Perl**。早期 Git 的许多高级指令或安装脚本是用 Shell 和 Perl 写的，不过为了跨平台性能（特别是 Windows 平台），后来大多数脚本命令都被用 C 语言重写了。
 
 ### [agent-skill](https://pub-161ae4b5ed0644c4a43b5c6412287e03.r2.dev/latest/agent-skills.pdf)
 
