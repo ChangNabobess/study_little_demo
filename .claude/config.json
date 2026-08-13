@@ -1,9 +1,9 @@
 {
   "dingtalk": {
-    "access_token": "9b824d4e8c064503cad27c06da250d872d038e2a51e0cf3f99dd6b77cdece179",
-    "secret": "SEC5e8e7aacf11874d0b222e1cb2a36b279b19b6c2b0f33cf6ed328e02d2ae8ac99",
-    "at_user_ids": [312333230229490150],
-    "at_mobiles": [15237982380],
+    "access_token": "",
+    "secret": "",
+    "at_user_ids": [],
+    "at_mobiles": [],
     "is_at_all": false
   }
 }
