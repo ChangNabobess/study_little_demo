@@ -4255,15 +4255,20 @@ bc.postMessage({ type: 'refresh', id: 123 });
 const bc = new BroadcastChannel('order_channel');
 bc.onmessage = (e) => console.log(e.data);
 ```
+
 # 1009
-**[queueMicrotask微任务](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/queueMicrotask)**
+
+**[queueMicrotask 微任务](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/queueMicrotask)**
+
 ```js
 queueMicrotask(callback);
 ```
-**[MutationObserver微任务](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver)**
+
+**[MutationObserver 微任务](https://developer.mozilla.org/zh-CN/docs/Web/API/MutationObserver)**
+
 ```js
 // 选择需要观察变动的节点
-const targetNode = document.getElementById("some-id");
+const targetNode = document.getElementById('some-id');
 
 // 观察器的配置（需要观察什么变动）
 const config = { attributes: true, childList: true, subtree: true };
@@ -4272,10 +4277,10 @@ const config = { attributes: true, childList: true, subtree: true };
 const callback = function (mutationsList, observer) {
   // Use traditional 'for loops' for IE 11
   for (let mutation of mutationsList) {
-    if (mutation.type === "childList") {
-      console.log("A child node has been added or removed.");
-    } else if (mutation.type === "attributes") {
-      console.log("The " + mutation.attributeName + " attribute was modified.");
+    if (mutation.type === 'childList') {
+      console.log('A child node has been added or removed.');
+    } else if (mutation.type === 'attributes') {
+      console.log('The ' + mutation.attributeName + ' attribute was modified.');
     }
   }
 };
@@ -4287,5 +4292,16 @@ const observer = new MutationObserver(callback);
 observer.observe(targetNode, config);
 
 // 之后，可停止观察
-observer.disconnect();
+observer.disconct();
+```
+
+# 1015
+
+## git 暂存、提取、删除
+
+```bash
+git stash push -u -m "登记右侧加做确认Tab-待产品确认"
+git stash list
+git stash pop 'stash@{0}'
+git stash drop 'stash@{0}'
 ```

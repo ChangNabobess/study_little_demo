@@ -673,18 +673,21 @@ COMMIT;   -- 两条都 OK，一起生效；中途出错就 ROLLBACK 全部撤销
 - **持久性(D)**：一旦 COMMIT，数据永久保存，断电也不丢。
 
 ## 0701
-### SSMS中快捷键积累
-| 需求 | VS Code 习惯 | SSMS 快捷键 |
-|------|------------|------------|
-| **批量替换文本** | `Ctrl + H` | `Ctrl + H`（一样）。可勾选正则、区分大小写；选中一段后能限定"仅在选定内容中"替换 |
+
+### SSMS 中快捷键积累
+
+| 需求                            | VS Code 习惯 | SSMS 快捷键                                                                                 |
+| ------------------------------- | ------------ | ------------------------------------------------------------------------------------------- |
+| **批量替换文本**                | `Ctrl + H`   | `Ctrl + H`（一样）。可勾选正则、区分大小写；选中一段后能限定"仅在选定内容中"替换            |
 | **列编辑 / 多行同一列同时输入** | `Alt + 拖动` | **`Alt + 鼠标拖动`** 竖着框选，或 `Shift + Alt + ↑/↓/←/→`,然后直接打字 → 每行同位置同时插入 |
-| **在多行行首/行尾批量加东西** | 多光标 | `Alt` 拖出一条**零宽竖线**（框选但不选中字符）→ 打字即在每行插入 |
-| **查找** | `Ctrl + F` | `Ctrl + F`（一样） |
-| **整词/全部替换** | 替换框里点 | `Ctrl + H` 后按 `Alt + A` = 全部替换 |
+| **在多行行首/行尾批量加东西**   | 多光标       | `Alt` 拖出一条**零宽竖线**（框选但不选中字符）→ 打字即在每行插入                            |
+| **查找**                        | `Ctrl + F`   | `Ctrl + F`（一样）                                                                          |
+| **整词/全部替换**               | 替换框里点   | `Ctrl + H` 后按 `Alt + A` = 全部替换                                                        |
 
 ## 最常用的一招：列编辑
 
 比如你想给连续几行**行首都加 `--` 注释掉**：
+
 1. 把光标放到第一行行首
 2. 按住 **`Alt`**，鼠标往下拖到最后一行行首（拖出一条竖线，跨了 N 行但没选中字符）
 3. 直接输入 `--` → N 行同时被加上
@@ -692,20 +695,21 @@ COMMIT;   -- 两条都 OK，一起生效；中途出错就 ROLLBACK 全部撤销
 > 注释代码其实还有更快的：选中多行后 `Ctrl + K, Ctrl + C` 注释、`Ctrl + K, Ctrl + U` 取消注释。
 
 ### visual studio 快捷键积累
+
 VS 2022 的导航后退是 **`Ctrl + -`**，前进 **`Ctrl + Shift + -`**（连续按可退多步，也可以点工具栏左上角那两个蓝色箭头）。
 
 给你一份看 C# 代码最常用的导航快捷键：
 
-| 快捷键 | 作用 | 说明 |
-|--------|------|------|
-| `F12` | 转到定义 | 接口方法会停在接口声明 |
-| `Ctrl + F12` | 转到实现 | 你已经用过，跳到真正的方法体 |
-| `Ctrl + -` / `Ctrl + Shift + -` | 后退 / 前进 | 跨文件的光标位置历史 |
-| `Shift + F12` | 查找所有引用 | 看这个方法/字段被谁调用了，排查链路必备 |
-| `Alt + F12` | 速览定义（Peek） | 在当前文件**弹小窗**看定义，不跳走、不丢上下文 |
-| `Ctrl + T` | 全局搜索 | 按类名/方法名/文件名跳转，类似前端的全局 Go to |
-| `Ctrl + ,` | 转到成员/符号 | 比 `Ctrl+T` 更轻量的导航 |
-| `Ctrl + K, Ctrl + T` | 查看调用层次 | 树状展开"谁调用了它、它调用了谁" |
+| 快捷键                          | 作用             | 说明                                           |
+| ------------------------------- | ---------------- | ---------------------------------------------- |
+| `F12`                           | 转到定义         | 接口方法会停在接口声明                         |
+| `Ctrl + F12`                    | 转到实现         | 你已经用过，跳到真正的方法体                   |
+| `Ctrl + -` / `Ctrl + Shift + -` | 后退 / 前进      | 跨文件的光标位置历史                           |
+| `Shift + F12`                   | 查找所有引用     | 看这个方法/字段被谁调用了，排查链路必备        |
+| `Alt + F12`                     | 速览定义（Peek） | 在当前文件**弹小窗**看定义，不跳走、不丢上下文 |
+| `Ctrl + T`                      | 全局搜索         | 按类名/方法名/文件名跳转，类似前端的全局 Go to |
+| `Ctrl + ,`                      | 转到成员/符号    | 比 `Ctrl+T` 更轻量的导航                       |
+| `Ctrl + K, Ctrl + T`            | 查看调用层次     | 树状展开"谁调用了它、它调用了谁"               |
 
 对你现在看 ABP 这种"接口/实现分离"的代码，最高频的组合是：`Ctrl+F12` 进实现 → 看完 `Ctrl+-` 退回 → `Shift+F12` 看还有谁在用。
 
@@ -716,3 +720,341 @@ VS 2022 的导航后退是 **`Ctrl + -`**，前进 **`Ctrl + Shift + -`**（连�
 1. **关注点分离（Separation of Concerns）**：配置、鉴权、业务是三种不同的「关注点」，分开放各自演进、各自测试。
 2. **横切关注点 + 面向切面（AOP）**：鉴权、日志、事务、异常处理——这些「每个业务都要、又不属于某个业务」的东西，用过滤器/中间件**统一处理**，而不是散在业务里。
 3. **配置期 vs 请求期分离**：启动时把全局参数准备好（跑一次），请求来了只管跑业务——避免每个请求重复做初始化。
+
+# 10-20
+
+# C# 依赖注入与容器学习笔记
+
+学习日期：2026-10-20  
+项目背景：经典 ASP.NET Boilerplate（ABP），以 `ItemSyncLog` 为例。
+
+## 1. 先区分类、对象和方法
+
+```csharp
+public class QueryService
+{
+    public void Query()
+    {
+        Console.WriteLine("执行查询");
+    }
+}
+
+var service = new QueryService();
+service.Query();
+```
+
+- `QueryService`：类，定义对象具有什么行为。
+- `service`：这个类创建出来的对象（实例）。
+- `Query()`：对象提供的方法。
+
+对应 JavaScript：
+
+```javascript
+class QueryService {
+  query() {
+    console.log('执行查询');
+  }
+}
+
+const service = new QueryService();
+service.query();
+```
+
+**依赖注入容器可以理解为管理其他对象的工具对象。它不是某一个方法，也不是 Docker 容器。**
+
+## 2. 什么是依赖？
+
+如果 A 要调用 B 的功能，A 就依赖 B。
+
+项目中的 `ItemSyncLog` 需要查询日志，因此使用 `ItemSyncLogSelect` 提供的查询方法。
+
+```text
+ItemSyncLog
+  └── 需要日志查询服务 ItemSyncLogSelect
+        └── 又需要公共服务 ICommonHelper 的实现对象
+```
+
+“依赖”在这里指协作需要的其他服务对象，不只指 NuGet 包依赖。
+
+## 3. 什么是注入？
+
+**注入就是把当前类需要的对象，从外部传进来。**
+
+下面是简化后的教学示例：
+
+```csharp
+public interface ILogReader
+{
+    string Read();
+}
+
+public class LogReader : ILogReader
+{
+    public string Read() => "查询到一条日志";
+}
+
+public class LogPageService
+{
+    private readonly ILogReader _reader;
+
+    public LogPageService(ILogReader reader)
+    {
+        _reader = reader;
+    }
+
+    public string GetLogs()
+    {
+        return _reader.Read();
+    }
+}
+```
+
+手动创建并使用：
+
+```csharp
+ILogReader reader = new LogReader();
+var page = new LogPageService(reader);
+
+Console.WriteLine(page.GetLogs());
+// 输出：查询到一条日志
+```
+
+`new LogPageService(reader)` 把依赖传进构造函数，因此叫“构造函数注入”。**即使没有容器，依赖注入也能成立。**
+
+语法说明：
+
+- `interface` 定义接口，约定服务有哪些方法；接口本身不能直接 `new`。
+- `class LogReader : ILogReader` 表示类实现接口，类似 TypeScript 的 `implements`。
+- `public LogPageService(...)` 与类同名且没有返回类型，是构造函数，创建实例时调用。
+- `private` 表示字段只能在当前类内部访问。
+- `readonly` 表示字段只能在声明时或当前类的构造函数中赋值；不代表字段引用的对象内部不可变化。
+- `_reader` 前面的下划线只是字段命名习惯，没有特殊的注入作用。
+
+## 4. 容器解决什么问题？
+
+手动注入时，调用方需要自己准备所有对象：
+
+```text
+准备公共服务
+→ 创建查询服务，并传入公共服务
+→ 创建业务服务，并传入查询服务
+```
+
+依赖越来越多，创建代码也会越来越复杂。容器负责登记对应关系，并自动完成这些创建与传参步骤。
+
+可以用 JavaScript 模拟一个极简容器：
+
+```javascript
+const container = new Map();
+
+// 注册：登记如何创建对象，此时没有执行工厂函数。
+container.set('ILogReader', () => new LogReader());
+
+// 解析：根据登记信息取得创建方法，再创建对象。
+const factory = container.get('ILogReader');
+const reader = factory();
+
+// 注入：将对象传给使用它的类。
+const page = new LogPageService(reader);
+```
+
+这是概念示例。真实 ABP 容器会根据 C# 类型查找服务，还会递归处理依赖和生命周期。
+
+| 概念              | 含义                                     |
+| ----------------- | ---------------------------------------- |
+| 注册（Register）  | 告诉容器“需要某个接口时，使用哪个实现”   |
+| 解析（Resolve）   | 向容器索取某个类型的对象，由它创建或复用 |
+| 注入（Inject）    | 把准备好的依赖传给使用方                 |
+| 容器（Container） | 负责这些工作及对象生命周期管理的工具     |
+
+注册通常只是登记规则，不意味着此刻就创建所有对象。
+
+## 5. 项目中的三个文件如何联系？
+
+### 5.1 接口：约定能力
+
+文件：`src/AdiconDataService.Application/ItemSyncLog/IItemSyncLogSelect.cs`，第 13 行。
+
+```csharp
+public interface IItemSyncLogSelect : IApplicationService
+{
+    // 声明日志查询等方法。
+}
+```
+
+`IItemSyncLogSelect` 是业务接口，继承 ABP 的 `IApplicationService`，属于应用服务体系。
+
+### 5.2 实现类：提供具体逻辑
+
+文件：`src/AdiconDataService.Application/ItemSyncLog/ItemSyncLogSelect.cs`，第 22 行起。
+
+```csharp
+[RemoteService(false)]
+public class ItemSyncLogSelect : IItemSyncLogSelect
+{
+    private readonly ICommonHelper _commonHelper;
+
+    public ItemSyncLogSelect(ICommonHelper commonHelper)
+    {
+        _commonHelper = commonHelper;
+    }
+
+    // 实现接口声明的查询方法。
+}
+```
+
+`ItemSyncLogSelect` 实现 `IItemSyncLogSelect`，所以它的对象可以作为该接口类型使用。
+
+`[RemoteService(false)]` 是 C# 特性（Attribute），为框架提供额外配置：这里表示不自动暴露为远程服务接口，不会禁止依赖注入。
+
+### 5.3 使用方：通过构造函数接收
+
+文件：`src/AdiconDataService.Application/ItemSyncLog/ItemSyncLog.cs`，第 33、38、45 行。
+
+```csharp
+private readonly IItemSyncLogSelect _itemSyncLogSelect;
+
+public ItemSyncLog(
+    IWebHostEnvironment env,
+    IItemSyncLogSelect itemSyncLogSelect,
+    ICommonHelper commonHelper,
+    AbpLoginResultTypeHelper abpLoginResultTypeHelper)
+{
+    // 此处省略其他初始化代码。
+    _itemSyncLogSelect = itemSyncLogSelect;
+}
+```
+
+| 名称                 | 身份               |
+| -------------------- | ------------------ |
+| `IItemSyncLogSelect` | 接口类型           |
+| `ItemSyncLogSelect`  | 实现类             |
+| `itemSyncLogSelect`  | 构造函数参数       |
+| `_itemSyncLogSelect` | 保存服务引用的字段 |
+
+下面这句是保存对象引用，不是复制或重新创建一个对象：
+
+```csharp
+_itemSyncLogSelect = itemSyncLogSelect;
+```
+
+后续调用：
+
+```csharp
+_itemSyncLogSelect.logMasterDataComboSelect(
+    input, nowflag, OrgnizationLink, out count);
+```
+
+就会进入 `ItemSyncLogSelect` 的对应实现。这里 `out count` 用于让方法通过参数返回总记录数。
+
+## 6. 程序怎么知道先注册，再注入？
+
+因为 ABP 的启动流程会调用模块初始化方法，项目已在其中安排了注册。
+
+文件：`src/AdiconDataService.Application/AdiconDataServiceApplicationModule.cs`，第 198 行起。
+
+```csharp
+var thisAssembly =
+    typeof(AdiconDataServiceApplicationModule).GetAssembly();
+
+IocManager.RegisterAssemblyByConvention(thisAssembly);
+```
+
+逐段解释：
+
+- `typeof(...)`：取得一个 C# 类型的描述信息。
+- `GetAssembly()`：取得该类型所属的程序集，可以暂时理解成 Application 项目编译得到的 `.dll`。
+- `RegisterAssemblyByConvention(...)`：扫描程序集，按 ABP 的约定注册符合条件的类型。
+- `IocManager`：ABP 提供的依赖注入管理入口，背后使用容器完成服务管理。
+
+框架通过“反射”读取类型、接口和构造函数等信息。它不是按源码文件排列顺序逐个执行，也不是靠参数名字猜实现类。
+
+本例中，实现类通过接口属于 `IApplicationService` 体系，结合 ABP 的常规注册规则，建立：
+
+```text
+IItemSyncLogSelect → ItemSyncLogSelect
+```
+
+仅仅给任意类取一个 `Service` 后缀，并不能保证它会被注册；要符合框架约定或显式注册。
+
+执行过程分为两个阶段：
+
+```text
+应用启动阶段
+  → ABP 初始化 ApplicationModule
+  → 扫描程序集，注册服务对应关系
+
+框架需要创建 ItemSyncLog 时
+  → 检查其构造函数需要哪些参数
+  → 发现需要 IItemSyncLogSelect
+  → 找到对应实现 ItemSyncLogSelect
+  → 继续准备它需要的 ICommonHelper
+  → 创建查询服务并传给 ItemSyncLog
+  → 构造函数将其保存到 _itemSyncLogSelect
+```
+
+对于这个普通构造函数注入场景，查找依据是参数类型。因此把参数改名为 `queryService`，不会改变注入关系：
+
+```csharp
+IItemSyncLogSelect queryService
+```
+
+## 7. 容器还有哪些功能？
+
+除了注册和自动注入，容器还管理对象生命周期，以及它所负责对象的资源释放。
+
+| 生命周期            | 创建或复用规则                                   |
+| ------------------- | ------------------------------------------------ |
+| `Transient`（瞬时） | 每次向容器解析服务时，通常创建新实例             |
+| `Scoped`（作用域）  | 同一作用域内复用，Web 中常见的是同一次请求内复用 |
+| `Singleton`（单例） | 同一个容器内复用同一个实例                       |
+
+这是依赖注入中的通用分类。项目使用经典 ABP，具体作用域机制和配置 API 取决于其容器集成，不能直接照搬其他框架的配置代码。
+
+本例应用服务按经典 ABP 约定通常是 `Transient`，除非另有显式配置。
+
+特别注意：
+
+```csharp
+_itemSyncLogSelect.MethodA();
+_itemSyncLogSelect.MethodB();
+```
+
+即使服务是 `Transient`，这两次调用也仍然使用字段保存的同一个对象。**瞬时并不是每调用一次方法，就自动重新 `new`。**
+
+单例对象可能同时被多个请求使用，不能随意把某次请求的用户或查询参数保存在它的共享字段中。
+
+对于容器拥有并跟踪的可释放对象，容器会在相应的释放时机调用 `Dispose()` 等清理方法。自己在容器之外 `new` 的对象，不能一概指望容器替你清理。
+
+## 8. 常见误解
+
+| 误解                           | 正确理解                                       |
+| ------------------------------ | ---------------------------------------------- |
+| 容器就是一个类方法             | 容器是管理对象的工具，注册只是它提供的一项功能 |
+| `itemSyncLogSelect` 是方法     | 在当前构造函数中，它是接收服务对象的参数       |
+| `using` 引入命名空间就完成注入 | `using` 只是方便引用类型，不负责创建或注入服务 |
+| 接口可以自己创建对象           | 接口约定能力，容器根据注册信息找到具体实现     |
+| 注册时就创建了所有服务         | 通常先登记规则，解析服务时才创建或复用         |
+| 按文件名、参数名查找实现       | 本例依据类型关系和 ABP 注册约定                |
+| 同一个接口的实现永远唯一       | 接口可以有多个实现，需要明确注册和选择规则     |
+| 瞬时服务每次调用方法都重建     | 生命周期影响容器解析；已有字段仍引用原对象     |
+| 容器会帮我执行业务查询         | 容器准备服务对象，SQL 与业务逻辑由服务方法实现 |
+
+## 9. 自测
+
+1. 将构造函数参数 `itemSyncLogSelect` 改成 `queryService`，并同步调整赋值，会影响注入吗？
+2. `_itemSyncLogSelect = itemSyncLogSelect` 是否创建了新对象？
+3. `RegisterAssemblyByConvention(...)` 的作用是什么？
+4. `ItemSyncLogSelect` 还依赖 `ICommonHelper`，由谁准备这个对象？
+5. 不使用容器，手动 `new` 并通过构造函数传对象，是否算依赖注入？
+
+<details>
+<summary>查看答案</summary>
+
+1. 不会，本例按参数类型查找服务。
+2. 不会，只是将对象引用保存到字段。
+3. 扫描程序集，按 ABP 约定注册服务。
+4. 使用容器创建服务时，容器会继续解析并提供依赖；手动创建时则由调用方准备。
+5. 算。依赖注入是一种组织对象依赖的方式，容器是自动完成这件事的工具。
+
+</details>
